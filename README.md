@@ -4,6 +4,12 @@ An online laboratory for EEE 361 (Electromagnetic Waves). Students change a mate
 fields respond immediately, and read the same numbers they would get by hand from D. K. Cheng,
 *Field and Wave Electromagnetics*, 2nd edition.
 
+**Live site:** https://moaazbek.github.io/em-wave-lab/ (QR code for class: `qr-code.png` in the repository root;
+it is not part of the website).
+
+> Student project for EEE 361. Not an official course resource. Check results against the textbook
+> (Cheng, *Field and Wave Electromagnetics*, 2nd ed.).
+
 **Lab 01 — Plane-wave incidence** (Cheng § 8-2, 8-3, 8-5 to 8-8, 8-10): a uniform plane wave meets a
 plane boundary between two media. Normal and oblique incidence, both polarizations, lossless, lossy and
 perfectly conducting Medium 2, Brewster angle, total reflection, skin depth.
@@ -20,7 +26,21 @@ npm run build      # type check (tsc, strict) + static production build into dis
 npm run preview    # serve dist/ locally
 ```
 
-## Deploy to GitHub Pages
+## Publish an update
+
+Commit and push to `main`. The workflow tests, builds and redeploys the site in about a minute:
+
+```sh
+npm test && npm run build      # optional local check first
+git add -A
+git commit -m "Describe the change"
+git push
+gh run watch                   # optional: follow the deploy
+```
+
+If the tests fail, the site is not updated and the previous version stays online.
+
+## Deploy to GitHub Pages (first-time setup, already done for this repository)
 
 The build is fully static, uses relative asset paths and hash routing (`#/plane-wave-incidence?...`),
 so it works from any sub-path such as `https://<user>.github.io/<repo>/`.

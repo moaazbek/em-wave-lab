@@ -1,6 +1,6 @@
 import { Dispatch, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { Part, Polarization, Quantity } from '../../physics'
-import { ThemeToggle } from '../../shell/App'
+import { Disclaimer, ThemeToggle } from '../../shell/App'
 import { parseHash, replaceQuery } from '../../shell/router'
 import { Heading, Segmented, Switch } from '../../ui/controls'
 import { si, sig } from '../../ui/format'
@@ -93,6 +93,7 @@ export default function PlaneWaveIncidenceLab({ query }: { query: string }) {
               {gamma}
             </div>
             <div className="mt-6"><ShowWork model={model} /></div>
+            <footer className="mt-8 border-t border-rule pb-2 pt-3"><Disclaimer /></footer>
           </main>
           <aside className="scroll-thin overflow-y-auto border-l border-rule bg-panel px-4 py-4" aria-label="Results">
             <Results model={model} />
@@ -130,6 +131,7 @@ export default function PlaneWaveIncidenceLab({ query }: { query: string }) {
             <ShowWork model={model} />
           </div>
         )}
+        <footer className="mt-8 border-t border-rule pt-3"><Disclaimer /></footer>
         {tab === 'plots' && (
           <div className="flex flex-col gap-5">
             <section>

@@ -29,6 +29,16 @@ export function ThemeToggle() {
   )
 }
 
+/** Shown at the bottom of every page. */
+export function Disclaimer({ className = '' }: { className?: string }) {
+  return (
+    <p className={`text-[12px] leading-relaxed text-faint ${className}`}>
+      Student project for EEE 361. Not an official course resource. Check results against the textbook (Cheng,{' '}
+      <i>Field and Wave Electromagnetics</i>, 2nd ed.).
+    </p>
+  )
+}
+
 export function App() {
   const path = useRoutePath()
   const lab = LABS.find((l) => l.slug === path)
@@ -77,9 +87,12 @@ function Home() {
         </ul>
         <p className="mt-5 text-[13px] text-faint">In preparation: {PLANNED.join('; ')}.</p>
       </main>
-      <footer className="mt-auto pt-16 text-[12px] leading-relaxed text-faint">
-        Model: uniform plane waves, linear isotropic homogeneous media, steady state. Material values are typical and
-        approximate.
+      <footer className="mt-auto flex flex-col gap-1.5 pt-16 text-[12px] leading-relaxed text-faint">
+        <p>
+          Model: uniform plane waves, linear isotropic homogeneous media, steady state. Material values are typical
+          and approximate.
+        </p>
+        <Disclaimer />
       </footer>
     </div>
   )
