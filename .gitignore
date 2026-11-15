@@ -1,4 +1,24 @@
+# dependencies and build output
 node_modules
 dist
+coverage
+*.log
+
+# local and secret configuration
+.env
+.env.*
 *.local
+
+# documents that must never be published (textbook, exams, notes)
+*.pdf
+*.doc
+*.docx
+*.ppt
+*.pptx
+notes/
+private/
+
+# editor and OS files
 .DS_Store
+.vscode/
+.idea/
