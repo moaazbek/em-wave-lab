@@ -34,6 +34,7 @@ export function ZPlot({ model, clock, height = 150 }: { model: Model; clock: Clo
     for (let i = 0; i < n; i++) zs[i] = pxToZ(v, (i * W) / (n - 1))
     const re = new Float64Array(n), im = new Float64Array(n)
     sampleZProfile(sol, state.part, state.quantity, axis, zs, re, im)
+    // Display only: Medium 2 is drawn amplified when its field is weak (labelled on the plot, with a true-value axis).
     for (let i = 0; i < n; i++) if (zs[i] >= 0) { re[i] *= gain; im[i] *= gain }
     const norm = state.quantity === 'E' ? sol.e0 : sol.e0 / sol.p1.eta.re
     const y = (val: number) => mid - Math.max(-RANGE, Math.min(RANGE, val / norm)) * unit
@@ -123,13 +124,24 @@ export function ZPlot({ model, clock, height = 150 }: { model: Model; clock: Clo
             return <circle key={i} cx={x} cy={mid - amp * unit} r={2.75} fill={isMax ? 'var(--ink)' : 'var(--panel)'} stroke="var(--ink)" strokeWidth={1.25} />
           })}
           {[2, 1, -1, -2].map((g) => (
-            <text key={g} x={W - 4} y={mid - g * unit - 3} textAnchor="end" className="num" fontSize={10} fill="var(--faint)">{g > 0 ? `+${g}` : `−${-g}`}</text>
+            <g key={g}>
+              {/* Medium 1 scale: next to the boundary when Medium 2 is amplified, else at the right edge. */}
+              <text x={gain > 1 ? v.bx - 4 : W - 4} y={mid - g * unit - 3} textAnchor="end" className="num" fontSize={10} fill="var(--faint)">
+                {g > 0 ? `+${g}` : `−${-g}`}
+              </text>
+              {/* Medium 2 scale when amplified: the true values, i.e. the tick value divided by the gain. */}
+              {gain > 1 && (
+                <text x={W - 4} y={mid - g * unit - 3} textAnchor="end" className="num" fontSize={10} fill="var(--warn)">
+                  {g > 0 ? `+${sig(g / gain, 2)}` : `−${sig(-g / gain, 2)}`}
+                </text>
+              )}
+            </g>
           ))}
         </svg>
       )}
       {v && gain > 1 && (
         <div className="pointer-events-none absolute right-2 top-1.5 text-[11.5px] font-medium text-warn" style={{ left: v.bx + 8, textAlign: 'right' }}>
-          Medium 2 values ×{sig(gain, 3)}
+          Medium 2 drawn ×{sig(gain, 3)} · right axis: true values
         </div>
       )}
       <div className="pointer-events-none absolute left-2 top-1.5 flex items-baseline gap-3 text-[11.5px] text-mute">

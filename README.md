@@ -89,6 +89,8 @@ Any other static host works too: upload the contents of `dist/`.
 - **Weak-field colour gain:** in a good conductor the transmitted E is a tiny fraction of E_i0 (seawater
   at 5 MHz: 1.7 %) and would be invisible. When the peak field in Medium 2 is below 10 % of E_i0 (or H_i0),
   the map and the z-plot multiply Medium 2 by a 1-2-5 factor and label it ("Weak field: colour scale ×50").
+  This is display-only: the results, explanations and equations use the true values, and the z-plot adds a
+  second y axis on the Medium 2 side that shows the true (unamplified) values.
 - **Colour range** of the map is ±2 times the incident amplitude, the largest value a total field can reach
   in Medium 1.
 - **Slowed time:** the animation runs at 0.125 to 1 displayed periods per second; the caption states the
@@ -97,8 +99,13 @@ Any other static host works too: upload the contents of `dist/`.
 - **Field shown:** switching polarization also switches the map to the field along a_y (E for
   perpendicular, H for parallel). For the field that lies in the plane of incidence the student chooses
   the x or z component.
-- **Standing-wave extremes:** a reflection phase within 10⁻⁴ rad of 0° or 180° is treated as real, so a
-  good conductor (Γ = −0.999998 + j…) shows its |E| minimum at the interface.
+- **Standing-wave extremes** are computed from the exact, unrounded phase of Γ, with z′ = −z the distance
+  from the interface: θ_Γ − 2β₁z′_min = −π and θ_Γ − 2β₁z′_max = 0 (mod 2π). A computed extreme that lies
+  behind the interface (inside Medium 2) by less than λ₁/1000 is reported as "at the interface"; the exact
+  position is still shown in "Show the work". Example: copper at 3 MHz has θ_Γ = 179.99986°, and its first
+  minimum lies 19 µm behind the interface (λ₁/1000 = 99.9 mm), so |E| is minimum at the interface.
+- **Display rounding only:** Γ, τ and every field value are used unrounded by the engine, the field map and
+  the plots. Phases near 0° or 180° are printed with enough decimals to show the departure (179.99986°).
 - **Real Γ and τ** are shown with their sign (Γ = −0.3820, as in the textbook); complex ones in polar form,
   with the other form in the advanced view.
 - **Wave colours** (incident amber, reflected magenta, transmitted green) were checked with a

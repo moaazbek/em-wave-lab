@@ -117,35 +117,52 @@ export function surfaceCurrent(sol: InterfaceSolution): { x: C; y: C } {
 export interface StandingWave {
   /** Standing-wave ratio S = (1 + |Gamma|) / (1 - |Gamma|); Infinity when |Gamma| = 1. */
   S: number
-  /** Positions (z <= 0, nearest the interface first) of the maxima of the y-directed field magnitude. */
+  /**
+   * Reported positions z (<= 0) of the maxima and minima of |1 + Gamma e^{j2 k_1z z}|, nearest the
+   * interface first. A point that lies behind the interface (inside Medium 2) by less than
+   * `tolerance` is reported as z = 0, "at the interface". Points further behind are dropped.
+   */
   zMax: number[]
   zMin: number[]
-  /** What the y-directed total field magnitude does at z = 0. */
+  /** The same points before that rule is applied: exact positions, possibly slightly positive. */
+  zMaxExact: number[]
+  zMinExact: number[]
+  /** lambda_1 / 1000 (m). */
+  tolerance: number
+  /** What the field magnitude does at z = 0 by the rule above. */
   atInterface: 'max' | 'min' | 'neither'
 }
 
 /**
- * Standing-wave pattern in Medium 1 of the field that carries Gamma directly:
- * |1 + Gamma e^{j 2 k_1z z}|. For normal incidence this is |E| (Cheng 8-8).
+ * Standing-wave pattern in Medium 1 (Cheng 8-8). With z' = -z the distance from the interface,
+ *   |E_1(z')| = E_i0 |1 + |Gamma| e^{j(theta_Gamma - 2 beta z')}|,
+ * so the minima satisfy  theta_Gamma - 2 beta z'_min = -pi (mod 2 pi)
+ * and the maxima satisfy theta_Gamma - 2 beta z'_max = 0   (mod 2 pi).
+ * theta_Gamma is the exact, unrounded phase of Gamma; beta is k_1z (= beta_1 at normal incidence).
  */
 export function standingWave(sol: InterfaceSolution, count = 4): StandingWave {
   const mag = Math.min(1, abs(sol.Gamma))
   const S = mag >= 1 - 1e-12 ? Infinity : (1 + mag) / (1 - mag)
-  const th = arg(sol.Gamma)
-  // Phase tolerance: a good conductor gives Gamma = -1 + (tiny) j, whose minimum is at the interface for all purposes.
-  const TOL = 1e-4
-  // maxima: th + 2 k z = -2 n pi, with th taken in [0, 2 pi)
-  let thMax = th < 0 ? th + 2 * Math.PI : th
-  if (thMax > 2 * Math.PI - TOL || thMax < TOL) thMax = 0
-  // minima: th + 2 k z = -(2n + 1) pi, with th taken in [-pi, pi)
-  let thMin = th > Math.PI - TOL ? th - 2 * Math.PI : th
-  if (Math.abs(thMin + Math.PI) < TOL) thMin = -Math.PI
-  const zMax: number[] = []
-  const zMin: number[] = []
-  for (let n = 0; n < count; n++) {
-    zMax.push(Math.min(0, -(thMax + 2 * n * Math.PI) / (2 * sol.k1z)) + 0)
-    zMin.push(Math.min(0, -(thMin + (2 * n + 1) * Math.PI) / (2 * sol.k1z)) + 0)
+  const th = arg(sol.Gamma) // in [-pi, pi], not rounded
+  const beta = sol.k1z
+  const tolerance = sol.p1.lambda / 1000
+
+  /** z'_k = (th + offset + 2 pi k) / (2 beta) for k = -1, 0, 1, ...; offset = pi for minima, 0 for maxima. */
+  const solve = (offset: number) => {
+    const exact: number[] = []
+    const reported: number[] = []
+    let first: number | null = null
+    for (let k = -1; exact.length < count; k++) {
+      const zp = (th + offset + 2 * Math.PI * k) / (2 * beta)
+      if (zp < -tolerance) continue // behind the interface by more than lambda_1/1000: not in Medium 1
+      if (first === null) first = zp
+      exact.push(0 - zp)
+      reported.push(zp <= 0 ? 0 : 0 - zp) // "0 - x" avoids -0
+    }
+    return { exact, reported, atInterface: first !== null && first <= 0 }
   }
-  const atInterface = mag < 1e-12 ? 'neither' : thMax === 0 ? 'max' : thMin === -Math.PI ? 'min' : 'neither'
-  return { S, zMax, zMin, atInterface }
+  const mn = solve(Math.PI)
+  const mx = solve(0)
+  const atInterface = mag < 1e-12 ? 'neither' : mn.atInterface ? 'min' : mx.atInterface ? 'max' : 'neither'
+  return { S, zMax: mx.reported, zMin: mn.reported, zMaxExact: mx.exact, zMinExact: mn.exact, tolerance, atInterface }
 }

@@ -1,5 +1,5 @@
 import { C, C0, DEG, EPS0, ETA0, GOOD_CONDUCTOR_MIN, LOW_LOSS_MAX, abs, arg, goodConductorApprox, incidentPowerDensity, lowLossApprox, pctError } from '../../physics'
-import { texNum as n, texPolar, texRect } from '../../ui/format'
+import { phasePlaces, si, texNum as n, texPolar, texRect } from '../../ui/format'
 import type { Model } from './derive'
 
 export interface WorkStep {
@@ -161,8 +161,14 @@ export function workSteps(m: Model): WorkStep[] {
       section: pec ? '8-6' : '8-8',
       lines: [
         pec ? `S = \\frac{1 + |\\Gamma|}{1 - |\\Gamma|} \\to \\infty` : `S = \\frac{1 + |\\Gamma|}{1 - |\\Gamma|} = \\frac{1 + ${n(g)}}{1 - ${n(g)}} = ${n(m.sw.S)}`,
-        `|E_1(z)| = E_{i0}\\left|1 + \\Gamma e^{j2\\beta_1 z}\\right|: \\qquad z_{\\max} = ${n(m.sw.zMax[0])}${U('m')}, \\qquad z_{\\min} = ${n(m.sw.zMin[0])}${U('m')}, \\qquad \\text{spacing } \\frac{\\lambda_1}{2} = ${n(p1.lambda / 2)}${U('m')}`,
+        `|E_1(z')| = E_{i0}\\left|1 + |\\Gamma|\\,e^{j(\\theta_\\Gamma - 2\\beta_1 z')}\\right|, \\qquad z' = -z, \\qquad \\theta_\\Gamma = ${n(arg(sol.Gamma), 10)}${U('rad')}`,
+        `\\theta_\\Gamma - 2\\beta_1 z'_{\\max} = 0 \\pmod{2\\pi} \\ \\Rightarrow\\ z'_{\\max} = ${n(-m.sw.zMaxExact[0], 6)}${U('m')}${m.sw.zMax[0] === 0 ? '\\ \\ (\\text{at the interface})' : ''}`,
+        `\\theta_\\Gamma - 2\\beta_1 z'_{\\min} = -\\pi \\pmod{2\\pi} \\ \\Rightarrow\\ z'_{\\min} = ${n(-m.sw.zMinExact[0], 6)}${U('m')}${m.sw.zMin[0] === 0 ? '\\ \\ (\\text{at the interface})' : ''}`,
+        `\\text{spacing between minima } \\frac{\\lambda_1}{2} = ${n(p1.lambda / 2)}${U('m')}`,
       ],
+      note: Math.max(m.sw.zMinExact[0], m.sw.zMaxExact[0]) > 0
+        ? `A negative z′ lies behind the interface. It is less than λ₁/1000 = ${si(m.sw.tolerance, 'm', 3)} behind, so it is reported as "at the interface".`
+        : undefined,
     })
   }
 
@@ -194,7 +200,7 @@ export function workSteps(m: Model): WorkStep[] {
     const unit = q === 'E' ? 'V/m' : 'A/m'
     const ph = (a: number) => {
       const d = a / DEG
-      return Math.abs(d) < 0.005 ? '' : ` ${d < 0 ? '-' : '+'} ${Math.abs(d).toFixed(2)}^\\circ`
+      return d === 0 ? '' : ` ${d < 0 ? '-' : '+'} ${Math.abs(d).toFixed(phasePlaces(d))}^\\circ`
     }
     const term = (v: number, s: string) => (Math.abs(v) < 1e-12 ? '' : ` ${v < 0 ? '+' : '-'} ${n(Math.abs(v))}${s}`)
     const wt = `2\\pi(${n(f)})t`

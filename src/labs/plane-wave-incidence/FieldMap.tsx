@@ -49,6 +49,7 @@ export function FieldMap({ model, theme, clock, onTheta, className = '' }: Props
     for (let i = 0; i < cols; i++) zs[i] = pxToZ(view, ((i + 0.5) * W) / cols)
     const gRe = new Float32Array(cols), gIm = new Float32Array(cols)
     sampleZProfile(sol, state.part, state.quantity, axis, zs, gRe, gIm)
+    // Display only: weak Medium 2 fields are drawn amplified (labelled on the map). The engine's values are untouched.
     for (let i = 0; i < cols; i++) if (zs[i] >= 0) { gRe[i] *= gain; gIm[i] *= gain }
     const xRe = new Float32Array(rows), xIm = new Float32Array(rows)
     for (let r = 0; r < rows; r++) {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { niceBelow, parseEng, si, sig, texNum } from './format'
+import { niceBelow, parseEng, phaseDeg, si, sig, texNum, texPolar } from './format'
 
 describe('engineering input', () => {
   it('parses plain, exponent and prefixed numbers', () => {
@@ -24,6 +24,10 @@ describe('engineering input', () => {
     expect(parseEng(si(2.4e9, 'Hz'))).toBeCloseTo(2.4e9, 0)
     expect(sig(199.74)).toBe('199.7')
     expect(sig(705358, 3)).toBe('705000')
+    expect(phaseDeg(Math.PI - 2.4e-6)).toBe('179.99986°')
+    expect(phaseDeg(Math.PI)).toBe('180.00°')
+    expect(phaseDeg(1.2309594)).toBe('70.53°')
+    expect(texPolar({ re: -0.9999976, im: 2.399e-6 })).toBe('0.9999976\\,\\underline{/179.99986^\\circ}')
     expect(sig(5.8e7, 3)).toBe('5.80×10⁷')
     expect(texNum(5.8e7, 3)).toBe('5.8\\times10^{7}')
     expect(niceBelow(0.37)).toBe(0.2)

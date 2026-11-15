@@ -1,9 +1,9 @@
 import { ReactNode } from 'react'
 import {
-  C, DEG, MediumClass, MediumParams, abs, arg, goodConductorApprox, incidentPowerDensity, lowLossApprox, pctError,
+  C, MediumClass, MediumParams, abs, arg, goodConductorApprox, incidentPowerDensity, lowLossApprox, pctError,
 } from '../../physics'
 import { Heading } from '../../ui/controls'
-import { deg, fixed, pct, si, sig } from '../../ui/format'
+import { deg, pct, phaseDeg, si, sig } from '../../ui/format'
 import { Prose, Tex } from '../../ui/Tex'
 import { CLASS_LABEL, Model } from './derive'
 
@@ -15,7 +15,7 @@ const rect = (z: C, n = 4) => {
 const polar = (z: C, n = 4) => {
   // Near |z| = 1 (good conductors) four figures would hide the small departure from total reflection.
   const close = Math.abs(1 - abs(z)) < 1e-3 && Math.abs(1 - abs(z)) > 1e-12
-  return `${close ? abs(z).toFixed(7) : sig(abs(z), n)} ∠ ${fixed(arg(z) / DEG + 0, close ? 4 : 2)}°`
+  return `${close ? abs(z).toFixed(7) : sig(abs(z), n)} ∠ ${phaseDeg(arg(z))}`
 }
 /** A real value is shown with its sign, as in the textbook (Γ = −0.3820); a complex one in polar form. */
 const isReal = (z: C) => Math.abs(z.im) <= 1e-9 * abs(z)
@@ -123,6 +123,24 @@ function MediumBlock({ n, p, cls, name, advanced }: { n: 1 | 2; p: MediumParams;
   )
 }
 
+/** One sentence on where the standing-wave extremes are, using the exact phase of Gamma. */
+function standingNote(model: Model): string {
+  const { sol, sw } = model
+  if (sol.R <= 1e-12) return 'No reflection, so there is no standing wave.'
+  const th = `$\\theta_\\Gamma$ = ${phaseDeg(arg(sol.Gamma))}`
+  if (sol.Gamma.im === 0) {
+    return sw.atInterface === 'max' ? '$\\Gamma > 0$: $|E|$ is maximum at the interface.' : '$\\Gamma < 0$: $|E|$ is minimum at the interface.'
+  }
+  if (sw.atInterface !== 'neither') {
+    const kind = sw.atInterface === 'min' ? 'minimum' : 'maximum'
+    const behind = sw.atInterface === 'min' ? sw.zMinExact[0] : sw.zMaxExact[0]
+    return behind > 0
+      ? `${th}. The nearest ${kind} of $|E|$ lies ${si(behind, 'm', 3)} behind the interface, less than $\\lambda_1/1000$, so $|E|$ is ${kind} at the interface.`
+      : `${th}: $|E|$ is ${kind} at the interface.`
+  }
+  return `${th}, so the interface is not an extremum of $|E|$. The nearest minimum is ${si(-sw.zMin[0], 'm', 4)} in front of it.`
+}
+
 export function Results({ model }: { model: Model }) {
   const { sol, state } = model
   const adv = state.advanced
@@ -194,15 +212,12 @@ export function Results({ model }: { model: Model }) {
             <Row sym="S" sub="standing-wave ratio">{sig(model.sw.S, 4)}</Row>
             {sol.R > 1e-12 && (
               <>
-                <Row sym="|E|_{\max}" sub="nearest to boundary">z = {model.sw.zMax[0] === 0 ? '0' : si(model.sw.zMax[0], 'm')}</Row>
-                <Row sym="|E|_{\min}" sub="nearest to boundary">z = {model.sw.zMin[0] === 0 ? '0' : si(model.sw.zMin[0], 'm')}</Row>
+                <Row sym="|E|_{\max}" sub="nearest to boundary">{model.sw.zMax[0] === 0 ? 'at the interface' : `z = ${si(model.sw.zMax[0], 'm')}`}</Row>
+                <Row sym="|E|_{\min}" sub="nearest to boundary">{model.sw.zMin[0] === 0 ? 'at the interface' : `z = ${si(model.sw.zMin[0], 'm')}`}</Row>
               </>
             )}
             <p className="mt-1.5 text-[11.5px] leading-snug text-mute">
-              <Prose>{model.sw.atInterface === 'max' ? '$\\Gamma > 0$: $|E|$ is maximum at the interface.'
-                : model.sw.atInterface === 'min' ? '$\\Gamma < 0$: $|E|$ is minimum at the interface.'
-                : sol.R <= 1e-12 ? 'No reflection, so there is no standing wave.'
-                : `$\\Gamma$ is complex (angle ${fixed(arg(sol.Gamma) / DEG, 2)}°), so the interface is not exactly an extremum of $|E|$; it is close to a ${Math.abs(arg(sol.Gamma)) > Math.PI / 2 ? 'minimum' : 'maximum'}.`}</Prose>
+<Prose>{standingNote(model)}</Prose>
             </p>
           </dl>
         ) : (

@@ -41,6 +41,21 @@ export const fixed = (x: number, places: number): string =>
   Number.isFinite(x) ? x.toFixed(places).replace('-', '−') : sig(x)
 
 export const deg = (rad: number, places = 2): string => `${fixed((rad * 180) / Math.PI, places)}°`
+
+/**
+ * Phase angle in degrees with enough decimals to show a small departure from 0° or ±180°
+ * (179.99986°, not a rounded 180.00°). Formats the exact value; nothing is snapped.
+ */
+export function phaseDeg(rad: number): string {
+  const d = (rad * 180) / Math.PI
+  return `${fixed(d + 0, phasePlaces(d))}°`
+}
+
+/** Decimals for an angle in degrees: 2 normally, more when it is within 0.01° of 0° or ±180°. */
+export function phasePlaces(d: number): number {
+  const dev = Math.min(Math.abs(d), Math.abs(180 - Math.abs(d)))
+  return dev > 0 && dev < 0.01 ? Math.min(8, Math.ceil(-Math.log10(dev)) + 1) : 2
+}
 export const pct = (fraction: number, places = 1): string => `${fixed(fraction * 100, places)}${NB}%`
 
 const MULT: Record<string, number> = { T: 1e12, G: 1e9, M: 1e6, k: 1e3, K: 1e3, m: 1e-3, u: 1e-6, 'µ': 1e-6, 'μ': 1e-6, n: 1e-9, p: 1e-12 }
@@ -98,8 +113,11 @@ export function texRect(z: { re: number; im: number }, n = 4): string {
 
 /** LaTeX for a complex number in polar form, |z| ∠ angle. */
 export function texPolar(z: { re: number; im: number }, n = 4): string {
-  const a = (Math.atan2(z.im, z.re) * 180) / Math.PI
-  return `${texNum(Math.hypot(z.re, z.im), n)}\\,\\underline{/${(Object.is(a, -0) ? 0 : a).toFixed(2)}^\\circ}`
+  const a = (Math.atan2(z.im, z.re) * 180) / Math.PI + 0
+  const m = Math.hypot(z.re, z.im)
+  // Near |z| = 1 (good conductors) show enough digits that the departure from 1 and from 180° is visible.
+  const mag = Math.abs(1 - m) < 1e-3 && Math.abs(1 - m) > 1e-12 ? m.toFixed(7) : texNum(m, n)
+  return `${mag}\\,\\underline{/${a.toFixed(phasePlaces(a))}^\\circ}`
 }
 
 /** "Nice" 1-2-5 length not larger than x. */

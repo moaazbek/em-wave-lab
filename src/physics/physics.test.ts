@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   C, DEG, EPS0, MU0, Medium, Polarization, abs, arg, avgPoyntingZ, brewsterAngle, classify, criticalAngle,
-  editMedium, fieldAt, fieldComponent, fromPreset, getPreset, goodConductorApprox, isCustomized, lossTangent,
+  div, editMedium, fieldAt, fieldComponent, fromPreset, getPreset, goodConductorApprox, isCustomized, lossTangent,
   lowLossApprox, mediumParams, mul, pctError, sampleZProfile, solveInterface, sqrt, c, standingWave,
   surfaceCurrent, transmittedFractionFromFields, xFactor, zProfile, LOSSLESS_PRESET_IDS, PRESETS,
 } from './index'
@@ -157,12 +157,56 @@ describe('lossy media', () => {
     expect(g.alpha).toBeCloseTo(8.886, 3)
     expect(g.beta).toBe(g.alpha)
   })
-  it('good conductor: |E| minimum sits at the interface', () => {
-    const s = solveInterface(AIR, med(1, 5.8e7), 3e6, 0, 'perp')
+  it('copper at 3 MHz: exact Gamma, exact extrema, minimum reported at the interface', () => {
+    const f = 3e6
+    const s = solveInterface(AIR, med(1, 5.8e7), f, 0, 'perp')
+    // Independent reference: Gamma = (eta2 - eta1) / (eta2 + eta1) with eta2 = sqrt(j w mu / (sigma + j w eps))
+    const w = 2 * Math.PI * f
+    const eta2 = sqrt(div(c(0, w * MU0), c(5.8e7, w * EPS0)))
+    const eta1 = Math.sqrt(MU0 / EPS0)
+    const ref = div(c(eta2.re - eta1, eta2.im), c(eta2.re + eta1, eta2.im))
+    expect(Math.abs(s.Gamma.re - ref.re)).toBeLessThan(1e-15)
+    expect(Math.abs(s.Gamma.im - ref.im) / ref.im).toBeLessThan(1e-9)
+    // The phase is not rounded to 180 degrees: it is 180 deg minus about 1.4e-4 deg.
+    const th = arg(s.Gamma)
+    expect(th).toBeLessThan(Math.PI)
+    expect((Math.PI - th) / DEG).toBeGreaterThan(1e-4)
+    expect((Math.PI - th) / DEG).toBeLessThan(2e-4)
+    // Minima from theta_Gamma - 2 beta z' = -pi (mod 2 pi): the first one is behind the interface
+    // by a tiny distance, so it is reported at the interface.
     const sw = standingWave(s)
-    expect(sw.atInterface).toBe('min')
+    const beta1 = s.p1.beta
+    const lam = s.p1.lambda
+    expect(sw.tolerance).toBe(lam / 1000)
+    const zpBehind = (th - Math.PI) / (2 * beta1) // z' of the k = -1 minimum (negative: inside Medium 2)
+    expect(zpBehind).toBeLessThan(0)
+    expect(-zpBehind).toBeLessThan(lam / 1000)
+    expect(sw.zMinExact[0]).toBe(0 - zpBehind)
     expect(sw.zMin[0]).toBe(0)
-    expect(sw.zMax[0]).toBeCloseTo(-s.p1.lambda / 4, 3)
+    expect(sw.atInterface).toBe('min')
+    // The other extrema are exact and unrounded.
+    expect(sw.zMin[1]).toBe(0 - (th + Math.PI) / (2 * beta1))
+    expect(sw.zMin[1]).not.toBe(-lam / 2)
+    expect(sw.zMax[0]).toBe(0 - th / (2 * beta1))
+    for (const z of sw.zMin) expect(abs(zProfile(s, 'total', 'E', 'y', Math.min(z, -1e-300), 1)))
+      .toBeLessThan(abs(zProfile(s, 'total', 'E', 'y', z - lam / 50, 1)))
+    // The field map uses the same exact Gamma: total E at z = 0- is (1 + Gamma) E_i0 = tau E_i0, not zero.
+    const e0 = zProfile(s, 'total', 'E', 'y', 0, 1)
+    expect(e0.re).toBe(1 + s.Gamma.re)
+    expect(e0.im).toBe(s.Gamma.im)
+    expect(abs(e0)).toBeGreaterThan(0)
+    expect(abs(e0)).toBeCloseTo(abs(s.tau), 15)
+  })
+  it('a minimum behind the interface by more than lambda_1/1000 is not moved to the interface', () => {
+    // Seawater at 1 GHz: Gamma has a phase well away from 180 degrees.
+    const s = solveInterface(AIR, med(72, 4), 1e9, 0, 'perp')
+    const th = arg(s.Gamma)
+    const zpBehind = (th - Math.PI) / (2 * s.p1.beta)
+    expect(-zpBehind).toBeGreaterThan(s.p1.lambda / 1000)
+    const sw = standingWave(s)
+    expect(sw.atInterface).toBe('neither')
+    expect(sw.zMin[0]).toBe(0 - (th + Math.PI) / (2 * s.p1.beta))
+    expect(sw.zMin[0]).toBeLessThan(0)
   })
   it('copper at 3 MHz: delta = 0.03815 mm', () => {
     const m = med(1, 5.8e7)
