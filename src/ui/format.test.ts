@@ -1,0 +1,31 @@
+import { describe, expect, it } from 'vitest'
+import { niceBelow, parseEng, si, sig, texNum } from './format'
+
+describe('engineering input', () => {
+  it('parses plain, exponent and prefixed numbers', () => {
+    expect(parseEng('2.4e9')).toBe(2.4e9)
+    expect(parseEng('2.4 GHz')).toBeCloseTo(2.4e9, 0)
+    expect(parseEng('5MHz')).toBe(5e6)
+    expect(parseEng('5 mhz')).toBe(5e6)
+    expect(parseEng('10k')).toBe(1e4)
+    expect(parseEng('58 MS/m')).toBe(5.8e7)
+    expect(parseEng('1e-4')).toBe(1e-4)
+    expect(parseEng('30°')).toBe(30)
+    expect(parseEng('4 S/m')).toBe(4)
+    expect(parseEng('100 µS/m')).toBeCloseTo(1e-4, 12)
+    expect(parseEng('−3')).toBe(-3)
+    expect(parseEng('abc')).toBeNull()
+    expect(parseEng('')).toBeNull()
+  })
+  it('formats with SI prefixes', () => {
+    expect(si(2.4e9, 'Hz')).toBe('2.400\u00a0GHz')
+    expect(si(3.815e-5, 'm')).toBe('38.15\u00a0µm')
+    expect(si(0, 'S/m')).toBe('0\u00a0S/m')
+    expect(parseEng(si(2.4e9, 'Hz'))).toBeCloseTo(2.4e9, 0)
+    expect(sig(199.74)).toBe('199.7')
+    expect(sig(705358, 3)).toBe('705000')
+    expect(sig(5.8e7, 3)).toBe('5.80×10⁷')
+    expect(texNum(5.8e7, 3)).toBe('5.8\\times10^{7}')
+    expect(niceBelow(0.37)).toBe(0.2)
+  })
+})
