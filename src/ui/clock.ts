@@ -63,10 +63,10 @@ export interface ClockOptions {
   initialPhase?: number
   wrap?: number
   /**
-   * Displayed periods per second actually used by the clock. When given, the speed selection is
-   * only an input to it (the rotating loop maps the selection and its own speed onto this rate).
+   * Maps the speed selection to the displayed periods (revolutions) per second the clock runs at.
+   * Default: the selection itself. The rotating loop uses it to turn at the engine's omega, slowed down.
    */
-  rate?: number
+  rate?: (selection: number) => number
 }
 
 export function useClock(options: ClockOptions = {}) {
@@ -74,10 +74,10 @@ export function useClock(options: ClockOptions = {}) {
   const reduced = useMemo(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches, [])
   const [playing, setPlaying] = useState(!reduced)
   const [speed, setSpeed] = useState(0.5)
-  const rate = options.rate
+  const rate = options.rate ? options.rate(speed) : speed
   useEffect(() => {
-    clock.speed = rate ?? speed
-  }, [clock, speed, rate])
+    clock.speed = rate
+  }, [clock, rate])
   useEffect(() => {
     if (playing) clock.play()
     else clock.pause()

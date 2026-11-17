@@ -45,6 +45,9 @@ describe('Chapman Example 7-1', () => {
     const st = solveSpeedMode({ ...EX71, omega: 0 })
     near(st.i, 400)
     expect(st.eInd).toBe(0)
+    expect(st.Pconv).toBe(0)
+    near(st.tauInd, 100) // the starting torque
+    expect(st.mode).toBe('motor') // current flows out of the battery: motor at standstill
   })
   it('(c) 10 N·m load', () => {
     const s = solveTorqueMode({ ...EX71, tauLoad: 10 })

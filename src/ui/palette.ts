@@ -39,6 +39,23 @@ export const DARK: Palette = {
   mapInk: '#f1eee7', mapHalo: '#0b0e11',
 }
 
+/**
+ * EEE 321 labs: physical meaning -> existing, validated token (DESIGN.md "Colour by meaning — EEE 321 labs").
+ * No new colours: voltage, current and mechanical quantities reuse the three wave colours.
+ */
+export const MACHINE_COLOR = {
+  /** e_ind, V_B, loop and brush voltages */
+  voltage: 'var(--inc)',
+  /** i, current marks ⊙ / ⊗, current arrow */
+  current: 'var(--ref)',
+  /** tau, omega, n, F, shaft power */
+  mechanical: 'var(--trn)',
+  /** B-field lines */
+  field: 'var(--mute)',
+  /** poles, rotor outline, wiring */
+  structure: 'var(--ink)',
+} as const
+
 export type ThemeName = 'light' | 'dark'
 export const PALETTES: Record<ThemeName, Palette> = { light: LIGHT, dark: DARK }
 

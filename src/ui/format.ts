@@ -82,10 +82,10 @@ export function parseEng(text: string): number | null {
     return mult === undefined ? null : value * mult
   }
   const first = rest[0]
-  // A lone unit that happens to start with a prefix letter ("m" = metres, "mm" = millimetres).
-  if (/^(m|S\/m|V\/m|Np\/m|rad\/m|°|deg|Ω)$/.test(rest)) return value
+  // A lone unit that happens to start with a prefix letter ("m" = metres, "T" = tesla, not tera).
+  if (/^(m|T|S\/m|V\/m|Np\/m|rad\/m|°|deg|Ω)$/.test(rest)) return value
   if (first in MULT && rest.length >= 1) return value * MULT[first]
-  return /^[a-zA-Z°Ω/]+$/.test(rest) ? value : null
+  return /^[a-zA-Z°Ω/·]+$/.test(rest) ? value : null
 }
 
 /** LaTeX for a real number with n significant figures. */
@@ -125,6 +125,14 @@ export function niceBelow(x: number): number {
   const e = Math.floor(Math.log10(x))
   const m = x / 10 ** e
   return (m >= 5 ? 5 : m >= 2 ? 2 : 1) * 10 ** e
+}
+
+/** Up to 6 significant figures, trailing zeros dropped, no SI prefix: "0.392699 Wb", "0.25 V·s" (as the textbook writes them). */
+export function plain(x: number, unit: string): string {
+  if (!Number.isFinite(x)) return sig(x)
+  const a = Math.abs(x)
+  const body = a !== 0 && (a >= 1e6 || a < 1e-4) ? sig(x, 4) : String(Number(x.toPrecision(6))).replace('-', '−')
+  return unit ? `${body}${NB}${unit}` : body
 }
 
 /** Short SI value for scale bars and ticks: "20 cm" style is avoided, trailing zeros are dropped ("200 mm", "1.5 µm"). */

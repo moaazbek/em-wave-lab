@@ -1,18 +1,26 @@
 # EEE 361 Field Lab
 
-An online laboratory for EEE 361 (Electromagnetic Waves). Students change a material or an angle, see the
-fields respond immediately, and read the same numbers they would get by hand from D. K. Cheng,
-*Field and Wave Electromagnetics*, 2nd edition.
+An online laboratory for two courses: **EEE 361** (Electromagnetic Waves, textbook D. K. Cheng,
+*Field and Wave Electromagnetics*, 2nd ed.) and **EEE 321** (Electromechanical Energy Conversion – I,
+textbook S. J. Chapman, *Electric Machinery Fundamentals*, 5th ed.). Students change a value, see the fields
+or the machine respond immediately, and read the same numbers they would get by hand from the textbook.
 
 **Live site:** https://moaazbek.github.io/em-wave-lab/ (QR code for class: `qr-code.png` in the repository root;
 it is not part of the website).
 
 > Student project for EEE 361. Not an official course resource. Check results against the textbook
 > (Cheng, *Field and Wave Electromagnetics*, 2nd ed.).
+>
+> Student project for EEE 321. Not an official course resource. Check results against the textbook
+> (Chapman, *Electric Machinery Fundamentals*, 5th ed.).
 
-**Lab 01 — Plane-wave incidence** (Cheng § 8-2, 8-3, 8-5 to 8-8, 8-10): a uniform plane wave meets a
-plane boundary between two media. Normal and oblique incidence, both polarizations, lossless, lossy and
-perfectly conducting Medium 2, Brewster angle, total reflection, skin depth.
+| Course | Lab | Route | Textbook |
+|---|---|---|---|
+| EEE 361 | **01 Plane-wave incidence**: a uniform plane wave meets a plane boundary between two media. Normal and oblique incidence, both polarizations, lossless, lossy and perfectly conducting Medium 2, Brewster angle, total reflection, skin depth. | `#/plane-wave-incidence` | Cheng § 8-2, 8-3, 8-5 to 8-8, 8-10 |
+| EEE 321 | **02 The rotating loop**: one loop between curved pole faces, fed by a battery through a resistor. Torque or speed given; motor, generator or no load; commutator; forces; power flow. | `#/eee321-rotating-loop` | Chapman § 7.1, Eqs. (7-1) to (7-16), Example 7-1, Problem 7-1 |
+
+Planned: EEE 361 Faraday's law and moving loops, transmission lines; EEE 321 01 three-phase transformer
+connections (§ 2.10), 03 armature windings and E_A (§ 7.3, 7.5).
 
 ## Run, test, build
 
@@ -21,7 +29,7 @@ Requires Node 20 or newer.
 ```sh
 npm install
 npm run dev        # development server, open the printed URL
-npm test           # unit tests (physics engine, formatting, colours, URL state)
+npm test           # unit tests (both engines, formatting, colours, URL state)
 npm run build      # type check (tsc, strict) + static production build into dist/
 npm run preview    # serve dist/ locally
 ```
@@ -51,7 +59,7 @@ so it works from any sub-path such as `https://<user>.github.io/<repo>/`.
 
 Any other static host works too: upload the contents of `dist/`.
 
-## What is in the lab
+## Lab 01 (EEE 361): what is in the lab
 
 - **Field map.** Every pixel is the instantaneous total (or incident / reflected / transmitted) field
   component, computed by the engine and animated in time. A diverging colour map, tuned separately for the
@@ -71,7 +79,43 @@ Any other static host works too: upload the contents of `dist/`.
 - **Six guided experiments**, each with a question to predict before revealing the answer.
 - The full setup is in the URL; **Copy link** shares an exact configuration.
 
-## Model: assumptions and limits
+## Lab 02 (EEE 321): the rotating loop
+
+- **Front view of the machine**, drawn from the engine: yoke, N pole left and S pole right with curved
+  faces, radial B-field lines, iron rotor, conductors ab and cd at radius r, the commutator (two half rings)
+  and two fixed brushes, and the external circuit (battery V_B, resistor R, current arrow, brush polarity).
+  The loop turns at the engine's ω, slowed down; the caption gives the factor ("Shown at 1/200 of real speed").
+  Each conductor shows its current (⊙ / ⊗), the polarity of its induced voltage (+ / −) and the force
+  F = ilB as an arrow on a fixed, labelled scale. Beyond the pole edges the marks disappear and the brushes
+  are highlighted while they short the segments. A badge reads MOTOR, GENERATOR or NO LOAD; Mode B adds a
+  prime-mover block with its torque.
+- **Voltage against rotor angle** over two revolutions: loop voltage and brush voltage, the gaps between the
+  poles shaded, and a cursor at the current angle. A pole-arc fraction control (default 0.9) changes only
+  this drawing.
+- **Operating line** ω(τ_load) from (7-6), (7-16) and KVL, motor and generator halves, the operating point;
+  drag it to set τ_load (torque given) or ω (speed given).
+- **Power bars** P_B, P_R and P_conv on one fixed scale, plus P_shaft and "Why the difference?
+  P_B − P_conv = i²R".
+- **Results:** φ, (2/π)φ, e_ind, i, ω, n, τ_ind, v, F, all powers, the mode, and in Mode A i_start, ω_nl and
+  τ_stall. **What is happening** and a sentence that reacts to the last change; **Show the work** in three
+  lines per step (equation, numbers with units, result) with equation numbers; six **guided experiments**.
+- Presets from Example 7-1 (b)–(e) and Problem 7-1; "customized" appears when a value is changed. The full
+  state is in the URL.
+
+### Lab 02 model and sign conventions
+
+- Steady state only. Chapman gives no inertia, so start-up is described in words (Example 7-1(a)), not
+  animated: when an input changes the new steady state is shown at once.
+- A_P = πrl ignores the gaps between the poles; all numbers use it. The gaps appear only in the waveform and
+  the drawing. B is uniform and radial under the poles, zero beyond their edges. The only loss is i²R.
+- ω > 0 is counter-clockwise; i > 0 flows out of the battery's + terminal into the loop (motor action), and
+  then τ_ind > 0; e_ind > 0 opposes that current; τ_load > 0 opposes the rotation, τ_load < 0 is a torque
+  applied in the direction of rotation.
+- Mode A (torque given) allows τ_load from −τ_stall up to just below τ_stall = (2/π)φ V_B/R; a larger typed
+  value is held at the limit with a warning. Mode B (speed given) allows 0 ≤ ω ≤ 2 ω_nl; a negative typed
+  speed is held at 0 with a warning.
+
+## Lab 01 (EEE 361): model, assumptions and limits
 
 - Uniform plane waves, time-harmonic steady state (phasors with e^{jωt}).
 - Linear, isotropic, homogeneous media; one plane interface at z = 0.
@@ -133,10 +177,46 @@ Any other static host works too: upload the contents of `dist/`.
   (`src/ui/palette.test.ts`). The rays also differ in position and labels, so colour is never the only cue.
 - **Fonts:** IBM Plex Sans for text and IBM Plex Mono with tabular figures for numbers, bundled locally
   (no external requests).
-- **Only one lab is built.** The home page lists the two planned labs as text only.
+- **Two courses, one site.** Labs are grouped by course on the home page; each course has its own
+  footer (`src/shell/courses.ts`). The site name "EEE 361 Field Lab" (page title) and the repository name no
+  longer cover both courses; the owner should decide whether to rename them. Routes are unchanged:
+  `#/plane-wave-incidence` still works, and the new lab is `#/eee321-rotating-loop`.
+- **Shared pieces** (clock, playback controls, guided-experiment panels, Show the work, result row, select,
+  lab header, two-layout frame, URL sync) moved to `src/ui` and `src/shell`, so both labs use the same
+  components. Six reference screenshots of Lab 01 were compared pixel by pixel before and after: identical.
+  One fix came with it: on phones the Lab 01 footer was drawn above the Plots tab content; it is now at the
+  bottom.
+- **Lab 02, motor or generator** follows the direction of the current only: i > 0 motor, i < 0 generator,
+  i = 0 no load. For ω > 0 this equals the sign of P_conv. At standstill (ω = 0, experiment 1) P_conv = 0
+  but current flows out of the battery: the lab calls this "motor at standstill".
+- **Lab 02, display speed:** the slow-down factor is a 1-2-5 number chosen from the no-load speed and the
+  speed choice (0.125–1 rev/s), never from the operating point. So loading the motor visibly slows the loop,
+  and weakening the field visibly speeds it up. It is never below 1 (real speed).
+- **Lab 02, fixed scales** that do not move with the torque or speed sliders: waveform ±2.2 V_B (e_ind ≤ 2 V_B
+  for ω ≤ 2 ω_nl); operating line τ_load ∈ [−τ_stall, τ_stall], ω ∈ [0, 2.1 ω_nl]; force arrows full length
+  i_start·l·B; power bars half-length V_B²/4R (the largest power the loop can convert as a motor). Longer
+  power bars are cut at the edge and marked « or ». Numbers always show the true values.
+- **Lab 02, induced-voltage marks:** a front view cannot show a direction along the conductor, so each
+  conductor carries + or − for the polarity of its end nearest the viewer (+ when the induced voltage points
+  out of the page). The legend above the drawing says so.
+- **Lab 02, conductors between the poles:** no voltage, no force and no current mark, because the brushes
+  short the loop there and the external current bypasses it.
+- **Lab 02, brushes** sit midway between the poles (top and bottom of the drawing) and the commutator gaps
+  line up with the conductors, so the segments switch where the loop voltage is zero. With pole-arc
+  fraction 1 the switch is instantaneous; it is drawn over ±3° so it can be seen.
+- **Lab 02, torque slider** steps on a 1-2-5 grid (τ_stall/500, 0.2 N·m for Example 7-1) so the book's values
+  are reachable by dragging; its top is one step below τ_stall.
+- **Lab 02, units** follow the book: R in Ω (0.3 Ω, not 300 mΩ), φ in Wb, (2/π)φ in V·s with up to six
+  significant figures. Engineering input accepts "120 V", "0.25 T", "250 mT", "4.7k", "10 N·m".
+- **Lab 02 default:** Example 7-1(c), a motor with a 10 N·m load, so current, forces and power show at once.
+- **Lab 02 has no Advanced switch:** every quantity the brief asks for is shown in the normal view.
 
 ## Not yet implemented
 
 - Lossy Medium 1 (the brief fixes σ₁ = 0 for this version).
 - Multiple layers (slabs, quarter-wave matching) and frequency-dispersive materials.
 - Vector arrows of E and H on the field map (the map shows one Cartesian component at a time).
+- Lab 02: the four-loop commutation machine (Chapman § 7.2), start-up transients (no inertia in the book),
+  losses other than i²R, and negative speeds (clockwise rotation).
+- EEE 321 Lab 01 (three-phase transformer connections, § 2.10) and Lab 03 (armature windings and E_A,
+  § 7.3, 7.5): listed as planned on the home page.

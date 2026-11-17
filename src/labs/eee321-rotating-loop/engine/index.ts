@@ -66,7 +66,7 @@ export interface OperatingPoint extends MachineConstants {
   PB: number
   /** Power lost in R, i^2 R (W). */
   PR: number
-  /** Converted power e_ind i = tau_ind omega (W). Positive: electric to mechanical. */
+  /** Converted power e_ind i = tau_ind omega (W). Positive: electric to mechanical; zero at standstill. */
   Pconv: number
   /** Mechanical power at the shaft, tau_ind omega (W): output as a motor, input (negative) as a generator. */
   Pshaft: number
@@ -95,7 +95,10 @@ export function machineConstants(p: MachineParams): MachineConstants {
 function finish(c: MachineConstants, given: GivenQuantity, tauLoad: number, omega: number, eInd: number, i: number, exceedsStall: boolean): OperatingPoint {
   const tauInd = c.k * i
   const Pconv = eInd * i
-  const mode: MachineMode = Math.abs(i) <= IDLE_REL * c.iStart ? 'idle' : Pconv > 0 ? 'motor' : 'generator'
+  // The mode follows the direction of the current only (Chapman: motor or generator by the current alone).
+  // For omega > 0 this is the sign of P_conv; at standstill (omega = 0, e_ind = 0) a current out of the
+  // battery still makes the loop a motor: it produces the starting torque but converts no power yet.
+  const mode: MachineMode = Math.abs(i) <= IDLE_REL * c.iStart ? 'idle' : i > 0 ? 'motor' : 'generator'
   const v = c.r * omega
   return {
     ...c, given, tauLoad, omega,

@@ -120,6 +120,23 @@ rays, angle arcs, plot curves, the dot in front of a result, the toolbar choice 
 | Other classes | `--faint` border, `--ink` text | Class badge for *lossless*, *low-loss dielectric*, *general lossy medium* |
 | Class strip | `--ink` at opacity 0.85 / 0.40 / 0.13 | Good conductor / general lossy / low-loss bands on the frequency axis |
 
+### Colour by meaning — EEE 321 labs
+
+The DC-machine labs (02, and 03 when built) reuse the same three validated colours with physical meanings,
+through named aliases in `src/ui/palette.ts` (`MACHINE_COLOR`). No new hex values.
+
+| Meaning | Alias | Token | Where it appears |
+|---|---|---|---|
+| Voltage (e_ind, V_B, e_loop, e_out) | `voltage` | `--inc` | +/− polarity marks on conductors and brushes, V_B and e_ind labels, waveform curves, P_B bar, e_ind dot |
+| Current (i) | `current` | `--ref` | ⊙ / ⊗ marks in the conductors, current arrow and label in the circuit, i dot |
+| Mechanical (τ, ω, n, F, shaft power) | `mechanical` | `--trn` | force arrows and values, rotation arrow, ω and τ labels, operating point, P_conv bar, prime-mover / load torque |
+| Field (B) | `field` | `--mute` | radial field lines (55 % opacity) and their arrowheads |
+| Structure | `structure` | `--ink` | pole, yoke and rotor outlines, wiring, N and S labels |
+
+Poles and yoke are filled `--rule`, the rotor `--sunk`, the air inside the yoke `--panel`. The P_R bar
+(heat) is `--faint`. Every mark also has a symbol or a label: ⊙/⊗, +/−, an arrowhead, or a text value; the
+mode badge is text (MOTOR, GENERATOR, NO LOAD). A legend above the drawing explains the three marks.
+
 **Colour is never the only cue.** Every coloured element also has a label, a symbol (θᵢ, Γ, τ), a
 position (the rays leave the boundary in different directions) or a line style.
 
@@ -269,13 +286,29 @@ filled SVG paths:
 
 No emoji and no icon font.
 
-### Result row — `Row` (`src/labs/plane-wave-incidence/Results.tsx`)
+### Result row — `Row` (`src/ui/Row.tsx`)
 `<dl>` rows: left a 8 px wave-colour dot (optional), the KaTeX symbol, and a small 11.5 px `--mute`
 qualifier ("reflected", "polar"); right the value in `.num` 13 px. 3 px vertical padding.
 
-### Class badge — `Badge`
-11.5 px, `px-1.5 py-px`, 3 px radius, 1 px border. Good conductor and perfect conductor are filled
-(`--ink` background, `--bg` text); other classes are outlined (`--faint` border, `--ink` text).
+### Badge — `Badge` (`src/ui/Row.tsx`)
+11.5 px, `px-1.5 py-px`, 3 px radius, 1 px border. `strong`: filled (`--ink` background, `--bg` text);
+otherwise outlined (`--faint` border, `--ink` text). Lab 01 fills good conductor and perfect conductor;
+Lab 02 fills MOTOR and GENERATOR and outlines NO LOAD.
+
+### Select with "customized" tag — `SelectField` (`src/ui/SelectField.tsx`)
+Label 12 px `--mute` with an optional `customized` `.tag` in `--warn` on the right; the select is 36 px
+tall, full width, 1 px `--rule`, 3 px radius, 13 px.
+
+### Playback — `PlaybackControls`, `AngleReadout` (`src/ui/Playback.tsx`)
+Play / pause, step, reset (icon buttons below), the speed select (units "T/s" for waves, "rev/s" for
+machines) and an angle readout (`ωt =` or `θ =`, `.num`, written to the DOM each frame).
+
+### Teaching panels (`src/ui/teaching.tsx`)
+`ExperimentList` (numbered rows with a `§` or reference tag), `ExperimentPanel` (task, "Predict first"
+question at 15 px 500, "Show the answer", answer with a 2 px `--ink` left rule, optional set-the-controls
+button), `WhatIsHappening` (reaction sentence with a 2 px `--inc` left rule, then the situation),
+`ShowWork` (collapsible; each step numbered, tagged with a section or an equation number such as
+"Eq. (7-6)", display maths one line each).
 
 ### Text buttons
 - Primary (e.g. "Show the answer"): 32 px tall, `px-3`, 12.5 px, 1 px `--ink` border, 3 px radius;
@@ -426,28 +459,45 @@ Right: Advanced switch, "Copy link" (hidden below 640 px), theme choice Auto / L
 - Touch targets: slider 40 px tall with a 24 px thumb; tabs 44 px; buttons at least 28 px.
 - No horizontal page scroll; map labels truncate with an ellipsis.
 
+### Lab frame and header (`src/shell/LabFrame.tsx`, `LabHeader.tsx`)
+Both labs use the same frame: the desktop grid and phone tabs above, and the header (back link, number,
+title, textbook tag such as `Chapman § 7.1`, optional Advanced switch, Copy link, theme).
+
+### Lab 02 centre column (desktop)
+Toolbar (legend of ⊙/⊗, +/−, force arrow on the left; playback right), machine view
+(`clamp(300px, 100vh − 420px, 560px)` tall, 1 px `--rule` frame, `--panel` fill), caption (slow-down
+factor, force scale), then the waveform and operating-line plots side by side (two equal columns, 24 px
+gap), the power bars, the explanation, Show the work and the footer. Phone: the machine view is pinned
+(`min(40vh, 320px)`) under a one-row toolbar; tabs Controls, Results, Explain, Plots.
+
 ### Home page (`src/shell/App.tsx`)
 Single column, max width 768 px (`max-w-3xl`), padding 20 px / 32 px sides and 32 px / 56 px top
-(phone / ≥ 640 px). Header row: course tag left, theme choice right. Title 34 / 46 px, intro 16 px
-`--mute` (max 576 px). "Labs" as `.tag` with a rule below; each lab is a full-width link row with a
-`3rem 1fr auto` grid: number (`.num` 13 px `--faint`), title 19 px with summary 14 px and a `Cheng §` tag,
-and an arrow `→` that moves 2 px right on hover. Planned labs are listed as plain `--faint` text.
+(phone / ≥ 640 px). Header row: the course codes as a tag left (`EEE 361 · EEE 321`), theme choice right.
+Title 34 / 46 px, intro 16 px `--mute` (max 576 px). Then one group per course: a `.tag` heading
+(`EEE 361 · Electromagnetic Waves`) with the textbook on the right (normal case, book title in italics)
+and a rule below; each lab is a full-width link row with a `3rem 1fr auto` grid: number (`.num` 13 px
+`--faint`), title 19 px with summary 14 px and the textbook tag, and an arrow `→` that moves 2 px right on
+hover. Planned labs follow as one `--faint` 13 px line ("In preparation: 01 …; 03 …"), then the model note
+of each built lab in 12 px `--faint`.
 
 ---
 
 ## 10. Footer
 
-Source: `Disclaimer` in `src/shell/App.tsx`. Shown on every page.
+Source: `Disclaimer` in `src/shell/Disclaimer.tsx`, text built from `src/shell/courses.ts`. One footer per
+course; each lab page shows its course's footer.
 
 Text (exact):
 
 > Student project for EEE 361. Not an official course resource. Check results against the textbook
 > (Cheng, *Field and Wave Electromagnetics*, 2nd ed.).
 
+> Student project for EEE 321. Not an official course resource. Check results against the textbook
+> (Chapman, *Electric Machinery Fundamentals*, 5th ed.).
+
 - 12 px, relaxed line height, `--faint`; the book title in italics.
-- **Home:** at the bottom of the column (`mt-auto`, 64 px above), after the model note
-  "Model: uniform plane waves, linear isotropic homogeneous media, steady state. Material values are
-  typical and approximate." (6 px between them).
+- **Home:** both footers at the bottom of the column (`mt-auto`, 64 px above, 6 px between them). The
+  model notes moved under each course group.
 - **Lab, desktop:** at the end of the centre column, 32 px below Show the work, with a 1 px top rule and
   12 px padding above the text.
 - **Lab, phone:** at the end of every tab panel, same rule and spacing.

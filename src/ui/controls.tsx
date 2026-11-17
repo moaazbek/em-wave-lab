@@ -24,6 +24,11 @@ export interface ParamSliderProps {
   digits?: number
   disabled?: boolean
   hint?: ReactNode
+  /**
+   * Called with the typed value when it lies outside [min, max], instead of clamping it.
+   * The caller decides what to show (for example a warning and a clamped value).
+   */
+  onOutOfRange?: (raw: number) => void
 }
 
 const STEPS = 1000
@@ -56,7 +61,9 @@ export function ParamSlider(p: ParamSliderProps) {
     }
     setBad(false)
     setText(null)
-    p.onChange(p.zeroStop && v <= 0 ? 0 : clamp(v, p.min, p.max))
+    if (p.zeroStop && v <= 0) p.onChange(0)
+    else if (p.onOutOfRange && (v < p.min || v > p.max)) p.onOutOfRange(v)
+    else p.onChange(clamp(v, p.min, p.max))
   }
 
   return (
