@@ -64,7 +64,7 @@ function CourseGroup({ course }: { course: Course }) {
               <span className="num text-[13px] text-faint">{l.number}</span>
               <span>
                 <span className="text-[19px] font-medium tracking-[-0.01em] group-hover:underline group-hover:decoration-1 group-hover:underline-offset-4">
-                  {l.title}
+                  {l.title.includes('$') ? <Prose>{l.title}</Prose> : l.title}
                 </span>
                 <span className="mt-1.5 block max-w-xl text-[14px] leading-relaxed text-mute">{l.summary}</span>
                 <span className="tag mt-2.5 block">{l.tag}</span>

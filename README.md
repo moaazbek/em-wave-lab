@@ -19,9 +19,9 @@ it is not part of the website).
 | EEE 361 | **01 Plane-wave incidence**: a uniform plane wave meets a plane boundary between two media. Normal and oblique incidence, both polarizations, lossless, lossy and perfectly conducting Medium 2, Brewster angle, total reflection, skin depth. | `#/plane-wave-incidence` | Cheng § 8-2, 8-3, 8-5 to 8-8, 8-10 |
 | EEE 321 | **01 Three-phase transformer connections**: Y–Y, Y–Δ, Δ–Y and Δ–Δ banks of three single-phase transformers; wiring with moving current, phasor diagrams, waveforms, the √3 factors, the 30° shift, unit-rating input, third-harmonic view. | `#/eee321-three-phase-transformer` | Chapman § 2.10, Eqs. (2-88) to (2-91), Example 2-9 |
 | EEE 321 | **02 The rotating loop**: one loop between curved pole faces, fed by a battery through a resistor. Torque or speed given; motor, generator or no load; commutator; forces; power flow. | `#/eee321-rotating-loop` | Chapman § 7.1, Eqs. (7-1) to (7-16), Example 7-1, Problem 7-1 |
+| EEE 321 | **03 Armature windings and E_A**: lap, wave and frog-leg windings; developed diagram drawn by the program, parallel paths traced through it, end view, path schematic, brush voltage, Z, a, y_c, E_A, R_A, I_A; exam mode "Identify the winding". | `#/eee321-armature-winding` | Chapman § 7.3, 7.5, Eqs. (7-22) to (7-49), Examples 7-2 to 7-4, Problems 7-4, 7-5, 7-7 |
 
-Planned: EEE 361 Faraday's law and moving loops, transmission lines; EEE 321 03 armature windings and
-E_A (§ 7.3, 7.5).
+Planned: EEE 361 Faraday's law and moving loops, transmission lines.
 
 ## Run, test, build
 
@@ -114,6 +114,40 @@ Any other static host works too: upload the contents of `dist/`.
   line currents and powers from these netlists; the ratio and the 30° shift are results, not rules.
 - The third-harmonic amplitude h is a display parameter (the book gives none); the circulating current it
   drives in a delta is described, not computed.
+
+## Lab 03 (EEE 321): armature windings, parallel paths and E_A
+
+- **Developed winding diagram** (the exam's style), drawn from the engine: pole strip over β of each pole
+  pitch, slot numbers, each coil as a diamond (top-layer side solid, bottom-layer side dashed at slot + y_s),
+  leads to the commutator segments, fixed brushes labelled + or − from the computed potentials, conductor
+  marks ⊙ (+) and ⊗ (−) in the two ends of the field colour map, faint in the dead zone, and a mark on coils
+  being commutated. The rotor slides left past the fixed poles and brushes, wrapping around. Path chips
+  ("Path 1 … Path a") and the brushes highlight their path in magenta. Large diagrams scroll inside their frame.
+- **End view** (C slots with both coil sides, P curved pole faces, commutator ring, fixed brushes, θm and θe),
+  **path schematic** (+ rail, one row per path with each coil's voltage, the path sum, − rail; coils shorted
+  by a brush listed separately) and **brush voltage against rotor angle** over three segment pitches with the
+  book's E_A = Kφω line.
+- **Formula results** for any input (Z, a, y_c — flagged "not an integer" or "no formula" —, brushes, C/a, Z/a,
+  p, K, K', ω, E_A, R_A by the series–parallel rule, I_A, I_A/a, V_T, τ_ind). The diagram is drawn only within
+  the constructive limits; otherwise it states the reason in one line and the numbers still update.
+- **Exam mode** "Identify the winding": a random drawable winding without type labels; the student enters
+  type, plex, direction, coils, conductors, segments, paths and y_c; Check grades each field with a reason.
+- Presets (Examples 7-2, 7-3, 7-4, Problem 7-7, the 9-coil wave and the 16-coil lap), six guided experiments,
+  What is happening, Show the work in the order Z, a, y_c, K/K', ω, E_A, R_A, I_A, V_T, τ_ind.
+
+### Lab 03 (EEE 321) model
+
+- Two-layer winding, slots = coils = segments, slot pitch Δ = 2π/C. Coil k: top side in slot k, bottom side
+  in slot k + y_s; starts at segment k, ends at segment k + y_c. Segment j is centred at
+  (j + (y_s − y_c)/2)Δ + α, so each coil's centre line lies midway between its two segments.
+- Field: N centres at electrical 0, S at 180°, b = ±1 within ±β·90° electrical, 0 in the dead zone.
+  Conductor voltage e = b·e_cond with e_cond = Pφω/(2π); coil voltage N_C(e_top − e_bottom).
+- Brushes fixed at the pole centres (on the neutral plane): P for lap, 2 one pole pitch apart for simplex wave;
+  width (m − 0.5) segment pitches. Paths are traced by cutting the commutator cycles (gcd(|y_c|, C) of them) at
+  the tapped segments; a chain between brushes of opposite polarity is a path, a chain returning to the same
+  brush is being commutated. Brush polarity comes from the computed potentials.
+- Constructive limits: lap m = 1–3 with C a multiple of mP, C ≥ 2P and C ≥ 2mP (see Decisions); simplex wave with
+  P ≥ 4, C ≥ 2P + 1 and an integer y_c; C ≤ 48 for drawing.
 
 ## Lab 02 (EEE 321): the rotating loop
 
@@ -267,6 +301,30 @@ Any other static host works too: upload the contents of `dist/`.
 - **EEE 321 Lab 01, display noise:** P or Q below 10⁻⁹ of S is shown as 0 (for example Q at PF 1).
 - **Shared "Show the work" notes** may now contain inline maths (rendered with KaTeX). Lab 01 (EEE 361) is
   unchanged: its six reference screenshots are still pixel-identical.
+- **EEE 321 Lab 03, multiplex lap needs C ≥ 2mP (a real limitation found by the tests).** The path-count
+  invariant failed for multiplex lap windings with one coil per path (for example duplex, P = 4, C = 8, or
+  triplex, P = 6, C = 18). Brushes are (m − 0.5) segments wide and only C/P segments apart, so when C/P ≤ m a
+  + brush and a − brush reach the same segment and short each other. The constructive part therefore draws
+  multiplex lap windings only for C ≥ 2mP (at least two coils per path) and says why otherwise. For simplex
+  lap this is the brief's C ≥ 2P. The tolerance was not loosened; 20 000 extra random cases trace exactly a paths.
+- **EEE 321 Lab 03, drawing limit vs tracing:** C ≤ 48 limits only the drawing. The tracing has no size limit
+  (a test traces Example 7-3's duplex lap, P = 6, C = 72, and finds 12 paths).
+- **EEE 321 Lab 03, clean starting angle:** the lab opens (and exam mode draws) at a rotor angle where every
+  brush touches exactly m segments, found by scanning one segment pitch; a test checks it for 500 windings.
+  Highlighting the paths (experiment 1) pauses at such an angle, so each path shows its full C/a coils.
+- **EEE 321 Lab 03, rotation and speed:** the rotor turns so that the coils slide left in the developed diagram
+  (clockwise in the end view); e_cond is taken positive for the chosen ω. Playback is in segment pitches per
+  second (0.5–4 seg/s); the caption gives the slow-down factor against the real speed.
+- **EEE 321 Lab 03, brush voltage:** the coil-level brush voltage is the mean potential of the + brushes minus
+  that of the − brushes, with brush potentials from a least-squares fit over the traced paths. With β = 1 and a
+  full-pitch lap winding it equals Kφω whenever no coil is commutated (tested exactly).
+- **EEE 321 Lab 03, Example 7-2 preset:** the four-loop machine uses illustrative values (φ = 0.05 Wb,
+  1200 r/min, 0.1 Ω per coil); the other presets use the book's data.
+- **EEE 321 Lab 03, speed input:** "400", "400 rpm", "400 r/min", "50 rev/s" (= 3000 r/min) and "rad/s" are
+  accepted. Shared `ParamSlider` gained optional `parse` and `integer` props, and `PlaybackControls` an optional
+  label format; Lab 01 (EEE 361) is still pixel-identical.
+- **EEE 321 Lab 03, conductor colours:** ⊙ (+) and ⊗ (−) use the two ends of the existing diverging field map,
+  always with the symbol; the highlighted path is `--ref`; E_A and V_T `--inc`, I_A `--ref`, τ and ω `--trn`.
 
 ## Not yet implemented
 
@@ -275,7 +333,9 @@ Any other static host works too: upload the contents of `dist/`.
 - Vector arrows of E and H on the field map (the map shows one Cartesian component at a time).
 - Lab 02: the four-loop commutation machine (Chapman § 7.2), start-up transients (no inertia in the book),
   losses other than i²R, and negative speeds (clockwise rotation).
-- EEE 321 Lab 03 (armature windings and E_A, § 7.3, 7.5): listed as planned on the home page.
+- EEE 321 Lab 03, out of scope: armature reaction, L di/dt voltages, interpoles and compensating windings
+  (§ 7.4); equalizer currents; diagrams of multiplex wave and frog-leg windings (their numbers are computed);
+  losses and the power-flow diagram (§ 7.7); multiplex lap windings with one coil per path (see Decisions).
 - EEE 321 Lab 01, out of scope: the per-phase equivalent circuit with winding impedance, the per-unit system
   for three-phase banks, voltage regulation and efficiency (Chapman § 2.10, Example 2-9 (b)–(c)); unbalanced
   loads; open-Δ and other two-transformer connections (§ 2.11); derating and inrush current; computing the

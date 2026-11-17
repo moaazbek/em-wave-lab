@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
-  MachineInputs, WindingSpec, analyze, buildWinding, cycleCount, expectedCycles, fluxFor, formula, fullPitch,
+  MachineInputs, WindingSpec, analyze, buildWinding, cleanAngle, cycleCount, expectedCycles, fluxFor, formula, fullPitch,
   parallelPaths, randomExamWinding,
 } from './index'
 
@@ -226,6 +226,11 @@ describe('invariants on 2000 random configurations', () => {
       const snap = analyze(w, rnd() * 2 * Math.PI, beta, f.econd)
       // 1. paths traced through the built winding = formula
       expect(snap.paths.length).toBe(f.a)
+      // every path really runs between brushes of opposite polarity, rising towards the + brush
+      for (const p of snap.paths) {
+        expect(snap.polarity[p.fromBrush]).toBe(-snap.polarity[p.toBrush] as 1 | -1)
+        if (Math.abs(p.voltage) > 1e-9 * f.econd) expect(Math.sign(p.voltage)).toBe(snap.polarity[p.toBrush])
+      }
       // 2. KVL around the winding
       const scale = Math.max(...snap.coilEmf.map(Math.abs), f.econd)
       expect(Math.abs(snap.kvlSum) / (scale * s.C)).toBeLessThan(1e-12)
@@ -239,6 +244,13 @@ describe('invariants on 2000 random configurations', () => {
           near(Math.abs(snap1.brushVoltage), f.EA, 1e-12)
         }
       }
+    }
+    // the clean angle used for drawing really has no commutation, for every valid winding
+    const rnd2 = mulberry32(5)
+    for (let t = 0; t < 500; t++) {
+      const b = buildWinding(randomValid(rnd2))
+      if (!b.ok) throw new Error(b.reason)
+      expect(analyze(b.winding, cleanAngle(b.winding), 0.8, 1).noCommutation).toBe(true)
     }
     expect(wave).toBeGreaterThan(300)
     expect(lap).toBeGreaterThan(300)

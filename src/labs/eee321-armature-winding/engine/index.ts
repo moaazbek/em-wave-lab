@@ -355,6 +355,26 @@ export function analyze(w: Winding, alpha: number, beta: number, econd: number):
   }
 }
 
+/**
+ * A rotor angle at which every brush touches exactly m segments (no coil is being commutated).
+ * The pattern repeats every segment pitch, so one pitch is scanned and the middle of the longest stretch
+ * without commutation is returned (for a wave winding the second brush is not a whole number of segments
+ * from the first, so a single closed-form offset cannot centre both).
+ */
+export function cleanAngle(w: Winding): number {
+  const N = 240
+  const ok = Array.from({ length: N }, (_, i) => analyze(w, (i / N) * w.delta, 1, 1).noCommutation)
+  let best = -1, bestLen = 0
+  for (let i = 0; i < N; i++) {
+    if (!ok[i] || ok[(i - 1 + N) % N]) continue // start of a run
+    let len = 0
+    while (len < N && ok[(i + len) % N]) len++
+    if (len > bestLen) { bestLen = len; best = i }
+  }
+  if (best < 0) return ok[0] ? 0 : 0.5 * w.delta
+  return (((best + (bestLen - 1) / 2) / N) % 1) * w.delta
+}
+
 /* ------------------------------------------------------------------ */
 /* Exam mode: random drawable winding                                    */
 /* ------------------------------------------------------------------ */

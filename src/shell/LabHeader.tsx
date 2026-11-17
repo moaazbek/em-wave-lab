@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
 import { Switch } from '../ui/controls'
 import { ThemeToggle } from './ThemeToggle'
 
 /** Lab header: back link, lab number and name, textbook tag; Advanced switch, Copy link, theme. */
 export function LabHeader({ number, title, tag, compact, advanced }: {
   number: string
-  title: string
+  title: ReactNode
   /** Textbook reference, e.g. "Cheng § 8-2 to 8-10". Shown from 1280 px. */
   tag: string
   compact: boolean

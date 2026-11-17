@@ -41,6 +41,17 @@ export const LABS: LabEntry[] = [
     component: lazy(() => import('../labs/eee321-three-phase-transformer')),
   },
   {
+    slug: 'eee321-armature-winding',
+    course: 'EEE 321',
+    number: '03',
+    title: 'Armature windings and $E_A$',
+    summary:
+      'Lap, wave and frog-leg windings: the developed diagram drawn by the program, the parallel paths traced through it, the end view, and Z, a, y_c, E_A, R_A and I_A with the equations. Includes an exam mode.',
+    tag: 'Chapman § 7.3, 7.5',
+    model: 'Model: two-layer winding, slots = coils; brushes fixed on the neutral plane; the book\'s $E_A$ assumes all conductors under the poles.',
+    component: lazy(() => import('../labs/eee321-armature-winding')),
+  },
+  {
     slug: 'eee321-rotating-loop',
     course: 'EEE 321',
     number: '02',
@@ -65,5 +76,4 @@ export interface PlannedLab {
 export const PLANNED: PlannedLab[] = [
   { course: 'EEE 361', title: "Faraday's law and moving loops" },
   { course: 'EEE 361', title: 'Transmission lines' },
-  { course: 'EEE 321', number: '03', title: 'Armature windings and $E_A$', tag: '§ 7.3, 7.5' },
 ]

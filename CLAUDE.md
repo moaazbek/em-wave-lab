@@ -4,6 +4,7 @@ Online labs for students. Live: https://moaazbek.github.io/em-wave-lab/ (deploys
 - EEE 361 Lab 01 `#/plane-wave-incidence`: plane wave at a boundary. Cheng, *Field and Wave Electromagnetics*, 2nd ed. (§ 8-2 to 8-10).
 - EEE 321 Lab 01 `#/eee321-three-phase-transformer`: three-phase transformer connections. Chapman § 2.10.
 - EEE 321 Lab 02 `#/eee321-rotating-loop`: simple rotating loop. Chapman, *Electric Machinery Fundamentals*, 5th ed. (§ 7.1).
+- EEE 321 Lab 03 `#/eee321-armature-winding`: armature windings, parallel paths and E_A. Chapman § 7.3, 7.5.
 The repository is public: never add textbook pages, slides, figures, scans, exam papers or long quotations.
 
 ## Commands
@@ -52,6 +53,19 @@ The repository is public: never add textbook pages, slides, figures, scans, exam
   say lag, so the lab uses A→C, B→A, C→B. Test T6 keeps the "as printed" result checked; it is not in the UI.
 - Load: I_x = ((S/3)∠θ / V_xn,eq)*; θ = +acos PF lagging. Delta winding currents: KCL + no circulating current.
 - Phase colours (`PHASE_COLOR`): A/a T1 `--inc`, B/b T2 `--ref`, C/c T3 `--trn`; line-to-line and neutral `--ink`.
+
+## EEE 321 Lab 03 notation and winding model (Chapman § 7.3, 7.5) — `#/eee321-armature-winding`
+- Engine: `src/labs/eee321-armature-winding/engine/` (formula part for any input; constructive part for drawing).
+- Symbols: P, C (coils = segments), N_C, Z = 2CN_C (7-22), m (plex), a, y_c, y_s, p = y_s P/C (7-24), φ, n, ω
+  ("mechanical speed, rad/s"), E_A, I_A, R_A, τ_ind, K = ZP/2πa, K' = ZP/60a.
+- a: lap mP (7-26), wave 2m (7-28), frog-leg 2P m_lap (7-29). y_c: lap ±m (7-25), simplex wave 2(C ± 1)/P (7-27);
+  + progressive, − retrogressive; no formula for multiplex wave / frog-leg (not drawn).
+- E_A = Kφω = K'φn; e_cond = Pφω/2π; τ = KφI_A; R_A by the series–parallel rule (elements per path × R, / a).
+- Model: two-layer, slots = C, Δ = 2π/C; coil k top slot k, bottom k + y_s, segments k → k + y_c; segment j at
+  (j + (y_s − y_c)/2)Δ + α; N centres at electrical 0, b = ±1 within ±β·90°; brushes fixed at pole centres
+  (P lap, 2 wave), width (m − 0.5) pitches; paths = cycles cut at tapped segments; polarity from potentials.
+- Limits: lap C multiple of mP, C ≥ 2P and C ≥ 2mP (else + and − brushes touch one segment); wave P ≥ 4,
+  C ≥ 2P + 1, integer y_c; draw only C ≤ 48. Invariants: traced paths = a, KVL, ideal path voltage = (Z/a)e_cond.
 
 ## EEE 321 Lab 02 notation and signs (Chapman § 7.1)
 - Symbols: r, l, B, A_P = πrl, φ = A_P B, ω (and n = 60ω/2π r/min), v = rω, e_ind, i, R, V_B, τ_ind, τ_load;

@@ -13,7 +13,9 @@ const BTN = 'flex h-7 w-7 shrink-0 items-center justify-center rounded-[3px] bor
  * Play / pause, step, reset and the speed select. Returned as a fragment so the caller places it
  * in its own toolbar row. `unit` labels the speed choices (T/s periods, rev/s revolutions).
  */
-export function PlaybackControls({ time, unit = 'T/s', unitTitle = 'Animation speed in periods per second', stepLabel = 'Step forward by 1/24 of a period', stepTitle = 'Step (1/24 period)', readout }: {
+export function PlaybackControls({ time, unit = 'T/s', unitTitle = 'Animation speed in periods per second', stepLabel = 'Step forward by 1/24 of a period', stepTitle = 'Step (1/24 period)', readout, format }: {
+  /** Label of a speed choice (default: "<value> <unit>"). */
+  format?: (v: number) => string
   time: ReturnType<typeof useClock>
   unit?: string
   unitTitle?: string
@@ -36,7 +38,7 @@ export function PlaybackControls({ time, unit = 'T/s', unitTitle = 'Animation sp
         className="select num h-7 shrink-0 rounded-[3px] border border-rule pl-1.5 pr-6 text-[12px] text-ink"
         value={time.speed} onChange={(e) => time.setSpeed(Number(e.target.value))} aria-label={unitTitle}
       >
-        {SPEEDS.map((v) => <option key={v} value={v}>{v} {unit}</option>)}
+        {SPEEDS.map((v) => <option key={v} value={v}>{format ? format(v) : `${v} ${unit}`}</option>)}
       </select>
       {readout}
     </>

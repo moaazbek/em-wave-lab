@@ -137,6 +137,13 @@ Poles and yoke are filled `--rule`, the rotor `--sunk`, the air inside the yoke 
 (heat) is `--faint`. Every mark also has a symbol or a label: ⊙/⊗, +/−, an arrowhead, or a text value; the
 mode badge is text (MOTOR, GENERATOR, NO LOAD). A legend above the drawing explains the three marks.
 
+**EEE 321 Lab 03 (armature windings)** uses `MACHINE_COLOR` as Lab 02 does — E_A, V_T and e `--inc`,
+I_A and the highlighted parallel path `--ref` (drawn thicker, the other paths faded), τ and ω `--trn` — plus
+the conductor voltage sign in the two ends of the diverging field map (`field[4]` orange for +, `field[0]`
+blue for −, per theme), always with ⊙ (+) or ⊗ (−); conductors in the dead zone are a `--faint` ring.
+Coils being commutated carry a small `--warn` diamond. Top-layer coil sides are solid, bottom-layer sides
+dashed (stated in the legend). Poles and the end view use `--rule` fills with `--ink` outlines.
+
 **EEE 321 Lab 01 (three-phase transformer)** uses the same three tokens for the three phases, through
 `PHASE_COLOR` in `src/ui/palette.ts`:
 

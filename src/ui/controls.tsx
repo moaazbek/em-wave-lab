@@ -29,6 +29,10 @@ export interface ParamSliderProps {
    * The caller decides what to show (for example a warning and a clamped value).
    */
   onOutOfRange?: (raw: number) => void
+  /** Show the value as a whole number (counts such as coils or turns). */
+  integer?: boolean
+  /** Custom parser for typed input (default: engineering input with SI prefixes). */
+  parse?: (text: string) => number | null
 }
 
 const STEPS = 1000
@@ -37,7 +41,7 @@ const STEPS = 1000
 export function ParamSlider(p: ParamSliderProps) {
   const id = useId()
   const { scale = 'lin', digits = 4 } = p
-  const show = (v: number) => (p.prefix ? si(v, p.unit, digits) : `${sig(v, digits)}${p.unit ? ' ' + p.unit : ''}`)
+  const show = (v: number) => (p.integer ? `${Math.round(v)}${p.unit ? ' ' + p.unit : ''}` : p.prefix ? si(v, p.unit, digits) : `${sig(v, digits)}${p.unit ? ' ' + p.unit : ''}`)
   const [text, setText] = useState<string | null>(null)
   const [bad, setBad] = useState(false)
 
@@ -54,7 +58,7 @@ export function ParamSlider(p: ParamSliderProps) {
     return round3(p.min * (p.max / p.min) ** ((pos - lo) / (STEPS - lo)))
   }
   const commit = (raw: string) => {
-    const v = parseEng(raw)
+    const v = (p.parse ?? parseEng)(raw)
     if (v === null) {
       setBad(true)
       return
