@@ -4,7 +4,7 @@ import { useSize } from '../../ui/controls'
 import { deg, niceBelow, si, sig, siShort } from '../../ui/format'
 import { PALETTES, ThemeName, fieldLut } from '../../ui/palette'
 import { Prose, Tex } from '../../ui/Tex'
-import type { Clock } from './clock'
+import type { Clock } from '../../ui/clock'
 import { CLASS_LABEL, Model, medium2Gain, shownAxis } from './derive'
 import { Viewport, makeViewport, pxToX, pxToZ } from './viewport'
 

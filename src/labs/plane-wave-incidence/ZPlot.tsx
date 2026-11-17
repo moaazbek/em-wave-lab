@@ -3,7 +3,7 @@ import { sampleZProfile } from '../../physics'
 import { useSize } from '../../ui/controls'
 import { niceBelow, sig, siShort } from '../../ui/format'
 import { Tex } from '../../ui/Tex'
-import type { Clock } from './clock'
+import type { Clock } from '../../ui/clock'
 import { Model, medium2Gain, shownAxis } from './derive'
 import { makeViewport, pxToZ, zToPx } from './viewport'
 

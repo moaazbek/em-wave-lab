@@ -1,8 +1,8 @@
-import { ReactNode } from 'react'
 import {
   C, MediumClass, MediumParams, abs, arg, goodConductorApprox, incidentPowerDensity, lowLossApprox, pctError,
 } from '../../physics'
 import { Heading } from '../../ui/controls'
+import { Badge as UiBadge, Row } from '../../ui/Row'
 import { deg, pct, phaseDeg, si, sig } from '../../ui/format'
 import { Prose, Tex } from '../../ui/Tex'
 import { CLASS_LABEL, Model } from './derive'
@@ -23,26 +23,8 @@ const value = (z: C, n = 4) => (isReal(z) ? sig(z.re, n) : polar(z, n))
 /** The other form, for the advanced view. */
 const otherForm = (z: C): [string, string] => (isReal(z) ? ['polar', polar(z)] : ['rectangular', rect(z)])
 
-function Row({ sym, children, color, sub }: { sym: string; children: ReactNode; color?: string; sub?: ReactNode }) {
-  return (
-    <div className="flex items-baseline justify-between gap-3 py-[3px]">
-      <dt className="flex shrink-0 items-baseline gap-1.5">
-        {color && <span className="inline-block h-2 w-2 translate-y-[-1px] rounded-full" style={{ background: color }} />}
-        <Tex>{sym}</Tex>
-        {sub && <span className="text-[11.5px] text-mute">{sub}</span>}
-      </dt>
-      <dd className="num min-w-0 text-right text-[13px]">{children}</dd>
-    </div>
-  )
-}
-
 function Badge({ cls }: { cls: MediumClass }) {
-  const strong = cls === 'good-conductor' || cls === 'pec'
-  return (
-    <span className={`rounded-[3px] border px-1.5 py-px text-[11.5px] ${strong ? 'border-ink bg-ink text-bg' : 'border-faint text-ink'}`}>
-      {CLASS_LABEL[cls]}
-    </span>
-  )
+  return <UiBadge strong={cls === 'good-conductor' || cls === 'pec'}>{CLASS_LABEL[cls]}</UiBadge>
 }
 
 function Approx({ p }: { p: MediumParams }) {

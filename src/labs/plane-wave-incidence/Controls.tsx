@@ -3,6 +3,7 @@ import {
   GOOD_CONDUCTOR_MIN, LOSSLESS_PRESET_IDS, LOW_LOSS_MAX, PRESETS, classBoundaryFrequencies, isCustomized,
 } from '../../physics'
 import { Heading, ParamSlider } from '../../ui/controls'
+import { SelectField } from '../../ui/SelectField'
 import { si, sig } from '../../ui/format'
 import { Prose, Tex } from '../../ui/Tex'
 import { CLASS_LABEL, Model } from './derive'
@@ -11,22 +12,10 @@ import { Action, LIMITS, setMedium, setPreset } from './state'
 function PresetSelect({ which, value, customized, onChange }: { which: 1 | 2; value: string; customized: boolean; onChange: (id: string) => void }) {
   const list = which === 1 ? PRESETS.filter((p) => LOSSLESS_PRESET_IDS.includes(p.id)) : PRESETS
   return (
-    <div>
-      <div className="flex items-baseline justify-between">
-        <label htmlFor={`preset-${which}`} className="text-[12px] text-mute">Material (typical values)</label>
-        {customized && <span className="tag !text-warn">customized</span>}
-      </div>
-      <select
-        id={`preset-${which}`}
-        className="select mt-1 h-9 w-full rounded-[3px] border border-rule pl-2 pr-7 text-[13px] text-ink"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      >
-        {list.map((p) => (
-          <option key={p.id} value={p.id}>{p.label} ({p.note})</option>
-        ))}
-      </select>
-    </div>
+    <SelectField
+      id={`preset-${which}`} label="Material (typical values)" value={value} customized={customized} onChange={onChange}
+      options={list.map((p) => ({ value: p.id, label: `${p.label} (${p.note})` }))}
+    />
   )
 }
 

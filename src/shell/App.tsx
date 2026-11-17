@@ -1,43 +1,11 @@
 import { Suspense } from 'react'
-import { ThemeChoice, setThemeChoice, useTheme } from '../ui/theme'
+import { Disclaimer } from './Disclaimer'
+import { ThemeToggle } from './ThemeToggle'
 import { LABS, PLANNED } from './labs'
 import { parseHash, useRoutePath } from './router'
 
-const THEMES: { value: ThemeChoice; label: string }[] = [
-  { value: 'system', label: 'Auto' },
-  { value: 'light', label: 'Light' },
-  { value: 'dark', label: 'Dark' },
-]
-
-export function ThemeToggle() {
-  const { choice } = useTheme()
-  return (
-    <div role="radiogroup" aria-label="Colour theme" className="flex items-center text-[11.5px]">
-      {THEMES.map((t) => (
-        <button
-          key={t.value}
-          type="button"
-          role="radio"
-          aria-checked={choice === t.value}
-          onClick={() => setThemeChoice(t.value)}
-          className={`h-7 px-1.5 ${choice === t.value ? 'text-ink underline decoration-1 underline-offset-4' : 'text-faint hover:text-ink'}`}
-        >
-          {t.label}
-        </button>
-      ))}
-    </div>
-  )
-}
-
-/** Shown at the bottom of every page. */
-export function Disclaimer({ className = '' }: { className?: string }) {
-  return (
-    <p className={`text-[12px] leading-relaxed text-faint ${className}`}>
-      Student project for EEE 361. Not an official course resource. Check results against the textbook (Cheng,{' '}
-      <i>Field and Wave Electromagnetics</i>, 2nd ed.).
-    </p>
-  )
-}
+export { Disclaimer } from './Disclaimer'
+export { ThemeToggle } from './ThemeToggle'
 
 export function App() {
   const path = useRoutePath()
