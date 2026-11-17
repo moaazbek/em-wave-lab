@@ -87,7 +87,11 @@ function CourseGroup({ course }: { course: Course }) {
           ))}
         </p>
       )}
-      {labs.map((l) => <p key={l.slug} className="mt-1.5 text-[12px] leading-relaxed text-faint"><Prose>{l.model}</Prose></p>)}
+      {labs.map((l) => (
+        <p key={l.slug} className="mt-1.5 text-[12px] leading-relaxed text-faint">
+          {labs.length > 1 && <span className="num mr-1.5">{l.number}</span>}<Prose>{l.model}</Prose>
+        </p>
+      ))}
     </section>
   )
 }
