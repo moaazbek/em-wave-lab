@@ -137,6 +137,21 @@ Poles and yoke are filled `--rule`, the rotor `--sunk`, the air inside the yoke 
 (heat) is `--faint`. Every mark also has a symbol or a label: ⊙/⊗, +/−, an arrowhead, or a text value; the
 mode badge is text (MOTOR, GENERATOR, NO LOAD). A legend above the drawing explains the three marks.
 
+**EEE 321 Lab 01 (three-phase transformer)** uses the same three tokens for the three phases, through
+`PHASE_COLOR` in `src/ui/palette.ts`:
+
+| Meaning | Token | Where it appears |
+|---|---|---|
+| Phase A/a, transformer T1 | `--inc` | T1 coils and their moving dots, V_AN / V_an / winding phasors of T1, I_A and I_a (dashed), v_AN in the third-harmonic plot |
+| Phase B/b, transformer T2 | `--ref` | T2 coils and dots, T2 phasors, I_B, I_b, v_BN |
+| Phase C/c, transformer T3 | `--trn` | T3 coils and dots, T3 phasors, I_C, I_c, v_CN |
+| Line-to-line phasors, neutral, rails | `--ink` | V_AB, V_BC, V_CA (thick), rails and their dots, the shift arc |
+| Third harmonic summed around a delta | `--warn` | dash-dot curve in the third-harmonic plot |
+
+Primary and secondary are told apart by position (left/right) and labels (upper/lower case), never by colour.
+Each lab's legend states what the three colours mean there (phases in Lab 01; voltage, current, mechanical
+in Labs 02 and 03).
+
 **Colour is never the only cue.** Every coloured element also has a label, a symbol (θᵢ, Γ, τ), a
 position (the rays leave the boundary in different directions) or a line style.
 

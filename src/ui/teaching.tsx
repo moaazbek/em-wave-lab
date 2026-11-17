@@ -129,7 +129,7 @@ export function ShowWork({ compute, dep }: { compute: () => WorkStep[]; dep: unk
             <div className="scroll-thin mt-1 overflow-x-auto pb-1 text-[13px]">
               {st.lines.map((l, k) => <Tex key={k} display>{l}</Tex>)}
             </div>
-            {st.note && <p className="text-[11.5px] leading-snug text-mute">{st.note}</p>}
+            {st.note && <p className="text-[11.5px] leading-snug text-mute">{st.note.includes('$') ? <Prose>{st.note}</Prose> : st.note}</p>}
           </li>
         ))}
       </ol>

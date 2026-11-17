@@ -2,6 +2,7 @@
 
 Online labs for students. Live: https://moaazbek.github.io/em-wave-lab/ (deploys on every push to `main`).
 - EEE 361 Lab 01 `#/plane-wave-incidence`: plane wave at a boundary. Cheng, *Field and Wave Electromagnetics*, 2nd ed. (§ 8-2 to 8-10).
+- EEE 321 Lab 01 `#/eee321-three-phase-transformer`: three-phase transformer connections. Chapman § 2.10.
 - EEE 321 Lab 02 `#/eee321-rotating-loop`: simple rotating loop. Chapman, *Electric Machinery Fundamentals*, 5th ed. (§ 7.1).
 The repository is public: never add textbook pages, slides, figures, scans, exam papers or long quotations.
 
@@ -36,6 +37,21 @@ The repository is public: never add textbook pages, slides, figures, scans, exam
 - Maths in the UI always through KaTeX (`Tex` / `Prose` with `$…$`). Numbers in the mono face with tabular figures.
 - Wave colours: incident / reflected / transmitted = `--inc` / `--ref` / `--trn` (validated for colour-vision deficiency in `ui/palette.test.ts`).
 - Explanatory text: short sentences, no idioms (many readers use English as a second language).
+
+## EEE 321 Lab 01 notation (Chapman § 2.10, slides' symbols) — `#/eee321-three-phase-transformer`
+- Engine: `src/labs/eee321-three-phase-transformer/engine/` (reuses `src/physics/complex.ts`).
+- Terminals A, B, C, N (primary) and a, b, c, n (secondary). V_LL, V_LN (primary), V_ll, V_ln (secondary);
+  I_L-pri, I_p-pri, I_L-sec, I_p-sec. A "phase" is one winding of one unit. a = N_P/N_S = V_p-pri/V_p-sec.
+- Ideal transformers: V_Sk = V_Pk/a (dot to undotted); I_Pk into the primary dot = I_Sk out of the secondary dot / a.
+- Phasors RMS; reference V_AN = (V_LL/√3)∠0° of the supply (for a Δ primary: supply to its neutral);
+  abc: V_BN ∠−120°, V_CN ∠+120°; acb swaps them. So V_AB = V_LL∠+30° (abc), ∠−30° (acb).
+- Netlists (dot → other), pri / sec: Y–Y A→N,B→N,C→N / a→n,b→n,c→n; Y–Δ A→N,B→N,C→N / a→b,b→c,c→a;
+  Δ–Y A→C,B→A,C→B / a→n,b→n,c→n; Δ–Δ A→B,B→C,C→A / a→b,b→c,c→a. Everything is computed from these;
+  the ratio (2-88)…(2-91) and the 30° shift are results, never hard-coded.
+- Δ–Y note: Chapman Fig. 2-37c as printed (A→B, B→C, C→A) gives +30° (lead) with abc; the text and slides
+  say lag, so the lab uses A→C, B→A, C→B. Test T6 keeps the "as printed" result checked; it is not in the UI.
+- Load: I_x = ((S/3)∠θ / V_xn,eq)*; θ = +acos PF lagging. Delta winding currents: KCL + no circulating current.
+- Phase colours (`PHASE_COLOR`): A/a T1 `--inc`, B/b T2 `--ref`, C/c T3 `--trn`; line-to-line and neutral `--ink`.
 
 ## EEE 321 Lab 02 notation and signs (Chapman § 7.1)
 - Symbols: r, l, B, A_P = πrl, φ = A_P B, ω (and n = 60ω/2π r/min), v = rω, e_ind, i, R, V_B, τ_ind, τ_load;

@@ -30,6 +30,17 @@ export const LABS: LabEntry[] = [
     component: lazy(() => import('../labs/plane-wave-incidence')),
   },
   {
+    slug: 'eee321-three-phase-transformer',
+    course: 'EEE 321',
+    number: '01',
+    title: 'Three-phase transformer connections',
+    summary:
+      'Y–Y, Y–Δ, Δ–Y and Δ–Δ banks of three single-phase transformers. See the current move in every winding and line, the phasors of both sides, the √3 factors and the 30° shift.',
+    tag: 'Chapman § 2.10',
+    model: 'Model: three ideal single-phase transformers, balanced load, no circulating current in a delta; the third-harmonic view is illustrative.',
+    component: lazy(() => import('../labs/eee321-three-phase-transformer')),
+  },
+  {
     slug: 'eee321-rotating-loop',
     course: 'EEE 321',
     number: '02',
@@ -54,6 +65,5 @@ export interface PlannedLab {
 export const PLANNED: PlannedLab[] = [
   { course: 'EEE 361', title: "Faraday's law and moving loops" },
   { course: 'EEE 361', title: 'Transmission lines' },
-  { course: 'EEE 321', number: '01', title: 'Three-phase transformer connections', tag: '§ 2.10' },
   { course: 'EEE 321', number: '03', title: 'Armature windings and $E_A$', tag: '§ 7.3, 7.5' },
 ]

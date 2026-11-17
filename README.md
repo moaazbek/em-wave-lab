@@ -17,10 +17,11 @@ it is not part of the website).
 | Course | Lab | Route | Textbook |
 |---|---|---|---|
 | EEE 361 | **01 Plane-wave incidence**: a uniform plane wave meets a plane boundary between two media. Normal and oblique incidence, both polarizations, lossless, lossy and perfectly conducting Medium 2, Brewster angle, total reflection, skin depth. | `#/plane-wave-incidence` | Cheng § 8-2, 8-3, 8-5 to 8-8, 8-10 |
+| EEE 321 | **01 Three-phase transformer connections**: Y–Y, Y–Δ, Δ–Y and Δ–Δ banks of three single-phase transformers; wiring with moving current, phasor diagrams, waveforms, the √3 factors, the 30° shift, unit-rating input, third-harmonic view. | `#/eee321-three-phase-transformer` | Chapman § 2.10, Eqs. (2-88) to (2-91), Example 2-9 |
 | EEE 321 | **02 The rotating loop**: one loop between curved pole faces, fed by a battery through a resistor. Torque or speed given; motor, generator or no load; commutator; forces; power flow. | `#/eee321-rotating-loop` | Chapman § 7.1, Eqs. (7-1) to (7-16), Example 7-1, Problem 7-1 |
 
-Planned: EEE 361 Faraday's law and moving loops, transmission lines; EEE 321 01 three-phase transformer
-connections (§ 2.10), 03 armature windings and E_A (§ 7.3, 7.5).
+Planned: EEE 361 Faraday's law and moving loops, transmission lines; EEE 321 03 armature windings and
+E_A (§ 7.3, 7.5).
 
 ## Run, test, build
 
@@ -78,6 +79,41 @@ Any other static host works too: upload the contents of `dist/`.
   and the instantaneous fields in cosine form.
 - **Six guided experiments**, each with a question to predict before revealing the answer.
 - The full setup is in the URL; **Copy link** shares an exact configuration.
+
+## Lab 01 (EEE 321): three-phase transformer connections
+
+- **Wiring view**, generated from the netlist: three single-phase transformers stacked (T1, T2, T3),
+  primary coils left and secondary coils right with polarity dots, one vertical rail per terminal
+  (A, B, C, N and a, b, c, n), orthogonal wires and junction dots, a Y or Δ symbol per side, and the live
+  winding voltage phasor beside each coil. Moving dots run along every wire; their direction and speed follow
+  the engine's instantaneous current (rail currents by KCL from the winding currents), scaled per side
+  (display only). Under reduced motion, static arrows show the direction instead.
+- **Phasor diagrams**, primary and secondary on the same angle reference: winding phasors thin in the phase
+  colour, line-to-line phasors thick in ink, line currents dashed. A dashed line shows the direction of V_AB on
+  the secondary diagram with an arc to V_ab ("30° lag", "30° lead" or "no shift"). "Rotate with ωt" turns
+  them with the slowed time (their real parts match the waveforms) or freezes them at t = 0; "Overlay"
+  draws the secondary on the primary diagram, scaled by V_LL/V_ll (display only).
+- **Waveforms:** one period of v_AB and of v_ab·V_LL/V_ll, a time cursor, and a bracket marking the shift as
+  T/12 (1.389 ms at 60 Hz, 1.667 ms at 50 Hz). With the third-harmonic view: the three v_kN with harmonic h,
+  their (identical) third-harmonic part, v_AB without it, and the sum of the harmonics around a delta.
+- **Inputs:** connection; "line voltage and a" or "unit rating" (one unit's winding voltages and S_unit; the
+  lab derives a, V_LL and the rated 3·S_unit, with a "Rated load" button); balanced load S_3φ, PF, lag/lead;
+  sequence abc/acb; 50 or 60 Hz; presets (Example 2-9, the 3 × 10 MVA bank, Y–Δ 13.8 kV, Y–Y 480/240 V,
+  Δ–Δ 4160/480 V).
+- **Results**, **What is happening**, **Show the work** (equation, numbers, result for each step of the
+  current connection, ending with the phase shift and its reason) and six **guided experiments**.
+
+### Lab 01 (EEE 321) model, notation and wiring
+
+- Bank of three ideal single-phase transformers (no winding impedance, no magnetizing current), balanced load,
+  no circulating current in a delta. RMS phasors; reference V_AN = (V_LL/√3)∠0° of the supply (for a Δ
+  primary, the supply's voltage to its own neutral); abc: V_BN at −120°, V_CN at +120°; acb swaps them.
+- Netlists (dotted end → other end), primary / secondary: Y–Y A→N, B→N, C→N / a→n, b→n, c→n;
+  Y–Δ A→N, B→N, C→N / a→b, b→c, c→a; Δ–Y A→C, B→A, C→B / a→n, b→n, c→n; Δ–Δ A→B, B→C, C→A /
+  a→b, b→c, c→a. The engine computes node potentials, winding currents (KCL plus no circulating current),
+  line currents and powers from these netlists; the ratio and the 30° shift are results, not rules.
+- The third-harmonic amplitude h is a display parameter (the book gives none); the circulating current it
+  drives in a delta is described, not computed.
 
 ## Lab 02 (EEE 321): the rotating loop
 
@@ -210,6 +246,27 @@ Any other static host works too: upload the contents of `dist/`.
   significant figures. Engineering input accepts "120 V", "0.25 T", "250 mT", "4.7k", "10 N·m".
 - **Lab 02 default:** Example 7-1(c), a motor with a 10 N·m load, so current, forces and power show at once.
 - **Lab 02 has no Advanced switch:** every quantity the brief asks for is shown in the normal view.
+- **EEE 321 Lab 01, Δ–Y wiring:** the lab uses T1 A→C, T2 B→A, T3 C→B, which gives the 30° lag (abc) that
+  Chapman's text and the course slides state. Chapman's Fig. 2-37c as printed (A→B, B→C, C→A) gives a 30°
+  lead with abc; a unit test (T6) proves this, so the claim is checked. The voltage ratio is the same. The
+  printed wiring is not offered in the lab; a note in "Show the work" explains the choice.
+- **EEE 321 Lab 01, complex numbers:** the engine reuses the repository's self-written, tested module
+  (`src/physics/complex.ts`) instead of adding a second copy.
+- **EEE 321 Lab 01, phase colours:** phase A/a (T1) `--inc`, B/b (T2) `--ref`, C/c (T3) `--trn` through
+  `PHASE_COLOR` in `src/ui/palette.ts`; line-to-line phasors and the neutral `--ink`. Primary and secondary are
+  told apart by position and upper/lower-case labels, never by colour. The same three tokens mean voltage,
+  current and mechanical quantities in the DC labs; each lab's legend states its meaning.
+- **EEE 321 Lab 01, moving dots:** each wire is drawn as a dashed stroke of dots whose offset advances by
+  k·i(ωt)·Δ(ωt), so the dots move back and forth with the AC current. k is chosen per side so that the largest
+  line current moves 26 px per radian of ωt. A browser check confirms the dots on rail A move with the
+  engine's i_A at all 24 steps of a period.
+- **EEE 321 Lab 01, starting phase:** ωt starts at 0, so a frozen phasor diagram, the waveform cursor and
+  the dots all show t = 0.
+- **EEE 321 Lab 01, frequency defaults:** 60 Hz for the Chapman presets (US examples), 50 Hz for the
+  3 × 10 MVA bank.
+- **EEE 321 Lab 01, display noise:** P or Q below 10⁻⁹ of S is shown as 0 (for example Q at PF 1).
+- **Shared "Show the work" notes** may now contain inline maths (rendered with KaTeX). Lab 01 (EEE 361) is
+  unchanged: its six reference screenshots are still pixel-identical.
 
 ## Not yet implemented
 
@@ -218,5 +275,8 @@ Any other static host works too: upload the contents of `dist/`.
 - Vector arrows of E and H on the field map (the map shows one Cartesian component at a time).
 - Lab 02: the four-loop commutation machine (Chapman § 7.2), start-up transients (no inertia in the book),
   losses other than i²R, and negative speeds (clockwise rotation).
-- EEE 321 Lab 01 (three-phase transformer connections, § 2.10) and Lab 03 (armature windings and E_A,
-  § 7.3, 7.5): listed as planned on the home page.
+- EEE 321 Lab 03 (armature windings and E_A, § 7.3, 7.5): listed as planned on the home page.
+- EEE 321 Lab 01, out of scope: the per-phase equivalent circuit with winding impedance, the per-unit system
+  for three-phase banks, voltage regulation and efficiency (Chapman § 2.10, Example 2-9 (b)–(c)); unbalanced
+  loads; open-Δ and other two-transformer connections (§ 2.11); derating and inrush current; computing the
+  third-harmonic circulating current.

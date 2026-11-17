@@ -56,6 +56,13 @@ export const MACHINE_COLOR = {
   structure: 'var(--ink)',
 } as const
 
+/**
+ * EEE 321 Lab 01 (three-phase transformer): phase -> existing token. Phase A/a (transformer 1) amber,
+ * B/b (transformer 2) magenta, C/c (transformer 3) green. Line-to-line phasors and the neutral use --ink.
+ * Primary and secondary are told apart by position and by upper/lower-case labels, never by colour.
+ */
+export const PHASE_COLOR = ['var(--inc)', 'var(--ref)', 'var(--trn)'] as const
+
 export type ThemeName = 'light' | 'dark'
 export const PALETTES: Record<ThemeName, Palette> = { light: LIGHT, dark: DARK }
 
