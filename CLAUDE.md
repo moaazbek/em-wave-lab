@@ -58,14 +58,23 @@ The repository is public: never add textbook pages, slides, figures, scans, exam
 - Engine: `src/labs/eee321-armature-winding/engine/` (formula part for any input; constructive part for drawing).
 - Symbols: P, C (coils = segments), N_C, Z = 2CN_C (7-22), m (plex), a, y_c, y_s, p = y_s P/C (7-24), φ, n, ω
   ("mechanical speed, rad/s"), E_A, I_A, R_A, τ_ind, K = ZP/2πa, K' = ZP/60a.
-- a: lap mP (7-26), wave 2m (7-28), frog-leg 2P m_lap (7-29). y_c: lap ±m (7-25), simplex wave 2(C ± 1)/P (7-27);
-  + progressive, − retrogressive; no formula for multiplex wave / frog-leg (not drawn).
-- E_A = Kφω = K'φn; e_cond = Pφω/2π; τ = KφI_A; R_A by the series–parallel rule (elements per path × R, / a).
+- a: lap mP (7-26), wave 2m (7-28), frog-leg 2P m_lap (7-29). y_c: lap ±m (7-25), wave 2(C ± m)/P; + progressive,
+  − retrogressive. For m = 1 this is Eq. (7-27); for m > 1 it is beyond the course: show the `--warn` "beyond the
+  textbook" badge (`BeyondBadge`, `WorkStep.beyond`) wherever it appears. Frog-leg: no y_c, never drawn.
+- E_A = Kφω = K'φn; e_cond = Pφω/2π = rωBl; τ = KφI_A; R_A by the series–parallel rule (elements per path × R, / a).
+- Dead zone (geometry from θ_e = (P/2)θ_m): β = pole arc / pole pitch, 0.5–1 (1 = "ignore the dead zone").
+  Arc β·360°/P mech, β·180° elec; gap (1−β)·360°/P mech, (1−β)·180° elec. Z_under = βZ, E_A,dz = (Z_under/a)e_cond
+  = βKφω (Chapman p. 448; solutions manual P 7-2, 7-9); I_A, V_T, τ = βKφI_A use E_A,dz. φ = B·A_P, A_P = 2πrl/P
+  (7-35, 7-36), B fixed. Flux input "φ | B, r, l". Coil-level average = mean brush voltage over one segment pitch.
 - Model: two-layer, slots = C, Δ = 2π/C; coil k top slot k, bottom k + y_s, segments k → k + y_c; segment j at
   (j + (y_s − y_c)/2)Δ + α; N centres at electrical 0, b = ±1 within ±β·90°; brushes fixed at pole centres
   (P lap, 2 wave), width (m − 0.5) pitches; paths = cycles cut at tapped segments; polarity from potentials.
-- Limits: lap C multiple of mP, C ≥ 2P and C ≥ 2mP (else + and − brushes touch one segment); wave P ≥ 4,
-  C ≥ 2P + 1, integer y_c; draw only C ≤ 48. Invariants: traced paths = a, KVL, ideal path voltage = (Z/a)e_cond.
+- Drawable rules live in ONE place: `drawRule` / `drawableCoilCounts(type, m, P, progressive)` in the engine; the
+  build, smart adjust (`adjust.ts`), C stepper, chips and messages all use it. No segment under two brushes ⇒
+  C/P ≥ m + ½. Lap: C multiple of mP, C ≥ 2P, C ≥ 2mP. Wave: P ≥ 4, C ≥ 2P + 1, C ≥ (m + ½)P, integer y_c.
+  Draw only C ≤ 48. Invariants: traced paths = a, KVL, no shared segment, ideal path voltage = (Z/a)e_cond.
+- Smart adjust (choice buttons only): keep the pressed choice; change P only if no C ≤ 48 exists, then C to the
+  nearest drawable (tie: smaller; C > 48 kept), then y_s to full pitch; say every change. Typed C never changes.
 
 ## EEE 321 Lab 02 notation and signs (Chapman § 7.1)
 - Symbols: r, l, B, A_P = πrl, φ = A_P B, ω (and n = 60ω/2π r/min), v = rω, e_ind, i, R, V_B, τ_ind, τ_load;

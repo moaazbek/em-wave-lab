@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Heading } from './controls'
 import { Prose, Tex } from './Tex'
+import { BeyondBadge } from './Row'
 
 /* ---------- Guided experiments ---------- */
 
@@ -104,6 +105,8 @@ export interface WorkStep {
   /** Display maths, one line each. */
   lines: string[]
   note?: string
+  /** Show the `--warn` "beyond the textbook" badge next to the title. */
+  beyond?: boolean
 }
 
 /**
@@ -123,7 +126,7 @@ export function ShowWork({ compute, dep }: { compute: () => WorkStep[]; dep: unk
         {steps.map((st, i) => (
           <li key={st.title} className="border-b border-rule py-3">
             <div className="flex items-baseline justify-between gap-3">
-              <h4 className="text-[13px] font-medium"><span className="num mr-2 text-[11px] font-normal text-faint">{i + 1}</span>{st.title}</h4>
+              <h4 className="text-[13px] font-medium"><span className="num mr-2 text-[11px] font-normal text-faint">{i + 1}</span>{st.title}{st.beyond && <span className="ml-2 align-[1px]"><BeyondBadge /></span>}</h4>
               <span className="tag shrink-0">{st.tag ?? (st.section.startsWith('beyond') ? st.section : `§ ${st.section}`)}</span>
             </div>
             <div className="scroll-thin mt-1 overflow-x-auto pb-1 text-[13px]">

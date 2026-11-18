@@ -11,9 +11,12 @@ const PAD = { l: 52, r: 12, t: 10, b: 24 }
 const PITCHES = 3
 const N = 361
 
-/** Coil-level brush voltage against rotor angle over three segment pitches, with the book's E_A = Kφω. */
-export function BrushPlot({ w, beta, econd, EA, clock, height = 170 }: {
-  w: Winding; beta: number; econd: number; EA: number; clock: Clock; height?: number
+/**
+ * Coil-level brush voltage against rotor angle over three segment pitches, with the book's E_A = Kφω (solid),
+ * the course estimate with the dead zone β K φ ω (dashed) and the engine's coil-level average (dotted).
+ */
+export function BrushPlot({ w, beta, econd, EA, EAdz, avg, clock, height = 170 }: {
+  w: Winding; beta: number; econd: number; EA: number; EAdz: number; avg: number; clock: Clock; height?: number
 }) {
   const [ref, size] = useSize<HTMLDivElement>()
   const W = size.w, H = height
@@ -23,7 +26,6 @@ export function BrushPlot({ w, beta, econd, EA, clock, height = 170 }: {
   const iw = Math.max(1, W - PAD.l - PAD.r), ih = H - PAD.t - PAD.b
   const X = (a: number) => PAD.l + (a / span) * iw
   const Yv = (v: number) => PAD.t + (1 - v / vMax) * ih
-  const avg = samples.reduce((s, v) => s + v, 0) / samples.length
   const cursor = useRef<SVGLineElement>(null)
   useEffect(() => {
     if (W <= 0) return
@@ -39,12 +41,13 @@ export function BrushPlot({ w, beta, econd, EA, clock, height = 170 }: {
     <div>
       <div className="mb-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11.5px] text-mute" aria-hidden>
         <span className="flex items-center gap-1.5"><svg width="20" height="6"><line x1="0" y1="3" x2="20" y2="3" stroke={MC.voltage} strokeWidth="2" /></svg>brush voltage (coil level)</span>
-        <span className="flex items-center gap-1.5"><svg width="20" height="6"><line x1="0" y1="3" x2="20" y2="3" stroke="var(--ink)" strokeWidth="1.5" /></svg><Tex>{'E_A = K\\phi\\omega'}</Tex> (book)</span>
-        <span className="num">average {si(avg, 'V', 4)}</span>
+        <span className="flex items-center gap-1.5"><svg width="20" height="6"><line x1="0" y1="3" x2="20" y2="3" stroke={MC.voltage} strokeWidth="1.5" strokeDasharray="1.5 2.5" /></svg>its average <span className="num text-ink">{si(avg, 'V', 4)}</span></span>
+        <span className="flex items-center gap-1.5"><svg width="20" height="6"><line x1="0" y1="3" x2="20" y2="3" stroke="var(--ink)" strokeWidth="1.5" /></svg><Tex>{'K\\phi\\omega'}</Tex> = <span className="num text-ink">{si(EA, 'V', 4)}</span> (Eq. 7-38, dead zone ignored)</span>
+        {beta < 1 && <span className="flex items-center gap-1.5"><svg width="20" height="6"><line x1="0" y1="3" x2="20" y2="3" stroke="var(--ink)" strokeWidth="1.5" strokeDasharray="5 3" /></svg><Tex>{'\\beta K\\phi\\omega'}</Tex> = <span className="num text-ink">{si(EAdz, 'V', 4)}</span> (conductors under the pole faces)</span>}
       </div>
       <div ref={ref} className="relative" style={{ height: H }}>
         {W > 0 && (
-          <svg width={W} height={H} className="absolute inset-0" role="img" aria-label={`Brush voltage over three segment pitches; average ${avg.toFixed(2)} V; book E_A ${EA.toFixed(2)} V.`}>
+          <svg width={W} height={H} className="absolute inset-0" role="img" aria-label={`Brush voltage over three segment pitches; average ${avg.toFixed(2)} V; book E_A ${EA.toFixed(2)} V; with the dead zone ${EAdz.toFixed(2)} V.`}>
             {[0, 0.5, 1].map((g) => (
               <g key={g}>
                 <line x1={PAD.l} x2={W - PAD.r} y1={Yv(g * vMax / 1.12)} y2={Yv(g * vMax / 1.12)} stroke={g === 0 ? 'var(--faint)' : 'var(--rule)'} strokeDasharray={g === 0 ? undefined : '2 4'} />
@@ -60,6 +63,8 @@ export function BrushPlot({ w, beta, econd, EA, clock, height = 170 }: {
               </g>
             ))}
             <line x1={PAD.l} x2={W - PAD.r} y1={Yv(EA)} y2={Yv(EA)} stroke="var(--ink)" strokeWidth={1.5} />
+            {beta < 1 && <line x1={PAD.l} x2={W - PAD.r} y1={Yv(EAdz)} y2={Yv(EAdz)} stroke="var(--ink)" strokeWidth={1.5} strokeDasharray="5 3" />}
+            <line x1={PAD.l} x2={W - PAD.r} y1={Yv(avg)} y2={Yv(avg)} stroke={MC.voltage} strokeWidth={1.5} strokeDasharray="1.5 2.5" />
             <path d={d} fill="none" stroke={MC.voltage} strokeWidth={2} strokeLinejoin="round" />
             <line ref={cursor} y1={PAD.t} y2={H - PAD.b} stroke="var(--mute)" strokeWidth={1} />
           </svg>

@@ -12,9 +12,13 @@ export function situation(m: Model): string[] {
   const out: string[] = []
   const pathRule = s.type === 'lap' ? `$a = mP$ = ${f.a}` : s.type === 'wave' ? `$a = 2m$ = ${f.a}, whatever the number of poles` : `$a = 2Pm_{lap}$ = ${f.a}`
   out.push(`This is a ${windingName(s)} winding with ${s.C} coils and ${s.P} poles: ${pathRule}. Each path has $C/a$ = ${sig(f.coilsPerPath, 4)} coils, or $Z/a$ = ${sig(f.condPerPath, 4)} conductors, in series.`)
-  out.push(`At $n$ = ${sig(s.n, 4)} r/min, $E_A = K\\phi\\omega$ = ${V(f.EA)} and $R_A$ = ${ohm(f.RA)}.${s.load ? ` With $R_L$ = ${ohm(s.RL)}, $I_A$ = ${si(f.IA, 'A', 4)}, ${si(f.Ipath, 'A', 4)} in each path, and $V_T$ = ${V(f.VT)}.` : ''}`)
+  if (s.beta < 1) {
+    out.push(`At $n$ = ${sig(s.n, 4)} r/min, the book's formula gives $E_A = K\\phi\\omega$ = ${V(f.EA)}. It ignores the dead zone.`)
+    out.push(`The pole faces cover $\\beta$ = ${sig(s.beta, 3)} of each pole pitch. The dead zone between two poles is ${sig(m.geo.gapM, 3)}° mechanical (${sig(m.geo.gapE, 3)}° electrical). Only the conductors under the pole faces make voltage: about $Z_{under} = \\beta Z$ = ${sig(f.Zunder, 4)} of ${f.Z}, so $E_{A,dz} = \\beta K\\phi\\omega$ = ${V(f.EAdz)} (Chapman p. 448).${m.avgBrush !== null ? ` The coil-level average of the brush voltage is ${V(Math.abs(m.avgBrush))}.` : ''}`)
+  } else out.push(`At $n$ = ${sig(s.n, 4)} r/min, $E_A = K\\phi\\omega$ = ${V(f.EA)}. With $\\beta = 1$ there is no dead zone, as the book assumes.`)
+  out.push(`$R_A$ = ${ohm(f.RA)}.${s.load ? ` With $R_L$ = ${ohm(s.RL)}, $I_A$ = ${si(f.IA, 'A', 4)}, ${si(f.Ipath, 'A', 4)} in each path, and $V_T$ = ${V(f.VT)}.` : ''}`)
   if (!build.ok) out.push(`The diagram is not drawn: ${build.reason}`)
-  else if (s.beta < 1) out.push(`The pole-arc fraction is ${s.beta}: some conductors are between the poles, so the brush voltage ripples and its average is below $K\\phi\\omega$ (Chapman p. 448).`)
+  else if (f.ycBeyondCourse) out.push(`The commutator pitch $y_c = 2(C \\pm m)/P$ = ${f.yc} is beyond the textbook: Chapman gives Eq. (7-27) for simplex wave windings only.`)
   return out
 }
 
@@ -29,11 +33,11 @@ export function reaction(a: Model, b: Model, change: ChangeKind): string | null 
   switch (change) {
     case 'm':
       if (s0.m === s1.m) return null
-      return `${windingName(s1)} instead of ${windingName(s0)}: $a$ = ${b.f.a} instead of ${a.f.a}, so each path has ${b.f.a > a.f.a ? 'fewer' : 'more'} conductors. $E_A$ ${ratio(a.f.EA, b.f.EA)} and $R_A$ ${ratio(a.f.RA, b.f.RA)}.`
+      return `${windingName(s1)} instead of ${windingName(s0)}: $a$ = ${b.f.a} instead of ${a.f.a}, so each path has ${b.f.a > a.f.a ? 'fewer' : 'more'} conductors. $E_A$ ${ratio(a.f.EA, b.f.EA)} and $R_A$ ${ratio(a.f.RA, b.f.RA)}.${b.f.ycBeyondCourse ? ' The pitch $y_c = 2(C \\pm m)/P$ is beyond the textbook.' : ''}`
     case 'type':
       if (s0.type === s1.type) return null
       if (s1.type === 'wave') return `Wave winding: only ${b.f.a} paths, whatever the number of poles. $E_A$ ${ratio(a.f.EA, b.f.EA)} and $R_A$ ${ratio(a.f.RA, b.f.RA)}.`
-      if (s1.type === 'frog') return `Frog-leg winding: a lap and a wave winding together, $a = 2Pm_{lap}$ = ${b.f.a}. $E_A$ ${ratio(a.f.EA, b.f.EA)}.`
+      if (s1.type === 'frog') return `Frog-leg winding: a lap and a wave winding together, $a = 2Pm_{lap}$ = ${b.f.a}. $E_A$ ${ratio(a.f.EA, b.f.EA)}. It is shown as numbers only.`
       return `Lap winding: $a = mP$ = ${b.f.a} paths. $E_A$ ${ratio(a.f.EA, b.f.EA)} and $R_A$ ${ratio(a.f.RA, b.f.RA)}.`
     case 'dir':
       return s1.progressive
@@ -53,7 +57,15 @@ export function reaction(a: Model, b: Model, change: ChangeKind): string | null 
     case 'load': case 'RL': case 'ignoreRA':
       return s1.load ? `With the load, $I_A = E_A/(R_A + R_L)$ = ${si(b.f.IA, 'A', 4)} and $V_T$ = ${V(b.f.VT)}. The countertorque is $K\\phi I_A$ = ${si(b.f.tau, 'N·m', 4)}.` : 'Open circuit: no current, $V_T = E_A$.'
     case 'beta':
-      return s1.beta < 1 ? `Pole-arc fraction ${s1.beta}: conductors in the dead zone give no voltage, so the brush voltage ripples below $K\\phi\\omega$.` : 'Pole-arc fraction 1: every conductor is under a pole, as the book assumes.'
+      return s1.beta < 1
+        ? `$\\beta$ = ${sig(s1.beta, 3)}: the pole faces get ${s1.beta < s0.beta ? 'narrower' : 'wider'} around the rotor; the air gap stays the same. The dead zone is ${sig(b.geo.gapM, 3)}° mech (${sig(b.geo.gapE, 3)}° elec). $E_{A,dz} = \\beta K\\phi\\omega$ = ${V(b.f.EAdz)}.`
+        : '$\\beta = 1$: no dead zone. Every conductor counts, as the book\'s $E_A = K\\phi\\omega$ assumes.'
+    case 'fluxMode':
+      return s1.fluxMode === 'field'
+        ? `Flux from $B$, $r$ and $l$: $\\phi = BA_P = 2\\pi r l B/P$ = ${si(b.phi, 'Wb', 4)} (Eq. 7-36), and $e_{cond} = r\\omega B l$.`
+        : `Flux per pole typed directly: $\\phi$ = ${si(b.phi, 'Wb', 4)}.`
+    case 'B': case 'r': case 'l':
+      return `$\\phi = 2\\pi r l B/P$ = ${si(b.phi, 'Wb', 4)}, so $E_A$ ${ratio(a.f.EA, b.f.EA)}.`
     case 'preset':
       return 'You loaded a preset. Compare the numbers with the book.'
     case 'experiment':

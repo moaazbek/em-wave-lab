@@ -12,14 +12,14 @@ import { Tex } from '../../ui/Tex'
 import { useMediaQuery, useTheme } from '../../ui/theme'
 import { BrushPlot } from './BrushPlot'
 import { Controls } from './Controls'
-import { DevelopedDiagram, Highlight, PathChips } from './DevelopedDiagram'
+import { DevelopedDiagram, Highlight, PathChips, ShortedNote } from './DevelopedDiagram'
 import { Model, derive, windingName } from './derive'
 import { EndView } from './EndView'
-import { Winding, cleanAngle } from './engine'
+import { MAX_DRAWN_COILS, Winding, cleanAngle } from './engine'
 import { ExamMode } from './ExamMode'
 import { EXPERIMENTS, Experiment } from './experiments'
 import { PathSchematic } from './PathSchematic'
-import { Results } from './Results'
+import { BeyondNote, Results } from './Results'
 import { useSnapshot } from './rotor'
 import { decodeState, encodeState, initSession, reduce } from './state'
 import { reaction, situation } from './teaching'
@@ -92,14 +92,25 @@ export default function ArmatureWindingLab({ query }: { query: string }) {
       {active && (
         <ExperimentPanel experiment={active} index={EXPERIMENTS.indexOf(active)} onClose={() => { setExperiment(null); setCycling(false) }} onReveal={() => reveal(active)} />
       )}
-      <WhatIsHappening reaction={reaction(before, model, session.change)} lines={situation(model)} />
+      <WhatIsHappening reaction={[...session.notes, reaction(before, model, session.change)].filter(Boolean).join(' ') || null} lines={situation(model)} />
     </section>
   )
   const experiments = <ExperimentList experiments={EXPERIMENTS} activeId={experiment} onLoad={loadExperiment} />
   const showWork = <ShowWork compute={() => workSteps(model)} dep={model} />
+  const goTo = (C: number) => {
+    dispatch({ type: 'set', change: 'C', patch: { C, chord: 0 } })
+    const d = derive({ ...s, C, chord: 0 })
+    if (d.build.ok) time.clock.reset(cleanPhase(d.build.winding))
+  }
   const notDrawn = !model.build.ok && (
-    <div className="flex min-h-[120px] items-center justify-center border border-dashed border-rule bg-panel px-4 py-6 text-center text-[13px] leading-relaxed text-mute">
-      {model.build.reason}
+    <div className="flex min-h-[120px] flex-col items-center justify-center gap-2.5 border border-dashed border-rule bg-panel px-4 py-6 text-center text-[13px] leading-relaxed text-mute">
+      <p>{model.build.reason}</p>
+      {model.nearest !== null && (
+        <button type="button" onClick={() => goTo(model.nearest!)}
+          className="h-7 rounded-[3px] border border-rule px-2.5 text-[12px] text-ink hover:border-ink">
+          {s.C > MAX_DRAWN_COILS ? 'Show a small drawable version' : 'Go to nearest drawable'} (<span className="num">C = {model.nearest}</span>)
+        </button>
+      )}
     </div>
   )
   const diagram = (
@@ -110,7 +121,7 @@ export default function ArmatureWindingLab({ query }: { query: string }) {
       </div>
       {w && snap ? (
         <>
-          <div className="mt-2"><PathChips snap={snap} highlight={highlight} onHighlight={setHighlight} /></div>
+          <div className="mt-2 flex flex-col gap-1.5"><PathChips snap={snap} highlight={highlight} onHighlight={setHighlight} /><ShortedNote snap={snap} /></div>
           <DevelopedDiagram w={w} snap={snap} clock={time.clock} highlight={highlight} onHighlight={setHighlight} className="mt-2" />
         </>
       ) : <div className="mt-2">{notDrawn}</div>}
@@ -125,11 +136,11 @@ export default function ArmatureWindingLab({ query }: { query: string }) {
   const brushPlot = w ? (
     <section className="min-w-0">
       <Heading section="p. 448">Brush voltage against rotor angle</Heading>
-      <div className="mt-2.5"><BrushPlot w={w} beta={s.beta} econd={model.f.econd} EA={model.f.EA} clock={time.clock} /></div>
+      <div className="mt-2.5"><BrushPlot w={w} beta={s.beta} econd={model.f.econd} EA={model.f.EA} EAdz={model.f.EAdz} avg={model.avgBrush ?? 0} clock={time.clock} /></div>
     </section>
   ) : null
   const header = <LabHeader number="03" title={<>Armature windings and <Tex>{'E_A'}</Tex></>} tag="Chapman § 7.3, 7.5" compact={!desktop} />
-  const endView = (cls: string) => (w && snap ? <EndView w={w} snap={snap} clock={time.clock} className={cls} /> : <div className={cls}>{notDrawn}</div>)
+  const endView = (cls: string) => (w && snap ? <EndView w={w} snap={snap} geo={model.geo} clock={time.clock} className={cls} /> : <div className={cls}>{notDrawn}</div>)
 
   return (
     <LabFrame
@@ -240,6 +251,8 @@ function Caption({ model, speedSel }: { model: Model; speedSel: number }) {
       Shown at <span className="num text-ink">1/{sig(realRevPerSec / shownRevPerSec, 3)}</span> of real speed
       (real: <span className="num">{sig(s.n, 4)} r/min = {sig(realRevPerSec, 3)} rev/s</span>; one segment pitch takes <span className="num text-ink">{si(1 / (SEG_PER_SEC * speedSel), 's', 2)}</span> on screen).
       {' '}Hover or tap a path chip or a brush to highlight its path in magenta.
+      {model.f.ycBeyondCourse && model.build.ok && <BeyondNote />}
     </p>
   )
 }
+

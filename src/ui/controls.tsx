@@ -33,6 +33,8 @@ export interface ParamSliderProps {
   integer?: boolean
   /** Custom parser for typed input (default: engineering input with SI prefixes). */
   parse?: (text: string) => number | null
+  /** Applied to slider moves only (typed values are never changed), e.g. to stop on allowed values. */
+  snap?: (v: number) => number
 }
 
 const STEPS = 1000
@@ -86,7 +88,12 @@ export function ParamSlider(p: ParamSliderProps) {
           inputMode="text"
           spellCheck={false}
           autoComplete="off"
-          onFocus={(e) => { setText(show(p.value)); requestAnimationFrame(() => e.target.select()) }}
+          onFocus={(e) => {
+            setText(show(p.value))
+            // select() also focuses the field in Chrome: only select if it still has focus (Enter may have blurred it)
+            const el = e.target
+            requestAnimationFrame(() => { if (document.activeElement === el) el.select() })
+          }}
           onChange={(e) => { setText(e.target.value); setBad(false) }}
           onBlur={() => { if (text !== null && text !== show(p.value)) commit(text); else { setText(null); setBad(false) } }}
           onKeyDown={(e) => {
@@ -105,7 +112,7 @@ export function ParamSlider(p: ParamSliderProps) {
         step={scale === 'lin' ? (p.step ?? (p.max - p.min) / STEPS) : 1}
         value={toPos(p.value)}
         aria-valuetext={show(p.value)}
-        onChange={(e) => { setText(null); setBad(false); p.onChange(fromPos(Number(e.target.value))) }}
+        onChange={(e) => { setText(null); setBad(false); const v = fromPos(Number(e.target.value)); p.onChange(p.snap ? p.snap(v) : v) }}
       />
       {p.hint && <div className="-mt-0.5 text-[11.5px] leading-snug text-mute">{p.hint}</div>}
     </div>
@@ -118,6 +125,8 @@ export interface SegOption<T extends string> {
   title?: string
   /** CSS colour for a small identity dot. */
   dot?: string
+  /** Not selectable now (the reason goes in `title` and in a hint next to the control). */
+  disabled?: boolean
 }
 
 /** Segmented choice (radio group). */
@@ -135,8 +144,9 @@ export function Segmented<T extends string>({ options, value, onChange, label }:
             role="radio"
             aria-checked={on}
             title={o.title}
+            disabled={o.disabled}
             onClick={() => onChange(o.value)}
-            className={`flex h-7 items-center gap-1.5 whitespace-nowrap px-2.5 text-[12px] ${i ? 'border-l border-rule' : ''} ${on ? 'bg-ink text-bg' : 'text-mute hover:text-ink'}`}
+            className={`flex h-7 items-center gap-1.5 whitespace-nowrap px-2.5 text-[12px] ${i ? 'border-l border-rule' : ''} ${on ? 'bg-ink text-bg' : o.disabled ? 'cursor-not-allowed text-faint line-through decoration-faint' : 'text-mute hover:text-ink'}`}
           >
             {o.dot && <span className="h-1.5 w-1.5 rounded-full" style={{ background: o.dot }} />}
             {o.label}

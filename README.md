@@ -123,17 +123,32 @@ Any other static host works too: upload the contents of `dist/`.
   marks ⊙ (+) and ⊗ (−) in the two ends of the field colour map, faint in the dead zone, and a mark on coils
   being commutated. The rotor slides left past the fixed poles and brushes, wrapping around. Path chips
   ("Path 1 … Path a") and the brushes highlight their path in magenta. Large diagrams scroll inside their frame.
-- **End view** (C slots with both coil sides, P curved pole faces, commutator ring, fixed brushes, θm and θe),
-  **path schematic** (+ rail, one row per path with each coil's voltage, the path sum, − rail; coils shorted
-  by a brush listed separately) and **brush voltage against rotor angle** over three segment pitches with the
-  book's E_A = Kφω line.
-- **Formula results** for any input (Z, a, y_c — flagged "not an integer" or "no formula" —, brushes, C/a, Z/a,
-  p, K, K', ω, E_A, R_A by the series–parallel rule, I_A, I_A/a, V_T, τ_ind). The diagram is drawn only within
-  the constructive limits; otherwise it states the reason in one line and the numbers still update.
+- **End view** (C slots with both coil sides, P curved pole faces exactly β·360°/P wide at a fixed radius,
+  field lines only under the pole faces, one dead zone marked "dead zone 18° mech · 36° elec", commutator ring,
+  fixed brushes, θm and θe), **path schematic** (+ rail, one row per path with each coil's voltage, the path
+  sum, − rail; coils shorted by a brush listed separately) and **brush voltage against rotor angle** over three
+  segment pitches with the book's E_A = Kφω (solid, "Eq. 7-38, dead zone ignored"), βKφω (dashed, "conductors
+  under the pole faces") and the coil-level average (dotted). A coil shorted by a brush while it has voltage gets
+  a `--warn` note ("shorted while it has voltage", § 7.2).
+- **Smart adjust:** pressing a choice button (winding type, plex, direction, P) keeps that choice and changes as
+  few other settings as needed to reach a drawable winding: P only when no C ≤ 48 can be drawn with it (wave with
+  P = 2 → 4; triplex lap with P = 10 or 12 → 8), then C to the nearest drawable value (tie: the smaller), then
+  y_s back to full pitch. Every automatic change is listed in the "what changed" sentence with its reason.
+  P buttons that cannot be drawn are disabled with a hint. The C − / + buttons step between drawable values,
+  "Drawable: …" chips show up to 8 of them, and slider moves stop on them; typed values are never changed.
+- **Messages** appear only for a typed C that cannot be drawn (reason + "Go to nearest drawable (C = …)"),
+  C > 48 ("Diagram drawn only for C ≤ 48; the numbers are still exact" + "Show a small drawable version"),
+  frog-leg (numbers only), and a simplex wave preset whose y_c is not an integer (Example 7-4, the book's reason).
+- **Multiplex wave windings** (duplex, triplex) are drawn with y_c = 2(C ± m)/P and a = 2m, marked with the
+  `--warn` "beyond the textbook" badge wherever the pitch formula appears (results, Show the work, caption).
+- **Formula results** for any input (Z, a, y_c, brushes, C/a, Z/a, p, pole arc and dead zone angles, Z_under,
+  K, K', ω, e_cond, E_A, E_A,dz, coil-level average, R_A by the series–parallel rule, I_A, I_A/a, V_T, τ_ind).
+- **Flux input:** "Flux given as φ | B, r, l"; the second mode uses φ = 2πrlB/P (Eq. 7-36), e_cond = rωBl.
 - **Exam mode** "Identify the winding": a random drawable winding without type labels; the student enters
   type, plex, direction, coils, conductors, segments, paths and y_c; Check grades each field with a reason.
-- Presets (Examples 7-2, 7-3, 7-4, Problem 7-7, the 9-coil wave and the 16-coil lap), six guided experiments,
-  What is happening, Show the work in the order Z, a, y_c, K/K', ω, E_A, R_A, I_A, V_T, τ_ind.
+- Presets (Examples 7-2, 7-3, 7-4, Problems 7-7 and 7-2 (dead zone), the 9-coil wave and the 16-coil lap),
+  seven guided experiments (including "The dead zone" with Problem 7-2), What is happening, Show the work in the
+  order Z, a, y_c, (φ), K/K', ω, E_A, then with β < 1 θ_gap,m, θ_gap,e, Z_under, E_A,dz, then R_A, I_A, V_T, τ.
 
 ### Lab 03 (EEE 321) model
 
@@ -141,13 +156,20 @@ Any other static host works too: upload the contents of `dist/`.
   in slot k + y_s; starts at segment k, ends at segment k + y_c. Segment j is centred at
   (j + (y_s − y_c)/2)Δ + α, so each coil's centre line lies midway between its two segments.
 - Field: N centres at electrical 0, S at 180°, b = ±1 within ±β·90° electrical, 0 in the dead zone.
-  Conductor voltage e = b·e_cond with e_cond = Pφω/(2π); coil voltage N_C(e_top − e_bottom).
-- Brushes fixed at the pole centres (on the neutral plane): P for lap, 2 one pole pitch apart for simplex wave;
+  Conductor voltage e = b·e_cond with e_cond = Pφω/(2π) (= rωBl); coil voltage N_C(e_top − e_bottom).
+- Dead zone (geometry, from θ_e = (P/2)θ_m, Eq. 7-23): β = pole arc / pole pitch (0.5–1); pole arc β·360°/P mech
+  (β·180° elec); gap (1 − β)·360°/P mech ((1 − β)·180° elec). Course estimate (Chapman p. 448; solutions manual
+  Problems 7-2, 7-9): Z_under = βZ, E_A,dz = (Z_under/a) e_cond = βKφω, τ_ind,dz = βKφI_A, I_A = E_A,dz/(R_A + R_L).
+  φ keeps the book's definition B·A_P with A_P = 2πrl/P (Eqs. 7-35, 7-36). Coil-level average: the mean brush
+  voltage over one segment pitch, 2000 samples.
+- Brushes fixed at the pole centres (on the neutral plane): P for lap, 2 one pole pitch apart for wave;
   width (m − 0.5) segment pitches. Paths are traced by cutting the commutator cycles (gcd(|y_c|, C) of them) at
   the tapped segments; a chain between brushes of opposite polarity is a path, a chain returning to the same
   brush is being commutated. Brush polarity comes from the computed potentials.
-- Constructive limits: lap m = 1–3 with C a multiple of mP, C ≥ 2P and C ≥ 2mP (see Decisions); simplex wave with
-  P ≥ 4, C ≥ 2P + 1 and an integer y_c; C ≤ 48 for drawing.
+- Constructive limits, all in one engine function (`drawRule`, listed by `drawableCoilCounts(type, m, P,
+  direction)`): no segment may ever be under two brushes, which needs C/P ≥ m + ½ (see Decisions).
+  Lap (m = 1–3): C a multiple of mP, C ≥ 2P, and so C ≥ 2mP. Wave (m = 1–3): P ≥ 4, C ≥ 2P + 1, C ≥ (m + ½)P,
+  2(C ± m)/P an integer. Frog-leg: not drawn. C ≤ 48 for drawing.
 
 ## Lab 02 (EEE 321): the rotating loop
 
@@ -323,6 +345,42 @@ Any other static host works too: upload the contents of `dist/`.
 - **EEE 321 Lab 03, speed input:** "400", "400 rpm", "400 r/min", "50 rev/s" (= 3000 r/min) and "rad/s" are
   accepted. Shared `ParamSlider` gained optional `parse` and `integer` props, and `PlaybackControls` an optional
   label format; Lab 01 (EEE 361) is still pixel-identical.
+- **EEE 321 Lab 03, follow-up — brush overlap rule replaces the brief's lower limits (a real fault found by
+  the tests).** The brief allowed lap C ≥ 2P for every m and wave C ≥ max(2P + 1, mP). Brushes are (m − ½)
+  segments wide and C/P segments apart, so they touch a common segment at some rotor angle whenever C/P < m + ½;
+  that segment then shorts a + brush to a − brush. The path count can still look right (it does for the triplex
+  wave, P = 4, C = 13), so the brief's 765-case check could not see it. A new invariant ("no segment under two
+  brushes") failed for 16 multiplex wave windings that the brief allows. The lab therefore uses C/P ≥ m + ½:
+  for lap this is C ≥ 2mP (unchanged), for wave C ≥ (m + ½)P. Consequences for the brief's test values:
+  triplex wave, P = 4: 13 → 15 (y_c = 9); wave m = 3, P = 4 → P = 12: C = 45 (list: 45), not 39; wave m = 2,
+  P = 12: list 34, 40, 46 (not 28); duplex wave → Lap at P = 4, C = 12: C = 16, not 8; lap m = 2, P = 8 from 24:
+  32, not 16; lap m = 3, P = 12: no drawable C ≤ 48 (36 would short the brushes). The test with a 6-cycle path
+  count uses the triplex wave P = 4, C = 15 and C = 17 instead of C = 13; C = 13 is tested as refused.
+  A test runs every drawable winding at 600 rotor angles and finds no shared segment.
+- **EEE 321 Lab 03, smart adjust may change P for triplex lap.** Triplex lap with 10 or 12 poles needs
+  C ≥ 60 or 72, more than the lab draws. Pressing triplex there moves P to the nearest pole count that can be
+  drawn (8), and says so; while triplex lap is selected the P = 10 and 12 buttons are disabled with a hint.
+  The brief's coverage test therefore holds for every combination except these two (tested exactly).
+- **EEE 321 Lab 03, slider and experiments:** moving the C slider stops on drawable values up to 48 (it is a
+  control, not typing); typed values are never changed. Experiment answers apply their change directly
+  (no smart adjust): "Lap → wave, same coils and flux" must keep C = 16, so it shows the not-drawable message
+  with "Go to nearest drawable", and the answer explains why.
+- **EEE 321 Lab 03, dead zone and flux:** the course method holds B under the poles fixed, so β lowers the
+  conductor count and E_A,dz = βKφω. If the *real* flux per pole were held fixed instead, narrower poles would
+  raise B under them and the average E_A would not fall. When β < 1, I_A, V_T and τ use E_A,dz (as the solutions
+  manual does in Problem 7-2); the book's E_A = Kφω stays in the results as "dead zone ignored". The book's
+  example presets use β = 1; the two figure presets (16-coil lap, 9-coil wave) open with β = 0.8 so the gaps show.
+- **EEE 321 Lab 03, where the coil-level average equals βKφω.** It does (within 2 × 10⁻³, tested on random
+  simplex lap windings, full pitch, C/P ≥ 4, β 0.5–0.8) when the coil being commutated is wholly in the dead
+  zone. It is not exact for β near 1, for chorded coils or for very few coils per pole: there a commutated coil
+  is still partly under a pole, so the lab also shows the `--warn` note "shorted while it has voltage".
+- **EEE 321 Lab 03, clean angle for multiplex wave:** for some multiplex wave windings the two brushes never
+  touch exactly m segments at the same time; the lab then opens at the angle where most brushes do.
+- **Shared components (Lab 01 EEE 361 still pixel-identical):** `Segmented` options may be `disabled`;
+  `ParamSlider` has an optional `snap` for slider moves only; `ShowWork` steps may carry the "beyond the
+  textbook" badge (`BeyondBadge` in `ui/Row.tsx`). `ParamSlider` fix: the delayed `select()` on focus now runs
+  only if the field still has focus — in Chrome `select()` focuses the field, so a very fast click–type–Enter
+  (seen in automated tests) left the field focused and a later blur re-committed the old text.
 - **EEE 321 Lab 03, conductor colours:** ⊙ (+) and ⊗ (−) use the two ends of the existing diverging field map,
   always with the symbol; the highlighted path is `--ref`; E_A and V_T `--inc`, I_A `--ref`, τ and ω `--trn`.
 
@@ -334,8 +392,10 @@ Any other static host works too: upload the contents of `dist/`.
 - Lab 02: the four-loop commutation machine (Chapman § 7.2), start-up transients (no inertia in the book),
   losses other than i²R, and negative speeds (clockwise rotation).
 - EEE 321 Lab 03, out of scope: armature reaction, L di/dt voltages, interpoles and compensating windings
-  (§ 7.4); equalizer currents; diagrams of multiplex wave and frog-leg windings (their numbers are computed);
-  losses and the power-flow diagram (§ 7.7); multiplex lap windings with one coil per path (see Decisions).
+  (§ 7.4); equalizer currents; frog-leg diagrams (their numbers are computed); losses and the power-flow
+  diagram (§ 7.7); windings whose brushes would share a segment, C/P < m + ½ (see Decisions), including
+  triplex lap with 10 or 12 poles at C ≤ 48; fringing at the pole tips (the field is ±1 under a pole face and
+  0 in the dead zone); exam questions on multiplex wave windings (outside the course).
 - EEE 321 Lab 01, out of scope: the per-phase equivalent circuit with winding impedance, the per-unit system
   for three-phase banks, voltage regulation and efficiency (Chapman § 2.10, Example 2-9 (b)–(c)); unbalanced
   loads; open-Δ and other two-transformer connections (§ 2.11); derating and inrush current; computing the

@@ -23,3 +23,8 @@ export function Badge({ strong, children }: { strong: boolean; children: ReactNo
     </span>
   )
 }
+
+/** "beyond the textbook" badge (`--warn`, DESIGN.md): a result or formula the course does not give. */
+export function BeyondBadge({ title }: { title?: string }) {
+  return <span title={title} className="whitespace-nowrap rounded-[3px] border border-warn px-1 py-px text-[11px] text-warn">beyond the textbook</span>
+}

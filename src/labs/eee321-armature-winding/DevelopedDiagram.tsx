@@ -64,6 +64,7 @@ export function DevelopedDiagram({ w, snap, clock, alphaStatic, highlight, onHig
     return m
   }, [snap])
   const commutated = useMemo(() => new Set(snap.commutated.flatMap((c) => c.coils)), [snap])
+  const hot = useMemo(() => new Set(snap.shortedWithVoltage), [snap])
   const lit = (k: number) => {
     if (!labels || !highlight) return false
     const pi = pathOf.get(k)
@@ -109,8 +110,11 @@ export function DevelopedDiagram({ w, snap, clock, alphaStatic, highlight, onHig
         </g>
         {commutated.has(k) && (
           <path d={`M${xm} ${Y.apex - 7} l4 4 l-4 4 l-4 -4z`} fill="var(--warn)" stroke="var(--panel)" strokeWidth={0.8}>
-            <title>commutating: shorted by a brush</title>
+            <title>{hot.has(k) ? 'shorted while it has voltage' : 'commutating: shorted by a brush'}</title>
           </path>
+        )}
+        {hot.has(k) && labels && (
+          <text x={xm + 7} y={Y.apex + 1} fontSize={9.5} fill="var(--warn)" stroke="var(--panel)" strokeWidth={3} paintOrder="stroke">V ≠ 0</text>
         )}
       </g>
     )
@@ -180,6 +184,17 @@ export function DevelopedDiagram({ w, snap, clock, alphaStatic, highlight, onHig
       </svg>
       {labels && pitch * C > (size.w || Infinity) && <div className="sr-only">The diagram scrolls sideways inside its frame.</div>}
     </div>
+  )
+}
+
+/** `--warn` note when a brush shorts a coil that still has voltage (§ 7.2: it should short a coil only at 0 V). */
+export function ShortedNote({ snap }: { snap: Snapshot }) {
+  if (snap.shortedWithVoltage.length === 0) return null
+  const list = snap.shortedWithVoltage.map((k) => k + 1).join(', ')
+  return (
+    <p className="text-[11.5px] leading-snug text-warn" role="status">
+      Coil{snap.shortedWithVoltage.length > 1 ? 's' : ''} {list}: shorted while it has voltage. A brush should short a coil only when the coil has 0 V (§ 7.2).
+    </p>
   )
 }
 

@@ -141,8 +141,15 @@ mode badge is text (MOTOR, GENERATOR, NO LOAD). A legend above the drawing expla
 I_A and the highlighted parallel path `--ref` (drawn thicker, the other paths faded), τ and ω `--trn` — plus
 the conductor voltage sign in the two ends of the diverging field map (`field[4]` orange for +, `field[0]`
 blue for −, per theme), always with ⊙ (+) or ⊗ (−); conductors in the dead zone are a `--faint` ring.
-Coils being commutated carry a small `--warn` diamond. Top-layer coil sides are solid, bottom-layer sides
-dashed (stated in the legend). Poles and the end view use `--rule` fills with `--ink` outlines.
+Coils being commutated carry a small `--warn` diamond; one shorted while it has voltage also gets a `--warn`
+"V ≠ 0" label and a `--warn` note line under the path chips. Top-layer coil sides are solid, bottom-layer sides
+dashed (stated in the legend). Poles and the end view use `--rule` fills with `--ink` outlines; pole faces are
+exactly β of the pole pitch at a fixed radius (the air gap never changes), field lines (`--mute`, 0.8 px, with
+small arrowheads in the air gap) only under the pole faces, and one dead zone marked by a thin `--mute` arc with
+end ticks and a dashed leader to a top-right label "dead zone / 18° mech / 36° elec". In the brush-voltage plot:
+coil-level curve `--inc` 2 px, its average `--inc` dotted, Kφω `--ink` solid, βKφω `--ink` dashed `5 3`.
+The m-plex wave pitch carries the `BeyondBadge` (1 px `--warn` border, 11 px `--warn` text, 3 px radius).
+"Drawable:" C chips are 24 px tall outlined buttons, the current value with an `--ink` border.
 
 **EEE 321 Lab 01 (three-phase transformer)** uses the same three tokens for the three phases, through
 `PHASE_COLOR` in `src/ui/palette.ts`:
@@ -280,14 +287,16 @@ loss tangent σ2/ωε2 = 0.4160 · general lossy medium      ← optional hint
   On coarse pointers (touch): 40 px tall, thumb 24 px (Firefox 20 px). Disabled: opacity 0.35.
 - **Scales:** linear, or logarithmic over 1000 steps (values rounded to 3 significant figures). Log
   sliders can have a *zero stop*: the leftmost position is exactly 0 (used for conductivity:
-  0, then 10⁻⁶ … 10⁸ S/m).
+  0, then 10⁻⁶ … 10⁸ S/m). An optional `snap` applies to slider moves only (Lab 03: C stops on drawable
+  values); typed values are never snapped.
 - **Hint:** 11.5 px `--mute`, snug, `-mt-0.5`.
 
 ### Segmented control — `Segmented`
 A radio group in one 1 px `--rule` box with 3 px radius; buttons 28 px tall (`h-7`), `px-2.5`, 12 px,
 separated by 1 px `--rule` lines. Selected: `--ink` background with `--bg` text. Unselected: `--mute`,
 `--ink` on hover. An option may carry a 6 px identity dot in its wave colour (Incident, Reflected,
-Transmitted).
+Transmitted). A `disabled` option is `--faint` with a `--faint` line-through and a not-allowed cursor; its
+reason goes in its title and in a 11.5 px `--mute` hint under the control (never an error message).
 
 ### Switch — `Switch`
 `role="switch"`, 28 px tall. Track 26 × 14 px, fully round, 1 px border: off `--faint` outline with a

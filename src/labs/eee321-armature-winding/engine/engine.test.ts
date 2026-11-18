@@ -406,6 +406,14 @@ describe('dead zone (Chapman p. 448; solutions manual Problems 7-2, 7-9)', () =>
     near(avg(spec({ P: 4, C: 40 }), 0.7), 14.0, 2e-3)
     near(avg(spec({ type: 'wave', P: 4, C: 21 }), 0.7), 14.7, 2e-3)
   })
+  it('§ 7.2: with β = 0.7 a brush never shorts a coil that has voltage; near β = 1 it does', () => {
+    const b = buildWinding(spec({ P: 4, C: 16 }))
+    if (!b.ok) throw new Error(b.reason)
+    const count = (beta: number) => Array.from({ length: 2000 }, (_, i) => analyze(b.winding, (i / 2000) * 2 * Math.PI, beta, 1)).filter((s) => s.shortedWithVoltage.length > 0).length
+    expect(count(0.7)).toBe(0)
+    expect(count(0.95)).toBeGreaterThan(0)
+    expect(count(1)).toBeGreaterThan(0)
+  })
   it('invariant: simplex lap, full pitch, C/P ≥ 4, β in [0.5, 0.8]: average = β Z e_cond / a', () => {
     const rnd = mulberry32(448)
     let n = 0
