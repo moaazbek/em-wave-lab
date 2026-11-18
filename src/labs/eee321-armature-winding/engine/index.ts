@@ -33,6 +33,12 @@ export interface MachineInputs {
   load: boolean
   RL: number
   ignoreRA: boolean
+  /**
+   * Pole-arc fraction β = pole arc / pole pitch (0.5 … 1; default 1 = the book's "ignore the dead zone").
+   * The course estimate with the dead zone counts only the conductors under the pole faces (Chapman p. 448):
+   * E_A,dz = β K φ ω. B under the poles stays the same, φ keeps the book's definition B A_P.
+   */
+  beta?: number
 }
 
 /* ------------------------------------------------------------------ */
@@ -42,10 +48,15 @@ export interface MachineInputs {
 export interface FormulaResult {
   Z: number
   a: number
-  /** Commutator pitch; null when the course gives no formula (multiplex wave, frog-leg). */
+  /** Commutator pitch; null for frog-leg (no formula). */
   yc: number | null
   ycInteger: boolean
-  /** Both wave values 2(C+1)/P and 2(C-1)/P (wave only), for the "not an integer" explanation. */
+  /**
+   * True when y_c comes from the general m-plex wave form 2(C ± m)/P, which Chapman does not give
+   * (he gives Eq. (7-27) for simplex wave only). The UI marks it "beyond the textbook".
+   */
+  ycBeyondCourse: boolean
+  /** Both wave values 2(C+m)/P and 2(C-m)/P (wave only), for the "not an integer" explanation. */
   waveYc: { prog: number; retro: number } | null
   brushes: number
   coilsPerPath: number
@@ -59,12 +70,19 @@ export interface FormulaResult {
   Kp: number
   /** Conductor voltage e_cond = P φ ω / (2π), from (7-31) and (7-36). */
   econd: number
+  /** E_A = K φ ω, Eq. (7-38): every conductor counted (dead zone ignored). */
   EA: number
+  /** Pole-arc fraction used, conductors under the pole faces Z_under = β Z, and E_A,dz = (Z_under / a) e_cond = β K φ ω. */
+  beta: number
+  Zunder: number
+  EAdz: number
   elementsPerPath: number
   Rpath: number
   RA: number
+  /** I_A = E_A,dz / (R_A + R_L) (with β = 1 this is the book's E_A / (R_A + R_L)). */
   IA: number
   VT: number
+  /** τ_ind = β K φ I_A (with β = 1 the book's K φ I_A, Eq. (7-49)). */
   tau: number
   Ipath: number
 }
@@ -86,29 +104,55 @@ export function formula(s: WindingSpec, x: MachineInputs): FormulaResult {
   let waveYc: FormulaResult['waveYc'] = null
   if (s.type === 'lap') yc = s.progressive ? m : -m // (7-25)
   else if (s.type === 'wave') {
-    waveYc = { prog: (2 * (C + 1)) / P, retro: (2 * (C - 1)) / P } // (7-27)
-    if (m === 1) yc = s.progressive ? waveYc.prog : waveYc.retro
+    waveYc = { prog: wavePitch(C, P, m, true), retro: wavePitch(C, P, m, false) } // (7-27) for m = 1
+    yc = s.progressive ? waveYc.prog : waveYc.retro
   }
   const ys = s.ys ?? fullPitch(C, P)
   const omega = (2 * Math.PI * x.n) / 60 // (7-40)
   const K = (Z * P) / (2 * Math.PI * a) // (7-39)
   const Kp = (Z * P) / (60 * a) // (7-42)
   const EA = K * x.phi * omega // (7-38)
+  const beta = x.beta ?? 1
+  const EAdz = beta * EA // (Z_under / a) e_cond, Chapman p. 448
   const elementsPerPath = x.Rper === 'conductor' ? Z / a : x.Rper === 'turn' ? Z / (2 * a) : C / a
   const Rpath = elementsPerPath * x.R
   const RA = Rpath / a
-  const IA = x.load ? EA / ((x.ignoreRA ? 0 : RA) + x.RL) : 0
+  const IA = x.load ? EAdz / ((x.ignoreRA ? 0 : RA) + x.RL) : 0
   return {
-    Z, a, yc, ycInteger: yc !== null && Number.isInteger(yc), waveYc,
+    Z, a, yc, ycInteger: yc !== null && Number.isInteger(yc), ycBeyondCourse: s.type === 'wave' && m > 1, waveYc,
     brushes: s.type === 'wave' ? 2 : P,
     coilsPerPath: C / a, condPerPath: Z / a, turnsPerPath: Z / (2 * a),
     ys, p: ((ys * P) / C) * 100, // (7-24)
     omega, K, Kp, econd: (P * x.phi * omega) / (2 * Math.PI), EA,
+    beta, Zunder: beta * Z, EAdz,
     elementsPerPath, Rpath, RA, IA,
-    VT: x.load ? IA * x.RL : EA,
-    tau: K * x.phi * IA, // (7-49)
+    VT: x.load ? IA * x.RL : EAdz,
+    tau: beta * K * x.phi * IA, // (7-49), β = 1 without the dead zone
     Ipath: IA / a, // (7-44)
   }
+}
+
+/**
+ * Commutator pitch of an m-plex wave winding, y_c = 2(C ± m)/P (+ progressive, − retrogressive).
+ * For m = 1 this is Chapman's Eq. (7-27); the general form is beyond the course.
+ */
+export const wavePitch = (C: number, P: number, m: number, progressive: boolean): number => (2 * (C + (progressive ? m : -m))) / P
+
+/** Flux per pole from B, r and l: φ = B A_P with A_P = 2πrl/P (Eqs. 7-35, 7-36). */
+export const fluxFromField = (B: number, r: number, l: number, P: number): number => (2 * Math.PI * r * l * B) / P
+
+/** Pole geometry in degrees (geometry, from θ_e = (P/2) θ_m, Eq. 7-23). */
+export interface PoleGeometry {
+  pitchM: number
+  pitchE: number
+  arcM: number
+  arcE: number
+  gapM: number
+  gapE: number
+}
+export function poleGeometry(P: number, beta: number): PoleGeometry {
+  const pitchM = 360 / P
+  return { pitchM, pitchE: 180, arcM: beta * pitchM, arcE: beta * 180, gapM: (1 - beta) * pitchM, gapE: (1 - beta) * 180 }
 }
 
 /** Flux per pole needed for a given E_A at speed n: φ = E_A / (K' n). */
@@ -150,34 +194,88 @@ export type BuildResult = { ok: true; winding: Winding } | { ok: false; reason: 
 const gcd = (x: number, y: number): number => (y === 0 ? Math.abs(x) : gcd(y, x % y))
 const mod = (x: number, n: number) => ((x % n) + n) % n
 
+/* ---------- drawable rules (one place) ---------- */
+
+export interface RuleFailure {
+  /** One sentence for the message. */
+  reason: string
+  /** "so that …" clause for the smart-adjust note (maths between dollar signs). */
+  need: string
+}
+
+const show = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(4).replace(/0+$/, ''))
+const PLEX_NAME = ['', 'simplex', 'duplex', 'triplex']
+
+/**
+ * Why a winding cannot be built and drawn, or null when it can. Every drawable rule is here; `drawableCoilCounts`,
+ * `buildWinding`, the smart adjust, the C stepper, the chips and the messages all use it.
+ *
+ * No segment may ever be under two brushes: that would short a + brush to a − brush. A brush is m − ½ segments wide and
+ * its neighbour is C/P segments away, so this needs C/P ≥ m + ½.
+ * Lap (m = 1, 2, 3): C a multiple of mP, C ≥ 2P, and so (from the rule above) C ≥ 2mP: two coils per path.
+ * Wave (m = 1, 2, 3): P ≥ 4, C ≥ 2P + 1, C ≥ (m + ½)P, and y_c = 2(C ± m)/P an integer.
+ * Frog-leg: never drawn. C > maxCoils: not drawn.
+ */
+export function drawRule(type: WindingType, m: number, P: number, progressive: boolean, C: number, maxCoils = MAX_DRAWN_COILS): RuleFailure | null {
+  if (type === 'frog')
+    return { reason: 'Frog-leg windings are shown as numbers only: the lab draws lap and wave windings, not the two together on one commutator.', need: '' }
+  if (type === 'wave' && P < 4)
+    return { reason: 'Wave windings need P ≥ 4. With 2 poles, a wave winding connects like a lap winding.', need: 'wave windings need at least 4 poles' }
+  if (type === 'lap') {
+    if (C % (m * P) !== 0)
+      return { reason: `A lap winding needs C to be a multiple of mP = ${m * P}; C = ${C} is not.`, need: `$C$ is a multiple of $mP$ = ${m * P}` }
+    if (C < 2 * P)
+      return { reason: `A lap winding needs at least 2P = ${2 * P} coils.`, need: `there are at least $2P$ = ${2 * P} coils` }
+    if (C < 2 * m * P)
+      return {
+        reason: `With ${PLEX_NAME[m]} brushes (${m - 0.5} segments wide) and only ${C / P} segments per pole, a + and a − brush would touch the same segment. Drawn for C ≥ 2mP = ${2 * m * P}.`,
+        need: `each path has at least 2 coils ($C \\ge 2mP$ = ${2 * m * P}), so that a + and a − brush never touch the same segment`,
+      }
+  } else {
+    if (C < 2 * P + 1)
+      return { reason: `A wave winding needs at least 2P + 1 = ${2 * P + 1} coils.`, need: `$C \\ge 2P + 1$ = ${2 * P + 1}` }
+    if (2 * C < (2 * m + 1) * P)
+      return {
+        reason: `With ${PLEX_NAME[m]} brushes (${m - 0.5} segments wide) and only ${show(C / P)} segments per pole pitch, the two brushes would touch the same segment at some rotor angles. Drawn for C ≥ (m + ½)P = ${show((m + 0.5) * P)}.`,
+        need: `$C \\ge (m + \\tfrac12)P$ = ${show((m + 0.5) * P)}, so that the two brushes never touch the same segment`,
+      }
+    const need = wavePitch(C, P, m, progressive), other = wavePitch(C, P, m, !progressive)
+    if (!Number.isInteger(need)) {
+      const sign = progressive ? '+' : '−'
+      const mm = m === 1 ? '1' : 'm'
+      return {
+        reason: `Not realizable as a ${progressive ? 'progressive' : 'retrogressive'} ${PLEX_NAME[m]} wave: y_c = 2(C ${sign} ${mm})/P = ${show(need)} is not an integer (the other sign gives ${show(other)}).`,
+        need: `$y_c = 2(C ${progressive ? '+' : '-'} ${mm})/P$ is an integer`,
+      }
+    }
+  }
+  if (C > maxCoils) return { reason: `Diagram drawn only for C ≤ ${MAX_DRAWN_COILS}; the numbers are still exact.`, need: `$C \\le$ ${MAX_DRAWN_COILS}` }
+  return null
+}
+
+/** All drawable coil counts C ≤ 48 for this winding type, plex, poles and direction (ascending; empty for frog-leg). */
+export function drawableCoilCounts(type: WindingType, m: number, P: number, progressive: boolean): number[] {
+  const out: number[] = []
+  for (let C = 1; C <= MAX_DRAWN_COILS; C++) if (drawRule(type, m, P, progressive, C) === null) out.push(C)
+  return out
+}
+
+/** The drawable value nearest to C (on a tie, the smaller one); null when the list is empty. */
+export function nearestDrawable(list: readonly number[], C: number): number | null {
+  let best: number | null = null
+  for (const v of list) if (best === null || Math.abs(v - C) < Math.abs(best - C) || (Math.abs(v - C) === Math.abs(best - C) && v < best)) best = v
+  return best
+}
+
 /**
  * Build the winding. `maxCoils` is the drawing limit (C ≤ 48); path tracing itself has no size limit,
  * so tests may pass Infinity.
  */
 export function buildWinding(s: WindingSpec, maxCoils = MAX_DRAWN_COILS): BuildResult {
   const { type, m, P, C } = s
-  if (type === 'frog' || (type === 'wave' && m > 1))
-    return { ok: false, reason: 'The course gives no commutator-pitch formula for this winding, so it is not drawn.' }
-  if (type === 'wave' && P < 4)
-    return { ok: false, reason: 'With 2 poles a wave winding is the same as a lap winding, so it is not offered.' }
-  if (type === 'lap') {
-    if (C % (m * P) !== 0) return { ok: false, reason: `A lap winding needs C to be a multiple of mP = ${m * P}; C = ${C} is not.` }
-    if (C < 2 * P) return { ok: false, reason: `A lap winding needs at least 2P = ${2 * P} coils.` }
-    // Brushes are (m - 0.5) segments wide and C/P segments apart. If C/P <= m, a + brush and a - brush reach
-    // the same segment and short each other: the winding needs at least two coils per path, C >= 2mP.
-    if (C < 2 * m * P)
-      return { ok: false, reason: `With ${m === 2 ? 'duplex' : 'triplex'} brushes (${m} segments wide) and only ${C / P} segments per pole, a + and a − brush would touch the same segment. Drawn for C ≥ 2mP = ${2 * m * P}.` }
-  } else {
-    if (C < 2 * P + 1) return { ok: false, reason: `A simplex wave winding needs at least 2P + 1 = ${2 * P + 1} coils.` }
-    const yp = (2 * (C + 1)) / P, yr = (2 * (C - 1)) / P
-    const need = s.progressive ? yp : yr
-    if (!Number.isInteger(need)) {
-      const show = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(4).replace(/0+$/, ''))
-      return { ok: false, reason: `Not realizable as a ${s.progressive ? 'progressive' : 'retrogressive'} simplex wave: y_c = 2(C ${s.progressive ? '+' : '−'} 1)/P = ${show(need)} is not an integer (the other sign gives ${show(s.progressive ? yr : yp)}).` }
-    }
-  }
-  if (C > maxCoils) return { ok: false, reason: `Diagram drawn only for C ≤ ${MAX_DRAWN_COILS}; the numbers are still exact.` }
-  const yc = type === 'lap' ? (s.progressive ? m : -m) : s.progressive ? (2 * (C + 1)) / P : (2 * (C - 1)) / P
+  const fail = drawRule(type, m, P, s.progressive, C, maxCoils)
+  if (fail) return { ok: false, reason: fail.reason }
+  const yc = type === 'lap' ? (s.progressive ? m : -m) : wavePitch(C, P, m, s.progressive)
   const ys = Math.min(Math.max(1, s.ys ?? fullPitch(C, P)), C - 1)
   const coils: Coil[] = Array.from({ length: C }, (_, k) => ({ k, top: k, bottom: mod(k + ys, C), start: k, end: mod(k + yc, C) }))
   // cycles: segment -> coil starting there -> its end segment -> ...
@@ -262,6 +360,8 @@ export interface Snapshot {
   noCommutation: boolean
   /** Sum of all coil voltages (KVL around the winding: zero). */
   kvlSum: number
+  /** Coils shorted by a brush while their voltage is not zero (§ 7.2: a brush should short a coil only at 0 V). */
+  shortedWithVoltage: number[]
 }
 
 /** Solve the small least-squares problem for brush potentials: V_to - V_from = voltage, with V_0 = 0. */
@@ -352,7 +452,18 @@ export function analyze(w: Winding, alpha: number, beta: number, econd: number):
     brushVoltage: avg(plus) - avg(minus),
     noCommutation: tapped.every((t) => t.length === m),
     kvlSum,
+    shortedWithVoltage: chains.filter((c) => c.kind === 'commutated').flatMap((c) => c.coils).filter((k) => coilEmf[k] !== 0),
   }
+}
+
+/**
+ * Coil-level average brush voltage: the mean of the brush voltage over one segment pitch of rotation
+ * (the pattern repeats every pitch), sampled at the midpoints of `samples` equal steps.
+ */
+export function averageBrushVoltage(w: Winding, beta: number, econd: number, samples = 2000): number {
+  let sum = 0
+  for (let i = 0; i < samples; i++) sum += analyze(w, ((i + 0.5) / samples) * w.delta, beta, econd).brushVoltage
+  return sum / samples
 }
 
 /**
@@ -363,7 +474,11 @@ export function analyze(w: Winding, alpha: number, beta: number, econd: number):
  */
 export function cleanAngle(w: Winding): number {
   const N = 240
-  const ok = Array.from({ length: N }, (_, i) => analyze(w, (i / N) * w.delta, 1, 1).noCommutation)
+  // brushes touching exactly m segments; for some multiplex wave windings the two brushes never do so together,
+  // and then the angle with the most such brushes (the longest stretch of it) is used
+  const good = Array.from({ length: N }, (_, i) => analyze(w, (i / N) * w.delta, 1, 1).tapped.filter((t) => t.length === w.spec.m).length)
+  const top = Math.max(...good)
+  const ok = good.map((g) => g === top)
   let best = -1, bestLen = 0
   for (let i = 0; i < N; i++) {
     if (!ok[i] || ok[(i - 1 + N) % N]) continue // start of a run
@@ -371,7 +486,7 @@ export function cleanAngle(w: Winding): number {
     while (len < N && ok[(i + len) % N]) len++
     if (len > bestLen) { bestLen = len; best = i }
   }
-  if (best < 0) return ok[0] ? 0 : 0.5 * w.delta
+  if (best < 0) return 0 // every sample equally good
   return (((best + (bestLen - 1) / 2) / N) % 1) * w.delta
 }
 
