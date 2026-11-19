@@ -30,9 +30,12 @@ Requires Node 20 or newer.
 ```sh
 npm install
 npm run dev        # development server, open the printed URL
-npm test           # unit tests (both engines, formatting, colours, URL state)
-npm run build      # type check (tsc, strict) + static production build into dist/
+npm test           # unit tests (engines, formatting, colours, URL state, DOM, guide accuracy)
+npm run lint       # ESLint, jsx-a11y rules
+npm run build      # type check (tsc, strict, also scripts/) + static production build into dist/
 npm run preview    # serve dist/ locally
+npm run guide:screenshots   # rebuild and re-take every screenshot of the guide (see "Updating the guide")
+npm run guide:pdf           # print the guide to public/guide/eee-labs-guide.pdf
 ```
 
 ## Publish an update
@@ -59,6 +62,40 @@ so it works from any sub-path such as `https://<user>.github.io/<repo>/`.
 3. Every push to `main` runs `.github/workflows/deploy.yml`: install, test, build, publish `dist/`.
 
 Any other static host works too: upload the contents of `dist/`.
+
+## Updating the guide
+
+The "How to use" guide is the route `#/guide` (one anchor per section: `#/guide#start`, `#/guide#<lab route>`,
+`#/guide#faq`). The home page links to it ("How to use"), every lab header has a "Guide" button that opens the lab's
+section, and the guide offers the same text as a PDF (`public/guide/eee-labs-guide.pdf`, "Download PDF").
+
+**Edit the text** in `src/guide/content/*.md`, one file per section (file-name order is page order). Plain
+Markdown: `##` / `###` headings, paragraphs, `-` and `1.` lists, `> ` notes, `$…$` and `$$…$$` maths (KaTeX), links
+such as `[the rotating loop](#/eee321-rotating-loop)` or `[FAQ](#/guide#faq)`. Three special forms:
+
+- `**[ui:Copy link]**` — a label of the interface, shown in bold. The tests check that it exists *exactly* in one
+  of the routes listed under `states:` in the file's front matter (desktop and every phone tab, with every
+  disclosure and experiment opened). A renamed button breaks the test: change the text or the `states`.
+- `{{xf.r212.VR: 2.94}}` — a number from the engine. The key is defined in `src/guide/values.ts`; the test checks
+  that the text is a correct rounding of the engine's value. Any other digit in the prose fails the test, except
+  textbook references (§, Eq., Example, Problem, Fig.), "EEE 361", "Step 2", "T1" and "Medium 2". Prefer pointing
+  to a screenshot or to **Show the work** over writing numbers.
+- `![What the image shows](image-name)` — a screenshot from `public/guide/img/`. If it has markers, the numbered
+  list right after it must have one item per marker, in order. Alt text describes the content (not "screenshot").
+
+**After any change to the interface**, run:
+
+```sh
+npm run guide:screenshots   # builds, serves dist/, re-takes all 38 images and their marker files
+npm run guide:pdf           # builds, prints #/guide to the PDF
+npm test                    # labels, numbers, images, markers, links
+```
+
+`npm run guide:screenshots -- --only name1,name2 --no-build` re-takes a few images. The list of screenshots (URL
+state, viewport, clip, steps, marker elements) is `src/guide/shots.ts`; add an entry there before referring to a new
+image. If an element to clip or to mark is missing, the script stops with its name and writes nothing for that
+image. It needs Chromium: Playwright's own (`npx playwright-core install chromium`), or set `CHROME_PATH`; on a Mac
+with Google Chrome nothing is needed. Commit the new images, marker files and PDF together with the change.
 
 ## Lab 01 (EEE 361): what is in the lab
 
@@ -468,6 +505,43 @@ Any other static host works too: upload the contents of `dist/`.
 - **Lint set-up.** `typescript-eslint` needs TypeScript < 6.1 and this project uses TypeScript 7 (no JS API), so
   ESLint parses TSX with `@babel/eslint-parser` (typescript + jsx syntax plugins). Type checking stays with
   `tsc --noEmit`. Only the three jsx-a11y rules of the brief are enabled.
+
+- **Guide, route and anchors.** The guide is `#/guide`; a section anchor follows a second `#` (`#/guide#faq`),
+  because the router uses the first hash for the route. `parseHash` returns the anchor; lab routes are unchanged.
+  The lab header's "Guide" button opens `#/guide#<lab route>`; the home page has "How to use".
+- **Guide, Markdown.** A self-written reader (`src/guide/markdown.ts`, about 150 lines) instead of a library: the
+  text needs only headings, lists, notes, links, images and maths (KaTeX is already on the site), plus the two
+  checked forms `**[ui:…]**` and `{{key: …}}`, which a library would need extensions for anyway.
+- **Guide, accuracy tests** (`src/guide/guide.test.tsx`): labels are matched exactly against element text,
+  `aria-label` or `title` in the rendered routes of each file's `states`; numbers are recomputed with each lab's
+  `derive()` from the preset's URL state (the same path as the results column) and must be a correct rounding; no
+  other digits in the prose; every image, marker file and marker count matches `src/guide/shots.ts`; every link and
+  anchor resolves; the PDF exists and is under 5 MB. The guide avoids writing the given data of problems: the preset
+  names carry them and are checked as labels.
+- **Guide, screenshots.** `playwright-core` (no browser download at install; it uses Playwright's Chromium if
+  installed, else `CHROME_PATH`, else Google Chrome). Light theme, `prefers-reduced-motion` (animations start
+  paused, at each lab's fixed starting angle), device scale factor 2, fonts and KaTeX settled, a fixed random seed
+  so exam mode always draws the same winding. Images are encoded to WebP by the browser's canvas (no native image
+  library), quality 0.8, stepping down only if a file would exceed 250 KB (none does; the largest is 229 KB). Clips
+  keep a 6 px margin so they never show neighbouring panels. The Example 7-3 results were split into two images
+  because together they are taller than the window.
+- **Guide, markers.** Drawn as HTML circles over the image from the boxes in the marker file (percent of the
+  image), so they follow the theme and stay correct when the image is re-taken. On a whole-window image they stay
+  inside the image; on a clipped image they may sit in a 24 px margin around it, so they cover nothing. The numbered
+  list after an image uses the same circles and is kept on the same printed page. The marker files are also bundled
+  into the page, so each image has its size at the first render and an anchor link lands in the right place.
+  Whole-window images get an "Open full size" link (they are small on a phone). Elements are found through
+  `data-ui` or new `data-guide` attributes (lab frame columns, header, result rows `row-<symbol>`, "What is
+  happening", exam mode, the armature diagram); these change nothing on screen.
+- **Guide, PDF.** `page.pdf()` on A4 with the page's print CSS: white background, light colours, no contents
+  sidebar or buttons, each lab section on a new page, a footer with page numbers, markers kept. Chrome stores WebP
+  images losslessly in a PDF (13 MB); the script prints JPEG copies at most 1500 px wide instead (2.9 MB). Lab links
+  in the PDF point to the live site and guide links jump inside the document. Printing the page from a browser
+  also switches to the light colours.
+- **Guide, EEE 361 walkthrough.** That lab has material presets, not problem presets; the guide uses its default
+  media at normal incidence (air to a lossless dielectric with εr = 4), the most common Cheng exercise.
+- **Guide, noticed but not changed:** the rotating loop's "what changed" sentence prints a resistance as "300 mΩ"
+  although its results use ohms ("0.3000 Ω"). The guide does not quote it.
 
 ## Not yet implemented
 

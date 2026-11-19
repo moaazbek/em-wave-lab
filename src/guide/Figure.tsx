@@ -34,9 +34,9 @@ function position(place: Place, b: { x: number; y: number; w: number; h: number 
 }
 
 /** A numbered marker (also used for the list that explains the markers). */
-export function MarkerDot({ n, style, className = '' }: { n: number; style?: CSSProperties; className?: string }) {
+export function MarkerDot({ n, style, className = '', hidden = false }: { n: number; style?: CSSProperties; className?: string; hidden?: boolean }) {
   return (
-    <span style={style}
+    <span style={style} aria-hidden={hidden || undefined}
       className={`guide-marker num inline-flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full bg-ink text-[11.5px] font-medium leading-none text-bg outline outline-1 outline-panel ${className}`}>
       {n}
     </span>
@@ -58,7 +58,7 @@ export function Figure({ name, alt }: { name: string; alt: string }) {
         <img src={`${IMG_DIR}/${name}.webp`} alt={alt} width={meta?.width} height={meta?.height} loading="lazy"
           className="block h-auto w-full rounded-[3px] border border-rule bg-panel" />
         {meta?.markers.map((m) => (
-          <MarkerDot key={m.n} n={m.n} className="absolute -translate-x-1/2 -translate-y-1/2 max-sm:scale-[0.82]" style={position(m.place, m.box, inside)} />
+          <MarkerDot key={m.n} n={m.n} hidden className="absolute -translate-x-1/2 -translate-y-1/2 max-sm:scale-[0.82]" style={position(m.place, m.box, inside)} />
         ))}
       </div>
       {meta?.window && meta.device === 'desktop' && (

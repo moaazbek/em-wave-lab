@@ -11,7 +11,8 @@ The repository is public: never add textbook pages, slides, figures, scans, exam
 - `npm run dev` — dev server
 - `npm test` — Vitest (physics engine, formatting, palette and contrast, URL state, data-ui DOM test)
 - `npm run lint` — ESLint with jsx-a11y (Babel parser; TypeScript 7 has no JS API for typescript-eslint)
-- `npm run build` — `tsc --noEmit` then static build into `dist/` (relative base, works from any sub-path)
+- `npm run build` — `tsc --noEmit` (app and `scripts/`) then static build into `dist/` (relative base)
+- `npm run guide:screenshots` / `npm run guide:pdf` — re-take the guide's images / print its PDF (README "Updating the guide")
 - `npm run preview` — serve the build
 
 ## Layout
@@ -24,8 +25,12 @@ The repository is public: never add textbook pages, slides, figures, scans, exam
 - `src/ui/` — shared components: `Button` (primary / secondary / small), `Chip`, `Disclosure`, icons (`buttons.tsx`),
   `LabTile`, `ParamSlider` (with `onOutOfRange`), `NumberField`, `Segmented`, `Switch`, `SelectField`,
   `Row`/`Badge`, `PlaybackControls`/`AngleReadout`, clock (`useClock`), teaching panels (`ExperimentList`,
-  `ExperimentPanel`, `WhatIsHappening`, `ShowWork`), KaTeX (`Tex`, `Prose`), formatting, palette, theme.
-- New labs: add a folder under `src/labs/` and one entry in `src/shell/labs.ts`; reuse the shared components.
+  `WhatIsHappening`, `ShowWork`), KaTeX (`Tex`, `Prose`), formatting, palette, theme.
+- `src/guide/` — the "How to use" guide (`#/guide`): text in `content/*.md` (`**[ui:Label]**` = checked UI label,
+  `{{key: shown}}` = number checked against `values.ts`), shot list `shots.ts`, images in `public/guide/img/`.
+  After any UI change: `npm run guide:screenshots`, `npm run guide:pdf`, `npm test`; update the text if a label moved.
+- New labs: add a folder under `src/labs/` and one entry in `src/shell/labs.ts`; reuse the shared components; add a
+  guide section `src/guide/content/<nn>-<route>.md` (the guide test requires one per lab).
 - Never change a published route slug. Compare screenshots before and after any visual change.
 - Everything clickable looks clickable: use `Button`, `Chip`, `Disclosure`, `ExperimentList`, `LabTile`, `Segmented`,
   `Switch`. Actions are `<button>`, navigation `<a href>`; never a click handler on a div, span or SVG group.

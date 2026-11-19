@@ -412,13 +412,24 @@ See § 9 "Home page".
 
 ### Header controls
 Back link: an `<a href="#/">` styled as a small button with a left arrow ("Field Lab", "Labs" on phone),
-`data-ui="header-link"`. "Copy link": small button. Theme: `Segmented` Auto / Light / Dark.
+`data-ui="header-link"`. "Guide": an `<a href="#/guide#<lab route>">` styled as a small button with a "?" icon
+(`HelpIcon`), `data-ui="header-link"`, on desktop and phone. "Copy link": small button. Theme: `Segmented` Auto /
+Light / Dark. The home page has the same small link "How to use" next to its theme choice.
 
 ### Other tags
 `Segmented` radio buttons `data-ui="segmented"` (outer border `--mute`), `Switch` `switch`, playback buttons
-`icon-button` (`--mute` border, `--ink` icon, hover `--sunk`), phone tabs `tab`. Links inside prose (none yet)
-stay text links, underlined 1 px with a 3 px offset, `--ink`, `data-ui="prose-link"`. `Heading` is a label,
-never a control.
+`icon-button` (`--mute` border, `--ink` icon, hover `--sunk`), phone tabs `tab`. Links inside prose (the guide)
+stay text links, underlined 1 px (`--mute`, `--ink` on hover) with a 2 px offset, `--ink`, `data-ui="prose-link"`;
+the guide's contents list uses `data-ui="toc-link"` (text links, underline on hover). `Heading` is a label, never a
+control.
+
+### Guide marker — `MarkerDot` (`src/guide/Figure.tsx`)
+A numbered circle over a guide screenshot: 22 px, `--ink` fill, number in the mono face 11.5 px 500 `--bg`, 1 px
+`--panel` outline (82 % size below 640 px). Placed from the marker file (box in percent of the image; place `tl`,
+`tr`, `center` inside, or `left`, `right`, `top`, `bottom` 16/14 px outside the box). Whole-window images keep the
+markers inside; clipped images have a 24 px margin for them. Markers on the image are `aria-hidden` (screen readers get the
+alt text); the numbered list under the image, which uses the same circles, carries the meaning. Printed with exact
+colours.
 
 ### Power bar
 A 10 px tall row (`h-2.5`) split into the reflected share (`--ref`) and the entering share (`--trn`),
@@ -608,6 +619,27 @@ gap), the power bars, the explanation, Show the work and the footer. Phone: the 
   fill, arrow 2 px right (no transition under reduced motion). Focus ring around the tile.
 - **Planned:** same shape, dashed `--rule` frame, "Planned" tag, "In preparation.", no arrow, no hover, not a
   link (`aria-disabled="true"`).
+
+### Guide page (`src/guide/GuidePage.tsx`, `#/guide`)
+
+```
+┌ header 44 px: ← Field Lab ………………………………………… Auto | Light | Dark ┐
+│                                                                 │
+│  CONTENTS (sticky,   │  How to use the labs (30–34 px 600)       │
+│  230 px, ≥ 1024 px)  │  [Download PDF]  The same guide on A4 …   │
+│  Start here          │                                           │
+│    Open a lab        │  EEE 321 · LAB 02 · CHAPMAN § 7.1  [Open the lab →]
+│  Plane-wave …        │  The rotating loop (24 px 600, rule below) │
+│  …                   │  ## heading 19 px 500 · text 15 px 1.6     │
+│                      │  [screenshot, 1 px --rule, markers]        │
+│                      │  ① explanation …                           │
+└──────────────────────┴───────────────────────────────────────────┘
+```
+One text column, at most 768 px; the contents list is a sticky left column from 1024 px and a `Disclosure`
+"Contents" above the text on smaller screens. Screenshots stay light (they are pictures of the light theme) with a
+1 px `--rule` frame; the page follows the theme. Notes (`> `) are `--sunk` boxes with a 2 px `--ink` left rule.
+Print / PDF: A4, light colours on white, no header, contents or buttons, each lab section starts a new page, an
+image stays on one page with its numbered list.
 
 ## 10. Footer
 
