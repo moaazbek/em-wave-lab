@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useReducer, useState } from 'react'
+import { ArrowIcon, Button } from '../../ui/buttons'
 import { LabFrame } from '../../shell/LabFrame'
 import { LabHeader } from '../../shell/LabHeader'
 import { useUrlSync } from '../../shell/router'
@@ -7,7 +8,7 @@ import { Heading, ParamSlider } from '../../ui/controls'
 import { si, sig } from '../../ui/format'
 import { PALETTES } from '../../ui/palette'
 import { PlaybackControls } from '../../ui/Playback'
-import { ExperimentList, ExperimentPanel, ShowWork, WhatIsHappening } from '../../ui/teaching'
+import { ExperimentList, ShowWork, WhatIsHappening } from '../../ui/teaching'
 import { Tex } from '../../ui/Tex'
 import { useMediaQuery, useTheme } from '../../ui/theme'
 import { BrushPlot } from './BrushPlot'
@@ -76,7 +77,6 @@ export default function ArmatureWindingLab({ query }: { query: string }) {
     const d = derive(e.setup)
     if (d.build.ok) time.clock.reset(cleanPhase(d.build.winding))
   }
-  const active = EXPERIMENTS.find((e) => e.id === experiment) ?? null
   const reveal = (e: Experiment) => {
     if (e.reveal?.cyclePaths) setCycling(true)
     else if (e.reveal?.patch) dispatch({ type: 'set', change: 'reveal', patch: e.reveal.patch })
@@ -89,13 +89,10 @@ export default function ArmatureWindingLab({ query }: { query: string }) {
   ) : null
   const explanation = (
     <section className="min-w-0">
-      {active && (
-        <ExperimentPanel experiment={active} index={EXPERIMENTS.indexOf(active)} onClose={() => { setExperiment(null); setCycling(false) }} onReveal={() => reveal(active)} />
-      )}
       <WhatIsHappening reaction={[...session.notes, reaction(before, model, session.change)].filter(Boolean).join(' ') || null} lines={situation(model)} />
     </section>
   )
-  const experiments = <ExperimentList experiments={EXPERIMENTS} activeId={experiment} onLoad={loadExperiment} />
+  const experiments = <ExperimentList experiments={EXPERIMENTS} activeId={experiment} onLoad={loadExperiment} onReveal={reveal} />
   const showWork = <ShowWork compute={() => workSteps(model)} dep={model} />
   const goTo = (C: number) => {
     dispatch({ type: 'set', change: 'C', patch: { C, chord: 0 } })
@@ -106,10 +103,9 @@ export default function ArmatureWindingLab({ query }: { query: string }) {
     <div className="flex min-h-[120px] flex-col items-center justify-center gap-2.5 border border-dashed border-rule bg-panel px-4 py-6 text-center text-[13px] leading-relaxed text-mute">
       <p>{model.build.reason}</p>
       {model.nearest !== null && (
-        <button type="button" onClick={() => goTo(model.nearest!)}
-          className="h-7 rounded-[3px] border border-rule px-2.5 text-[12px] text-ink hover:border-ink">
+        <Button variant="secondary" onClick={() => goTo(model.nearest!)} icon={<ArrowIcon />}>
           {s.C > MAX_DRAWN_COILS ? 'Show a small drawable version' : 'Go to nearest drawable'} (<span className="num">C = {model.nearest}</span>)
-        </button>
+        </Button>
       )}
     </div>
   )

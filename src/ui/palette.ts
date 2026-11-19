@@ -25,7 +25,7 @@ export interface Palette {
 
 export const LIGHT: Palette = {
   bg: '#f4f2ec', panel: '#fbfaf6', sunk: '#ece9e1',
-  ink: '#16181b', mute: '#565b62', faint: '#8e9299', rule: '#d6d2c7',
+  ink: '#16181b', mute: '#565b62', faint: '#6a6f76', rule: '#d6d2c7',
   inc: '#b07a00', ref: '#a31c6b', trn: '#16a37f', warn: '#a8431a',
   field: ['#08306b', '#4f93d2', '#f1efe8', '#ee8a4e', '#b5380a'],
   mapInk: '#16181b', mapHalo: '#f6f4ee',

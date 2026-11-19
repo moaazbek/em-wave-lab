@@ -44,3 +44,48 @@ describe('wave colours stay distinguishable under colour-vision deficiency', () 
     })
   }
 })
+
+/* ---------- contrast of buttons, chips, disclosures, experiment items and lab tiles ---------- */
+
+const luminance = (hex: string) => {
+  const [r, g, b] = hexToRgb(hex).map((v) => lin(v / 255))
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+const contrast = (a: string, b: string) => {
+  const x = luminance(a), y = luminance(b)
+  return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05)
+}
+/** color-mix(in srgb, a p%, b): channel-wise interpolation of the sRGB values. */
+const mix = (a: string, b: string, p: number) => {
+  const x = hexToRgb(a), y = hexToRgb(b)
+  return '#' + x.map((v, i) => Math.round(v * p + y[i] * (1 - p)).toString(16).padStart(2, '0')).join('')
+}
+
+describe('interactive elements reach WCAG contrast (text 4.5 : 1, borders and icons 3 : 1)', () => {
+  for (const [name, p] of [['light', LIGHT], ['dark', DARK]] as [string, Palette][]) {
+    it(name, () => {
+      const surfaces = { bg: p.bg, panel: p.panel, sunk: p.sunk }
+      const text = (fg: string, bg: string, what: string) => expect(contrast(fg, bg), `${what}: ${fg} on ${bg}`).toBeGreaterThanOrEqual(4.5)
+      const edge = (fg: string, bg: string, what: string) => expect(contrast(fg, bg), `${what}: ${fg} on ${bg}`).toBeGreaterThanOrEqual(3)
+      // Button primary: --bg text on --ink, and on the hover fill color-mix(--ink 85 %, --bg)
+      text(p.bg, p.ink, 'primary rest')
+      text(p.bg, mix(p.ink, p.bg, 0.85), 'primary hover')
+      // Button secondary / small and Chip: --ink text, --mute border at rest (on --bg or --panel), --ink border and --sunk fill on hover
+      for (const [k, s] of Object.entries(surfaces)) text(p.ink, s, `secondary / chip text on ${k}`)
+      edge(p.mute, p.bg, 'secondary border on bg'); edge(p.mute, p.panel, 'secondary border on panel')
+      edge(p.ink, p.sunk, 'secondary hover border')
+      // Chip "current": --bg text on --ink
+      text(p.bg, p.ink, 'chip current')
+      // Disclosure, ExperimentItem, LabTile: --ink titles and chevron / arrow icons, --mute secondary text, on --panel and on the --sunk hover fill
+      for (const s of [p.panel, p.sunk]) {
+        text(p.ink, s, 'title'); text(p.mute, s, 'state text / preview / summary')
+        edge(p.ink, s, 'chevron or arrow icon')
+        edge(p.mute, s, '"Open lab" pill border')
+      }
+      // light-theme tertiary text (numbers, footer) now meets AA; dark --faint (3.66 : 1) is unchanged (DESIGN.md § 13)
+      if (name === 'light') { text(p.faint, p.panel, 'faint on panel'); text(p.faint, p.bg, 'faint on bg') }
+      // the open experiment's --inc left rule is a mark next to an --ink border, not the only cue
+      edge(p.ink, p.panel, 'open experiment border')
+    })
+  }
+})

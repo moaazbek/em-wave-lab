@@ -30,9 +30,9 @@ export function PathSchematic({ snap, highlight, onHighlight, compact = false }:
           const o = oriented(p)
           const on = highlight.path === i || (highlight.brush !== null && (p.fromBrush === highlight.brush || p.toBrush === highlight.brush))
           return (
-            <button key={i} type="button" onClick={() => onHighlight({ path: highlight.path === i ? null : i, brush: null })}
+            <button key={i} type="button" data-ui="chip" aria-pressed={highlight.path === i} onClick={() => onHighlight({ path: highlight.path === i ? null : i, brush: null })}
               onMouseEnter={() => onHighlight({ path: i, brush: null })} onMouseLeave={() => onHighlight({ path: null, brush: null })}
-              className="flex items-center gap-1 text-left" aria-label={`Path ${i + 1}: ${o.items.length} coils, ${sig(Math.abs(p.voltage), 3)} V`}>
+              className="-mx-1 flex cursor-pointer items-center gap-1 rounded-[3px] border border-transparent px-1 py-0.5 text-left hover:border-mute hover:bg-sunk" aria-label={`Path ${i + 1}: ${o.items.length} coils, ${sig(Math.abs(p.voltage), 3)} V`}>
               <span className={`h-6 w-1 shrink-0 ${on ? 'bg-ref' : 'bg-ink'}`} />
               <span className="num w-9 shrink-0 text-[10.5px] text-faint">B{o.plus + 1}</span>
               <span className="flex min-w-0 flex-1 items-center gap-[2px] overflow-hidden">

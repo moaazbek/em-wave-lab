@@ -134,7 +134,7 @@ export function Segmented<T extends string>({ options, value, onChange, label }:
   options: SegOption<T>[]; value: T; onChange: (v: T) => void; label: string
 }) {
   return (
-    <div role="radiogroup" aria-label={label} className="inline-flex shrink-0 rounded-[3px] border border-rule">
+    <div role="radiogroup" aria-label={label} className="inline-flex shrink-0 rounded-[3px] border border-mute">
       {options.map((o, i) => {
         const on = o.value === value
         return (
@@ -142,6 +142,7 @@ export function Segmented<T extends string>({ options, value, onChange, label }:
             key={o.value}
             type="button"
             role="radio"
+            data-ui="segmented"
             aria-checked={on}
             title={o.title}
             disabled={o.disabled}
@@ -162,6 +163,7 @@ export function Switch({ checked, onChange, children }: { checked: boolean; onCh
     <button
       type="button"
       role="switch"
+      data-ui="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
       className="group inline-flex h-7 shrink-0 items-center gap-2 whitespace-nowrap text-[12px] text-mute hover:text-ink"

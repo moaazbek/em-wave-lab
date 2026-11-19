@@ -1,4 +1,5 @@
 import { Dispatch, ReactNode } from 'react'
+import { Button, Chip } from '../../ui/buttons'
 import { Heading, ParamSlider, Segmented, Switch } from '../../ui/controls'
 import { sig } from '../../ui/format'
 import { MACHINE_COLOR as MC } from '../../ui/palette'
@@ -9,8 +10,6 @@ import { MAX_DRAWN_COILS, ResistancePer, WindingType, drawableCoilCounts, neares
 import type { Model } from './derive'
 import { Action, ArmState, ChangeKind, FluxMode, LIMITS, POLES, PRESETS, PresetId, fromPreset, isCustomized, parseSpeed } from './state'
 
-const BTN = 'flex h-7 min-w-7 shrink-0 items-center justify-center rounded-[3px] border border-rule px-2 text-[12px] text-mute hover:text-ink disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-mute'
-const CHIP = 'num h-6 rounded-[3px] border px-1.5 text-[11.5px]'
 
 export function Controls({ model, dispatch, rotor }: { model: Model; dispatch: Dispatch<Action>; rotor?: ReactNode }) {
   const s = model.state
@@ -61,16 +60,15 @@ export function Controls({ model, dispatch, rotor }: { model: Model; dispatch: D
         <ParamSlider symbol={<Tex>C</Tex>} name="coils = commutator segments" integer unit="" scale="log" digits={4}
           min={LIMITS.C[0]} max={LIMITS.C[1]} value={s.C} onChange={(v) => setC(Math.round(v))} snap={snapC} />
         <div className="-mt-1 flex flex-wrap items-center gap-1.5">
-          <button type="button" className={BTN} disabled={steps.prev === null} onClick={() => steps.prev !== null && setC(steps.prev)}
-            aria-label={frog ? 'One coil fewer' : `Previous drawable C${steps.prev !== null ? ` (${steps.prev})` : ''}`}>−</button>
-          <button type="button" className={BTN} disabled={steps.next === null} onClick={() => steps.next !== null && setC(steps.next)}
-            aria-label={frog ? 'One coil more' : `Next drawable C${steps.next !== null ? ` (${steps.next})` : ''}`}>+</button>
+          <Button variant="small" className="w-7 !px-0 text-[15px]" disabled={steps.prev === null} onClick={() => steps.prev !== null && setC(steps.prev)}
+            aria-label={frog ? 'One coil fewer' : `Previous drawable C${steps.prev !== null ? ` (${steps.prev})` : ''}`}>−</Button>
+          <Button variant="small" className="w-7 !px-0 text-[15px]" disabled={steps.next === null} onClick={() => steps.next !== null && setC(steps.next)}
+            aria-label={frog ? 'One coil more' : `Next drawable C${steps.next !== null ? ` (${steps.next})` : ''}`}>+</Button>
           {chips.length > 0 && (
             <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Drawable values of C">
               <span className="text-[11.5px] text-mute">Drawable:</span>
               {chips.map((c) => (
-                <button key={c} type="button" onClick={() => setC(c)} aria-pressed={c === s.C}
-                  className={`${CHIP} ${c === s.C ? 'border-ink text-ink' : 'border-rule text-mute hover:text-ink'}`}>{c}</button>
+                <Chip key={c} current={c === s.C} onClick={() => setC(c)}>{c}</Chip>
               ))}
             </div>
           )}
@@ -110,7 +108,7 @@ export function Controls({ model, dispatch, rotor }: { model: Model; dispatch: D
           value={s.beta} onChange={(v) => set('beta', { beta: Number(v.toFixed(2)) })}
           hint={<>1 = no dead zone (the exam's "ignore the dead zone").</>} />
         <div className="-mt-1 flex flex-wrap items-center gap-x-3 gap-y-1.5">
-          <button type="button" className={BTN} disabled={s.beta === 1} onClick={() => set('beta', { beta: 1 })}>Ignore dead zone</button>
+          <Button variant="secondary" disabled={s.beta === 1} onClick={() => set('beta', { beta: 1 })}>Ignore dead zone</Button>
           <span className="num text-[11.5px] leading-snug text-mute">
             pole arc {sig(geo.arcM, 4)}° mech · {sig(geo.arcE, 4)}° elec; dead zone {sig(geo.gapM, 4)}° mech · {sig(geo.gapE, 4)}° elec <span className="font-sans">(geometry)</span>
           </span>

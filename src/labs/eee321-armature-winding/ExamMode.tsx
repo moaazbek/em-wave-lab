@@ -1,3 +1,4 @@
+import { Button, RefreshIcon } from '../../ui/buttons'
 import { useMemo, useState } from 'react'
 import { Segmented } from '../../ui/controls'
 import { Tex } from '../../ui/Tex'
@@ -29,9 +30,9 @@ export function ExamMode() {
   const score = graded ? graded.filter((g) => g.ok).length : 0
   return (
     <section className="min-w-0">
-      <div className="flex items-baseline justify-between gap-3 border-b border-rule pb-1.5">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule pb-1.5">
         <h3 className="tag !text-ink">Exam mode · Identify the winding</h3>
-        <button type="button" onClick={next} className="tag hover:!text-ink">New winding</button>
+        <Button variant="primary" onClick={next} icon={<RefreshIcon />}>New winding</Button>
       </div>
       <p className="mt-2.5 text-[13px] leading-relaxed text-mute">
         Read the diagram as in the exam. The type is not shown. <Tex>{`N_C = ${spec.NC}`}</Tex> {spec.NC === 1 ? 'turn' : 'turns'} per coil; the poles are on the strip above the slots.
@@ -62,7 +63,7 @@ export function ExamMode() {
         {num('yc', <>commutator pitch <Tex>{'y_c'}</Tex></>)}
       </div>
       <div className="mt-3 flex items-center gap-3">
-        <button type="button" onClick={() => setGraded(grade(spec, ans))} className="h-8 rounded-[3px] border border-ink px-3 text-[12.5px] hover:bg-ink hover:text-bg">Check</button>
+        <Button variant="primary" onClick={() => setGraded(grade(spec, ans))}>Check</Button>
         {graded && <span className="num text-[12.5px] text-ink">{score} / {graded.length} right</span>}
       </div>
       {graded && (

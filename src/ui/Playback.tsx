@@ -7,7 +7,7 @@ export const Icon = ({ d }: { d: string }) => (
   <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden><path d={d} fill="currentColor" /></svg>
 )
 
-const BTN = 'flex h-7 w-7 shrink-0 items-center justify-center rounded-[3px] border border-rule text-mute hover:text-ink'
+const BTN = 'flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-[3px] border border-mute text-ink hover:border-ink hover:bg-sunk'
 
 /**
  * Play / pause, step, reset and the speed select. Returned as a fragment so the caller places it
@@ -25,17 +25,17 @@ export function PlaybackControls({ time, unit = 'T/s', unitTitle = 'Animation sp
 }) {
   return (
     <>
-      <button type="button" className={BTN} onClick={() => time.setPlaying(!time.playing)} aria-label={time.playing ? 'Pause' : 'Play'} title={time.playing ? 'Pause' : 'Play'}>
+      <button type="button" data-ui="icon-button" className={BTN} onClick={() => time.setPlaying(!time.playing)} aria-label={time.playing ? 'Pause' : 'Play'} title={time.playing ? 'Pause' : 'Play'}>
         <Icon d={time.playing ? 'M3 2h3v10H3zM8 2h3v10H8z' : 'M3.5 1.5v11l9-5.5z'} />
       </button>
-      <button type="button" className={BTN} onClick={() => { time.setPlaying(false); time.clock.step() }} aria-label={stepLabel} title={stepTitle}>
+      <button type="button" data-ui="icon-button" className={BTN} onClick={() => { time.setPlaying(false); time.clock.step() }} aria-label={stepLabel} title={stepTitle}>
         <Icon d="M2 1.5v11l7-5.5zM10 2h2v10h-2z" />
       </button>
-      <button type="button" className={BTN} onClick={() => time.clock.reset()} aria-label="Reset time to t = 0" title="Reset to t = 0">
+      <button type="button" data-ui="icon-button" className={BTN} onClick={() => time.clock.reset()} aria-label="Reset time to t = 0" title="Reset to t = 0">
         <Icon d="M7 2a5 5 0 1 0 5 5h-1.6A3.4 3.4 0 1 1 7 3.6V6l3.5-3L7 0z" />
       </button>
       <select
-        className="select num h-7 shrink-0 rounded-[3px] border border-rule pl-1.5 pr-6 text-[12px] text-ink"
+        className="select num h-7 shrink-0 rounded-[3px] border border-mute pl-1.5 pr-6 text-[12px] text-ink"
         value={time.speed} onChange={(e) => time.setSpeed(Number(e.target.value))} aria-label={unitTitle}
       >
         {SPEEDS.map((v) => <option key={v} value={v}>{format ? format(v) : `${v} ${unit}`}</option>)}

@@ -6,7 +6,7 @@ import { useClock } from '../../ui/clock'
 import { Heading, Segmented, Switch } from '../../ui/controls'
 import { PHASE_COLOR } from '../../ui/palette'
 import { AngleReadout, PlaybackControls } from '../../ui/Playback'
-import { ExperimentList, ExperimentPanel, ShowWork, WhatIsHappening } from '../../ui/teaching'
+import { ExperimentList, ShowWork, WhatIsHappening } from '../../ui/teaching'
 import { Prose, Tex } from '../../ui/Tex'
 import { useMediaQuery } from '../../ui/theme'
 import { Controls } from './Controls'
@@ -45,18 +45,14 @@ export default function ThreePhaseTransformerLab({ query }: { query: string }) {
     dispatch({ type: 'load', state: { ...e.setup, overlay: s.overlay, rotate: s.rotate }, change: 'experiment' })
     time.clock.reset(0)
   }
-  const active = expList.find((e) => e.id === experiment) ?? null
   const reveal = (e: Experiment) => dispatch({ type: 'set', change: 'reveal', patch: e.reveal!.patch })
 
   const explanation = (
     <section className="min-w-0">
-      {active && (
-        <ExperimentPanel experiment={active} index={expList.indexOf(active)} onClose={() => setExperiment(null)} onReveal={() => reveal(active)} />
-      )}
       <WhatIsHappening reaction={reaction(before, model, session.change)} lines={situation(model)} />
     </section>
   )
-  const experiments = <ExperimentList experiments={expList} activeId={experiment} onLoad={loadExperiment} />
+  const experiments = <ExperimentList experiments={expList} activeId={experiment} onLoad={loadExperiment} onReveal={reveal} />
   const showWork = <ShowWork compute={() => workSteps(model)} dep={model} />
   const wiring = (cls: string, compact = false) => (
     <WiringView model={model} clock={time.clock} reduced={time.reduced} compact={compact} className={cls} />

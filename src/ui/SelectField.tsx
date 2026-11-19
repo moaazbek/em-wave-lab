@@ -15,7 +15,7 @@ export function SelectField<T extends string>({ id, label, value, options, onCha
       </div>
       <select
         id={id}
-        className="select mt-1 h-9 w-full rounded-[3px] border border-rule pl-2 pr-7 text-[13px] text-ink"
+        className="select mt-1 h-9 w-full rounded-[3px] border border-mute pl-2 pr-7 text-[13px] text-ink"
         value={value}
         onChange={(e) => onChange(e.target.value as T)}
       >

@@ -1,5 +1,6 @@
 import { useEffect, useId, useMemo, useRef } from 'react'
 import type { Clock } from '../../ui/clock'
+import { Chip } from '../../ui/buttons'
 import { useSize } from '../../ui/controls'
 import { sig } from '../../ui/format'
 import { PALETTES } from '../../ui/palette'
@@ -169,10 +170,9 @@ export function DevelopedDiagram({ w, snap, clock, alphaStatic, highlight, onHig
             const pol = snap.polarity[i]
             const on = labels && highlight?.brush === i
             return (
-              <g key={`${i}:${off}`} style={{ cursor: labels ? 'pointer' : undefined }}
+              <g key={`${i}:${off}`}
                 onMouseEnter={labels && onHighlight ? () => onHighlight({ path: null, brush: i }) : undefined}
-                onMouseLeave={labels && onHighlight ? () => onHighlight({ path: null, brush: null }) : undefined}
-                onClick={labels && onHighlight ? () => onHighlight({ path: null, brush: highlight?.brush === i ? null : i }) : undefined}>
+                onMouseLeave={labels && onHighlight ? () => onHighlight({ path: null, brush: null }) : undefined}>
                 <rect x={x - bw / 2} y={Y.brush0} width={bw} height={Y.brushH} fill={on ? 'var(--ref)' : 'var(--ink)'} rx={1} />
                 <text x={x} y={Y.brushLabel + 4} textAnchor="middle" fontSize={13} fontWeight={600} className="num" fill="var(--ink)">
                   {labels ? (pol > 0 ? '+' : '−') : ''}
@@ -205,12 +205,11 @@ export function PathChips({ snap, highlight, onHighlight, unit = 'V' }: { snap: 
       {snap.paths.map((p, i) => {
         const on = highlight.path === i
         return (
-          <button key={i} type="button" aria-pressed={on}
+          <Chip key={i} current={on}
             onMouseEnter={() => onHighlight({ path: i, brush: null })} onMouseLeave={() => onHighlight({ path: null, brush: null })}
-            onClick={() => onHighlight({ path: on ? null : i, brush: null })}
-            className={`h-7 rounded-[3px] border px-2 text-[11.5px] ${on ? 'border-ref text-ref' : 'border-rule text-mute hover:text-ink'}`}>
-            Path {i + 1} <span className="num">{sig(Math.abs(p.voltage), 3)} {unit}</span>
-          </button>
+            onClick={() => onHighlight({ path: on ? null : i, brush: null })}>
+            <span className="font-sans">Path {i + 1}</span> {sig(Math.abs(p.voltage), 3)} {unit}
+          </Chip>
         )
       })}
     </div>

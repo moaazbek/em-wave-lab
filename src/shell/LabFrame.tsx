@@ -53,7 +53,7 @@ export function LabFrame({ desktop, header, course, left, centre, right, pinned,
         <div role="tablist" aria-label="Panels" className="flex">
           {tabs.map(({ id, label }) => (
             <button
-              key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)}
+              key={id} role="tab" data-ui="tab" aria-selected={tab === id} onClick={() => setTab(id)}
               className={`h-11 flex-1 border-b-2 text-[13px] ${tab === id ? 'border-ink font-medium text-ink' : 'border-transparent text-mute'}`}
             >
               {label}

@@ -5,7 +5,7 @@ import { LabHeader } from '../../shell/LabHeader'
 import { useUrlSync } from '../../shell/router'
 import { Heading, Segmented, Switch } from '../../ui/controls'
 import { AngleReadout, PlaybackControls } from '../../ui/Playback'
-import { ExperimentList, ExperimentPanel, ShowWork, WhatIsHappening } from '../../ui/teaching'
+import { ExperimentList, ShowWork, WhatIsHappening } from '../../ui/teaching'
 import { si, sig } from '../../ui/format'
 import { PALETTES, fieldGradientCss } from '../../ui/palette'
 import { Tex } from '../../ui/Tex'
@@ -45,7 +45,6 @@ export default function PlaneWaveIncidenceLab({ query }: { query: string }) {
     dispatch({ type: 'load', state: { ...e.setup, advanced: e.setup.advanced || session.state.advanced }, change: 'experiment' })
     time.clock.reset(START_PHASE)
   }
-  const active = EXPERIMENTS.find((e) => e.id === experiment) ?? null
   const reveal = (e: Experiment) => {
     const patch = e.reveal!.patch
     const viewOnly = Object.keys(patch).every((k) => ['part', 'quantity', 'comp', 'rays', 'advanced'].includes(k))
@@ -54,13 +53,10 @@ export default function PlaneWaveIncidenceLab({ query }: { query: string }) {
 
   const explanation = (
     <section className="min-w-0">
-      {active && (
-        <ExperimentPanel experiment={active} index={EXPERIMENTS.indexOf(active)} onClose={() => setExperiment(null)} onReveal={() => reveal(active)} />
-      )}
       <WhatIsHappening reaction={reaction(before, model, session.change)} lines={situation(model)} />
     </section>
   )
-  const experiments = <ExperimentList experiments={EXPERIMENTS} activeId={experiment} onLoad={loadExperiment} />
+  const experiments = <ExperimentList experiments={EXPERIMENTS} activeId={experiment} onLoad={loadExperiment} onReveal={reveal} />
   const showWork = <ShowWork compute={() => workSteps(model)} dep={model} />
   const gamma = (
     <section>

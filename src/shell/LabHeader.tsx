@@ -1,4 +1,5 @@
 import { ReactNode, useState } from 'react'
+import { ArrowIcon, BUTTON_CLASS, Button, CopyIcon } from '../ui/buttons'
 import { Switch } from '../ui/controls'
 import { ThemeToggle } from './ThemeToggle'
 
@@ -21,8 +22,10 @@ export function LabHeader({ number, title, tag, compact, advanced }: {
   }
   return (
     <header className="flex h-11 shrink-0 items-center justify-between gap-3 border-b border-rule bg-panel px-3 sm:px-4">
-      <div className="flex min-w-0 items-baseline gap-2.5">
-        <a href="#/" className="tag shrink-0 !text-mute hover:!text-ink" aria-label="Back to the list of labs">{compact ? '← Labs' : '← Field Lab'}</a>
+      <div className="flex min-w-0 items-center gap-2.5">
+        <a href="#/" data-ui="header-link" className={`${BUTTON_CLASS.small} self-center`} aria-label="Back to the list of labs">
+          <ArrowIcon dir="left" size={13} />{compact ? 'Labs' : 'Field Lab'}
+        </a>
         <h1 className="truncate text-[14px] font-semibold tracking-[-0.005em]">
           <span className="num mr-1.5 font-normal text-faint">{number}</span>{title}
         </h1>
@@ -30,9 +33,9 @@ export function LabHeader({ number, title, tag, compact, advanced }: {
       </div>
       <div className="flex shrink-0 items-center gap-3 sm:gap-4">
         {advanced && <Switch checked={advanced.checked} onChange={advanced.onChange}>Advanced</Switch>}
-        <button type="button" onClick={copy} className="hidden h-7 text-[12px] text-mute hover:text-ink sm:block" title="The link contains the full setup">
+        <Button variant="small" onClick={copy} className="hidden sm:inline-flex" title="The link contains the full setup" icon={<CopyIcon />}>
           {copied ? 'Link copied' : 'Copy link'}
-        </button>
+        </Button>
         {!compact && <ThemeToggle />}
       </div>
     </header>

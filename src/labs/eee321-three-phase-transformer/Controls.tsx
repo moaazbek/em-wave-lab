@@ -1,4 +1,5 @@
 import { Dispatch } from 'react'
+import { Button } from '../../ui/buttons'
 import { Heading, NumberField, ParamSlider, Segmented, Switch } from '../../ui/controls'
 import { si, sig } from '../../ui/format'
 import { SelectField } from '../../ui/SelectField'
@@ -9,7 +10,6 @@ import {
   Action, ChangeKind, IDEAL_PRESETS, LIMITS, PresetId, REAL_PRESETS, RefSide, SpecifyBy, XfModel, XfState, ZFrom, fromPreset, isCustomized, viewOf,
 } from './state'
 
-const BTN = 'h-7 self-start rounded-[3px] border border-rule px-2.5 text-[12px] text-mute hover:border-ink hover:text-ink'
 const HINT = 'text-[11.5px] leading-snug text-mute'
 
 export function Controls({ model, dispatch }: { model: Model; dispatch: Dispatch<Action> }) {
@@ -145,7 +145,7 @@ function IdealControls({ model, set }: { model: Model; set: Set }) {
             <p className={HINT}>
               <Prose>{`Bank of three units: $a$ = ${sig(model.a, 5)}, $V_{LL}$ = ${si(model.VLL, 'V', 4)} (${model.conn[0] === 'Y' ? '$\\sqrt3\\,V_{\\phi P}$ on a Y primary' : '$V_{\\phi P}$ on a $\\Delta$ primary'}), rated $S = 3S_\\phi$ = ${si(model.Srated ?? 0, 'VA', 4)}.`}</Prose>
             </p>
-            <button type="button" onClick={() => set('rated', { S3: model.Srated ?? s.S3 })} className={BTN}>Rated load</button>
+            <Button variant="secondary" className="self-start" onClick={() => set('rated', { S3: model.Srated ?? s.S3 })}>Rated load</Button>
           </>
         )}
       </section>
@@ -283,7 +283,7 @@ function RealControls({ model, set }: { model: Model; set: Set }) {
             <ParamSlider symbol={<Tex>{'S_{load}'}</Tex>} name="load of the bank" unit="VA" prefix scale="log" zeroStop
               min={LIMITS.S3[0]} max={LIMITS.S3[1]} value={s.S3} onChange={(v) => set('S3', { S3: v })}
               hint={<>{sig(r.frac * 100, 4)} % of rated{s.hold === 'pri' ? ' (current at rated secondary voltage)' : ''}</>} />
-            <button type="button" onClick={() => set('rated', { S3: R.S })} className={BTN}>Rated load</button>
+            <Button variant="secondary" className="self-start" onClick={() => set('rated', { S3: R.S })}>Rated load</Button>
           </div>
         ) : (
           <ParamSlider symbol={<Tex>{'S_{load}/S'}</Tex>} name="fraction of rated" unit="%" min={0} max={125} step={1} digits={4}

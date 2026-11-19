@@ -7,7 +7,7 @@ import { Heading, ParamSlider } from '../../ui/controls'
 import { si, sig } from '../../ui/format'
 import { MACHINE_COLOR as MC } from '../../ui/palette'
 import { AngleReadout, PlaybackControls } from '../../ui/Playback'
-import { ExperimentList, ExperimentPanel, ShowWork, WhatIsHappening } from '../../ui/teaching'
+import { ExperimentList, ShowWork, WhatIsHappening } from '../../ui/teaching'
 import { Prose, Tex } from '../../ui/Tex'
 import { useMediaQuery } from '../../ui/theme'
 import { Controls } from './Controls'
@@ -42,20 +42,16 @@ export default function RotatingLoopLab({ query }: { query: string }) {
     dispatch({ type: 'load', state: { ...e.setup, poleArc: session.state.poleArc }, change: 'experiment' })
     time.clock.reset(0)
   }
-  const active = EXPERIMENTS.find((e) => e.id === experiment) ?? null
   const reveal = (e: Experiment) => dispatch({ type: 'set', change: 'reveal', patch: e.reveal!.patch })
   const onTau = (v: number) => dispatch({ type: 'set', change: 'tau', patch: { tau: v } })
   const onOmega = (v: number) => dispatch({ type: 'set', change: 'omega', patch: { omega: v } })
 
   const explanation = (
     <section className="min-w-0">
-      {active && (
-        <ExperimentPanel experiment={active} index={EXPERIMENTS.indexOf(active)} onClose={() => setExperiment(null)} onReveal={() => reveal(active)} />
-      )}
       <WhatIsHappening reaction={reaction(before, model, session.change)} lines={situation(model)} />
     </section>
   )
-  const experiments = <ExperimentList experiments={EXPERIMENTS} activeId={experiment} onLoad={loadExperiment} />
+  const experiments = <ExperimentList experiments={EXPERIMENTS} activeId={experiment} onLoad={loadExperiment} onReveal={reveal} />
   const showWork = <ShowWork compute={() => workSteps(model.op)} dep={model.op} />
   const caption = <Caption model={model} factor={factor} />
   const waveform = (
