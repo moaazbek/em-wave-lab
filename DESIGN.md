@@ -151,6 +151,12 @@ coil-level curve `--inc` 2 px, its average `--inc` dotted, Kφω `--ink` solid, 
 The m-plex wave pitch carries the `BeyondBadge` (1 px `--warn` border, 11 px `--warn` text, 3 px radius).
 "Drawable:" C chips are 24 px tall outlined buttons, the current value with an `--ink` border.
 
+**EEE 321 Lab 01, real bank** (per-phase circuit, phasor diagram, power bars) colours by meaning through
+`PERPHASE_COLOR`: voltages `--inc`, currents `--ref`, power and losses `--trn` (P_Cu a 45 % tint, P_core a
+45° hatch), circuit elements `--ink`, neglected elements `--faint` and dashed with the word "neglected".
+Labels sit on an 85 % `--panel` halo. A magnified drop phasor carries a `--warn` "drops shown ×N, display only"
+note. The VR curves differ by dash (solid lagging, `6 4` unity, `2 3` leading) as well as by label.
+
 **EEE 321 Lab 01 (three-phase transformer)** uses the same three tokens for the three phases, through
 `PHASE_COLOR` in `src/ui/palette.ts`:
 
@@ -297,6 +303,11 @@ separated by 1 px `--rule` lines. Selected: `--ink` background with `--bg` text.
 `--ink` on hover. An option may carry a 6 px identity dot in its wave colour (Incident, Reflected,
 Transmitted). A `disabled` option is `--faint` with a `--faint` line-through and a not-allowed cursor; its
 reason goes in its title and in a 11.5 px `--mute` hint under the control (never an error message).
+
+### Number field — `NumberField`
+The number field of `ParamSlider` without the slider, for typed data such as test readings: symbol and
+12 px `--mute` name on the left, a 7.5 rem `.num` field on the right with the same border, focus, invalid
+(`--warn`) and commit behaviour. Engineering input with units ("1.4 kV", "945 W").
 
 ### Switch — `Switch`
 `role="switch"`, 28 px tall. Track 26 × 14 px, fully round, 1 px border: off `--faint` outline with a

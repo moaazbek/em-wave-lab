@@ -15,8 +15,8 @@ function Labels({ items }: { items: Label[] }) {
   return (
     <>
       {items.map((l, i) => (
-        <div key={i} className={`pointer-events-none absolute whitespace-nowrap text-[11px] leading-tight ${l.className ?? ''}`}
-          style={{ left: l.x, top: l.y, transform: `translate(${l.align === 'right' ? '-100%' : l.align === 'center' ? '-50%' : '0'}, -50%)` }}>
+        <div key={i} className={`pointer-events-none absolute whitespace-nowrap rounded-[2px] px-0.5 text-[11px] leading-tight ${l.className ?? ''}`}
+          style={{ left: l.x, top: l.y, transform: `translate(${l.align === 'right' ? '-100%' : l.align === 'center' ? '-50%' : '0'}, -50%)`, background: 'color-mix(in srgb, var(--panel) 85%, transparent)' }}>
           {l.node}
         </div>
       ))}
@@ -57,7 +57,7 @@ export function CircuitDiagram({ model, className = '' }: { model: Model; classN
   const [ref, size] = useSize<HTMLDivElement>()
   const r = model.real!, o = model.sol.real
   const side = model.state.refSide
-  const W = size.w, H = 230
+  const W = size.w, H = 250
   if (!o || !r.circuit || W <= 0) return <div ref={ref} className={`relative border border-rule bg-panel ${className}`} style={{ height: H }} />
   const R = r.rating, b = r.bases, a = R.a
   const vals: CircuitValues = side === 'P' ? r.circuit.P : side === 'S' ? r.circuit.S : r.circuit.pu
@@ -77,7 +77,7 @@ export function CircuitDiagram({ model, className = '' }: { model: Model; classN
   const sub = side === 'P' ? ',P' : side === 'S' ? ',S' : ''
 
   const xL = 28, xR = W - 28, span = xR - xL
-  const yT = 70, yB = 182
+  const yT = 84, yB = 190
   const xs = xL + span * 0.24
   const xRc = xs - 18, xXm = xs + 18
   const xr0 = xL + span * 0.45, xr1 = xr0 + Math.min(70, span * 0.15)
@@ -85,29 +85,27 @@ export function CircuitDiagram({ model, className = '' }: { model: Model; classN
   const shuntOff = r.noShunt, seriesOff = r.noSeries
   const col = (off: boolean) => (off ? PC.neglected : PC.element)
   const labels: Label[] = [
-    { x: xL - 4, y: yT - 22, node: <><Tex>{VlSym}</Tex></>, className: 'font-medium' },
-    { x: xL - 4, y: yT - 8, node: <span className="num" style={{ color: PC.voltage }}>{polarTxt(Vl, vu)}</span> },
-    { x: xR + 4, y: yT - 22, align: 'right', node: <Tex>{VrSym}</Tex>, className: 'font-medium' },
-    { x: xR + 4, y: yT - 8, align: 'right', node: <span className="num" style={{ color: PC.voltage }}>{polarTxt(Vr, vu)}</span> },
-    { x: xL + 6, y: (yT + yB) / 2 - 7, node: <span className="text-mute">+ primary</span> },
-    { x: xL + 6, y: (yT + yB) / 2 + 7, node: <span className="text-mute">({sideTag(model, 'P')})</span> },
-    { x: xR - 6, y: (yT + yB) / 2 - 7, align: 'right', node: <span className="text-mute">secondary +</span> },
-    { x: xR - 6, y: (yT + yB) / 2 + 7, align: 'right', node: <span className="text-mute">({sideTag(model, 'S')})</span> },
+    // voltages: top corners
+    { x: xL - 6, y: 14, node: <><Tex>{VlSym}</Tex> <span className="text-mute">primary ({sideTag(model, 'P')})</span></> },
+    { x: xL - 6, y: 30, node: <span className="num" style={{ color: PC.voltage }}>{polarTxt(Vl, vu)}</span> },
+    { x: xR + 6, y: 14, align: 'right', node: <><span className="text-mute">secondary ({sideTag(model, 'S')})</span> <Tex>{VrSym}</Tex></> },
+    { x: xR + 6, y: 30, align: 'right', node: <span className="num" style={{ color: PC.voltage }}>{polarTxt(Vr, vu)}</span> },
+    // series elements: above the top wire
     { x: (xr0 + xr1) / 2, y: yT - 30, align: 'center', node: <Tex>{`R_{eq${sub}}`}</Tex> },
-    { x: (xr0 + xr1) / 2, y: yT - 17, align: 'center', node: <span className="num" style={{ color: col(seriesOff) }}>{seriesOff ? 'neglected' : ohm(vals.Req)}</span> },
+    { x: (xr0 + xr1) / 2, y: yT - 16, align: 'center', node: <span className="num" style={{ color: col(seriesOff) }}>{seriesOff ? 'neglected' : ohm(vals.Req)}</span> },
     { x: (xx0 + xx1) / 2, y: yT - 30, align: 'center', node: <Tex>{`jX_{eq${sub}}`}</Tex> },
-    { x: (xx0 + xx1) / 2, y: yT - 17, align: 'center', node: <span className="num" style={{ color: col(seriesOff) }}>{seriesOff ? 'neglected' : ohm(vals.Xeq)}</span> },
-    { x: xRc - 10, y: (yT + yB) / 2 - 6, align: 'right', node: <Tex>{`R_{C${sub}}`}</Tex> },
-    { x: xRc - 10, y: (yT + yB) / 2 + 8, align: 'right', node: <span className="num" style={{ color: col(shuntOff) }}>{shuntOff ? 'neglected' : vals.RC === null || !Number.isFinite(vals.RC) ? '∞' : ohm(vals.RC)}</span> },
-    { x: xXm + 10, y: (yT + yB) / 2 - 6, node: <Tex>{`jX_{M${sub}}`}</Tex> },
-    { x: xXm + 10, y: (yT + yB) / 2 + 8, node: <span className="num" style={{ color: col(shuntOff) }}>{shuntOff ? 'neglected' : vals.XM === null || !Number.isFinite(vals.XM) ? '∞' : ohm(vals.XM)}</span> },
-    { x: (xL + xRc) / 2 - 4, y: yT + 14, align: 'center', node: <><Tex>{IlSym}</Tex></> },
-    { x: (xL + xRc) / 2 - 4, y: yT + 28, align: 'center', node: <span className="num" style={{ color: PC.current }}>{polarTxt(Il, iu, 3)}</span> },
-    { x: xs, y: yB + 18, align: 'center', node: <><Tex>{'I_{ex}'}</Tex> <span className="num" style={{ color: shuntOff ? PC.neglected : PC.current }}>{shuntOff ? '0' : polarTxt(Ie, iu, 3)}</span></> },
-    { x: (xx1 + xR) / 2 + 6, y: yT + 14, align: 'center', node: <Tex>{IrSym}</Tex> },
-    { x: (xx1 + xR) / 2 + 6, y: yT + 28, align: 'center', node: <span className="num" style={{ color: PC.current }}>{polarTxt(Ir, iu, 3)}</span> },
+    { x: (xx0 + xx1) / 2, y: yT - 16, align: 'center', node: <span className="num" style={{ color: col(seriesOff) }}>{seriesOff ? 'neglected' : ohm(vals.Xeq)}</span> },
+    // shunt elements: beside the branch
+    { x: xRc - 10, y: (yT + yB) / 2 + 2, align: 'right', node: <Tex>{`R_{C${sub}}`}</Tex> },
+    { x: xRc - 10, y: (yT + yB) / 2 + 16, align: 'right', node: <span className="num" style={{ color: col(shuntOff) }}>{shuntOff ? 'neglected' : vals.RC === null || !Number.isFinite(vals.RC) ? '∞' : ohm(vals.RC)}</span> },
+    { x: xXm + 10, y: (yT + yB) / 2 + 2, node: <Tex>{`jX_{M${sub}}`}</Tex> },
+    { x: xXm + 10, y: (yT + yB) / 2 + 16, node: <span className="num" style={{ color: col(shuntOff) }}>{shuntOff ? 'neglected' : vals.XM === null || !Number.isFinite(vals.XM) ? '∞' : ohm(vals.XM)}</span> },
+    // currents: below the top wire at the ends, the excitation current below the branch
+    { x: xL - 4, y: yT + 14, node: <><Tex>{IlSym}</Tex> <span className="num" style={{ color: PC.current }}>{polarTxt(Il, iu, 3)}</span></> },
+    { x: xR + 4, y: yT + 14, align: 'right', node: <><Tex>{IrSym}</Tex> <span className="num" style={{ color: PC.current }}>{polarTxt(Ir, iu, 3)}</span></> },
+    { x: Math.max(xL - 4, xs - 40), y: yB + 16, node: <><Tex>{'I_{ex}'}</Tex> <span className="num" style={{ color: shuntOff ? PC.neglected : PC.current }}>{shuntOff ? '0' : polarTxt(Ie, iu, 3)}</span></> },
   ]
-  const yS0 = yT + 24, yS1 = yB - 24
+  const yS0 = yT + 30, yS1 = yB - 20
   return (
     <div ref={ref} className={`relative overflow-hidden border border-rule bg-panel ${className}`} style={{ height: H }}>
       <svg width={W} height={H} className="absolute inset-0" role="img"
@@ -220,8 +218,8 @@ export function PerPhasePhasors({ model, onGain, className = '' }: { model: Mode
   const labels: Label[] = [
     { x: (ox + X(V)) / 2, y: Y(V) + 13, align: 'center', node: <Tex>{'V_{\\phi S}'}</Tex> },
     { x: X(Id) + 4, y: Y(Id) + (Id.im < 0 ? 10 : -10), node: <><Tex>{'I_{\\phi S}'}</Tex> <span className="text-mute">(own scale)</span></> },
-    { x: X(P1) + 8, y: Y(P1) + (P1.im <= V.im ? 12 : -12), node: <Tex>{'R_{eq,S}I_{\\phi S}'}</Tex> },
-    { x: X(P2) + 6, y: (Y(P1) + Y(P2)) / 2, node: <Tex>{'jX_{eq,S}I_{\\phi S}'}</Tex> },
+    { x: Math.min(X(P1) + 8, W - 96), y: Y(P1) + (P1.im <= V.im ? 14 : -14), node: <Tex>{'R_{eq,S}I_{\\phi S}'}</Tex> },
+    { x: Math.min(X(P2) + 6, W - 96), y: (Y(P1) + Y(P2)) / 2 + (X(P2) + 6 > W - 96 ? 14 : 0), node: <Tex>{'jX_{eq,S}I_{\\phi S}'}</Tex> },
     { x: (X(P2)) / 2 + ox / 2 - 8, y: (Y(P2) + oy) / 2 - 12, align: 'right', node: <Tex>{'V_{\\phi P}/a'}</Tex> },
     { x: ox + ra + 6, y: oy - (Math.sin(delta / 2) * ra) - 4, node: <><Tex>{'\\delta'}</Tex> <span className="num">= {sig(o.deltaDeg, 4)}°</span></> },
   ]
@@ -251,7 +249,9 @@ export function PerPhasePhasors({ model, onGain, className = '' }: { model: Mode
         )}
       </div>
       <p className="mt-1 text-[11px] leading-snug text-mute">
-        True values: <span className="num text-ink">V_φS = {polarTxt(V, 'V')}, I_φS = {polarTxt(I, 'A')}, R·I = {si(abs(RI), 'V', 4)}, X·I = {si(abs(XI), 'V', 4)}, V_φP/a = {polarTxt(o.VPa, 'V', 5)}</span>.
+        True values: <Tex>{'V_{\\phi S}'}</Tex> = <span className="num text-ink">{polarTxt(V, 'V')}</span>, <Tex>{'I_{\\phi S}'}</Tex> = <span className="num text-ink">{polarTxt(I, 'A')}</span>,{' '}
+        <Tex>{'R_{eq,S}I'}</Tex> = <span className="num text-ink">{si(abs(RI), 'V', 4)}</span>, <Tex>{'X_{eq,S}I'}</Tex> = <span className="num text-ink">{si(abs(XI), 'V', 4)}</span>,{' '}
+        <Tex>{'V_{\\phi P}/a'}</Tex> = <span className="num text-ink">{polarTxt(o.VPa, 'V', 5)}</span>.
         {' '}Solid: <Tex>{'V_{\\phi S}'}</Tex> and the drops; long dashes: <Tex>{'V_{\\phi P}/a'}</Tex>; short dashes: current.
       </p>
     </div>

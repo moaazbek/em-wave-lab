@@ -2,7 +2,7 @@
 
 Online labs for students. Live: https://moaazbek.github.io/em-wave-lab/ (deploys on every push to `main`).
 - EEE 361 Lab 01 `#/plane-wave-incidence`: plane wave at a boundary. Cheng, *Field and Wave Electromagnetics*, 2nd ed. (§ 8-2 to 8-10).
-- EEE 321 Lab 01 `#/eee321-three-phase-transformer`: three-phase transformer connections. Chapman § 2.10.
+- EEE 321 Lab 01 `#/eee321-three-phase-transformer`: three-phase transformer connections, ideal and real bank. Chapman § 2.5–2.7, 2.10.
 - EEE 321 Lab 02 `#/eee321-rotating-loop`: simple rotating loop. Chapman, *Electric Machinery Fundamentals*, 5th ed. (§ 7.1).
 - EEE 321 Lab 03 `#/eee321-armature-winding`: armature windings, parallel paths and E_A. Chapman § 7.3, 7.5.
 The repository is public: never add textbook pages, slides, figures, scans, exam papers or long quotations.
@@ -20,7 +20,7 @@ The repository is public: never add textbook pages, slides, figures, scans, exam
 - `src/labs/plane-wave-incidence/` — the lab (state + URL codec, derived model, field map, plots, teaching text).
 - `src/shell/` — home page grouped by course, `courses.ts` (course, textbook, footer), lab registry (`labs.ts`),
   hash router + `useUrlSync`, `LabHeader`, `LabFrame` (desktop 3 columns / phone pinned view + tabs), `Disclaimer`.
-- `src/ui/` — shared components: `ParamSlider` (with `onOutOfRange`), `Segmented`, `Switch`, `SelectField`,
+- `src/ui/` — shared components: `ParamSlider` (with `onOutOfRange`), `NumberField`, `Segmented`, `Switch`, `SelectField`,
   `Row`/`Badge`, `PlaybackControls`/`AngleReadout`, clock (`useClock`), teaching panels (`ExperimentList`,
   `ExperimentPanel`, `WhatIsHappening`, `ShowWork`), KaTeX (`Tex`, `Prose`), formatting, palette, theme.
 - New labs: add a folder under `src/labs/` and one entry in `src/shell/labs.ts`; reuse the shared components.
@@ -41,8 +41,10 @@ The repository is public: never add textbook pages, slides, figures, scans, exam
 
 ## EEE 321 Lab 01 notation (Chapman § 2.10, slides' symbols) — `#/eee321-three-phase-transformer`
 - Engine: `src/labs/eee321-three-phase-transformer/engine/` (reuses `src/physics/complex.ts`).
-- Terminals A, B, C, N (primary) and a, b, c, n (secondary). V_LL, V_LN (primary), V_ll, V_ln (secondary);
-  I_L-pri, I_p-pri, I_L-sec, I_p-sec. A "phase" is one winding of one unit. a = N_P/N_S = V_p-pri/V_p-sec.
+- Terminals A, B, C, N (primary) and a, b, c, n (secondary). Exam notation everywhere (ideal and real):
+  V_LL, V_LN (HV), V_ll, V_ln (LV); V_φP, V_φS winding voltages of one transformer; I_LP, I_LS line currents;
+  I_φP, I_φS winding currents; a = N_P/N_S = V_φP/V_φS of ONE transformer; S bank, S_φ = S/3 one transformer.
+  Never the slide-style V_p-pri, I_L-pri, I_p-pri, S_3φ, S_unit. Primary = HV in presets; if a < 1 show (LV)/(HV).
 - Ideal transformers: V_Sk = V_Pk/a (dot to undotted); I_Pk into the primary dot = I_Sk out of the secondary dot / a.
 - Phasors RMS; reference V_AN = (V_LL/√3)∠0° of the supply (for a Δ primary: supply to its neutral);
   abc: V_BN ∠−120°, V_CN ∠+120°; acb swaps them. So V_AB = V_LL∠+30° (abc), ∠−30° (acb).
@@ -53,6 +55,18 @@ The repository is public: never add textbook pages, slides, figures, scans, exam
   say lag, so the lab uses A→C, B→A, C→B. Test T6 keeps the "as printed" result checked; it is not in the UI.
 - Load: I_x = ((S/3)∠θ / V_xn,eq)*; θ = +acos PF lagging. Delta winding currents: KCL + no circulating current.
 - Phase colours (`PHASE_COLOR`): A/a T1 `--inc`, B/b T2 `--ref`, C/c T3 `--trn`; line-to-line and neutral `--ink`.
+- Real bank ("Model: Ideal | Real bank"): approximate equivalent circuit of each transformer (R_C ∥ jX_M at the
+  primary terminals, then R_eq + jX_eq); working values referred to the secondary (LV): Z_S = Z_P/a²,
+  Y_E,S = a²Y_E,P. One solver: secondary windings at the ideal netlist's angles (|V_φS| rated, or from Eq. 2-64
+  with |V_φP| held), V_Pk = a(V_Sk + Z_SE,S I_Sk), aI_Pk = I_Sk + (V_Pk/a)Y_E,S, then the same netlist code.
+  Ideal = Z_SE = 0, no shunt (tested phasor by phasor). Shift readout = connection shift − δ.
+- Tests: OC (2-40…2-47) gives R_C, X_M, SC (2-48…2-52) gives R_eq, X_eq, on the side measured. Bank line readings:
+  Y side V/√3, I, P/3; Δ side V, I/√3, P/3. P > V·I is refused. Per-unit bases per side: V_φ,rated and
+  S_φ = S/3; Z_base = V_φ²/S_φ = 3V_φ²/S (2-94); I_L,base = S/(√3 V_L) (2-95).
+- VR = (|V_φP|/a − |V_φS|)/|V_φS| (2-62); P_Cu = 3I_φS²R_eq,S; P_core = 3|V_φP/a|²/R_C,S; η (2-67). The solutions
+  manual has errors in Problems 2-10 to 2-13 (README Decisions): follow the book's equations, never the manual.
+- Per-phase colours (`PERPHASE_COLOR`): voltage `--inc`, current `--ref`, power and losses `--trn` (losses tinted
+  or hatched), elements `--ink`, neglected `--faint`.
 
 ## EEE 321 Lab 03 notation and winding model (Chapman § 7.3, 7.5) — `#/eee321-armature-winding`
 - Engine: `src/labs/eee321-armature-winding/engine/` (formula part for any input; constructive part for drawing).

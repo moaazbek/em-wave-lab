@@ -17,7 +17,7 @@ it is not part of the website).
 | Course | Lab | Route | Textbook |
 |---|---|---|---|
 | EEE 361 | **01 Plane-wave incidence**: a uniform plane wave meets a plane boundary between two media. Normal and oblique incidence, both polarizations, lossless, lossy and perfectly conducting Medium 2, Brewster angle, total reflection, skin depth. | `#/plane-wave-incidence` | Cheng § 8-2, 8-3, 8-5 to 8-8, 8-10 |
-| EEE 321 | **01 Three-phase transformer connections**: Y–Y, Y–Δ, Δ–Y and Δ–Δ banks of three single-phase transformers; wiring with moving current, phasor diagrams, waveforms, the √3 factors, the 30° shift, unit-rating input, third-harmonic view. | `#/eee321-three-phase-transformer` | Chapman § 2.10, Eqs. (2-88) to (2-91), Example 2-9 |
+| EEE 321 | **01 Three-phase transformer connections**: Y–Y, Y–Δ, Δ–Y and Δ–Δ banks of three single-phase transformers; wiring with moving current, phasor diagrams, waveforms, the √3 factors, the 30° shift, unit-rating input, third-harmonic view; real-bank mode with OC/SC tests, per-unit, voltage regulation, losses and efficiency. | `#/eee321-three-phase-transformer` | Chapman § 2.5–2.7, 2.10, Eqs. (2-40) to (2-67), (2-88) to (2-95), Example 2-9, Problems 2-10 to 2-13 |
 | EEE 321 | **02 The rotating loop**: one loop between curved pole faces, fed by a battery through a resistor. Torque or speed given; motor, generator or no load; commutator; forces; power flow. | `#/eee321-rotating-loop` | Chapman § 7.1, Eqs. (7-1) to (7-16), Example 7-1, Problem 7-1 |
 | EEE 321 | **03 Armature windings and E_A**: lap, wave and frog-leg windings; developed diagram drawn by the program, parallel paths traced through it, end view, path schematic, brush voltage, Z, a, y_c, E_A, R_A, I_A; exam mode "Identify the winding". | `#/eee321-armature-winding` | Chapman § 7.3, 7.5, Eqs. (7-22) to (7-49), Examples 7-2 to 7-4, Problems 7-4, 7-5, 7-7 |
 
@@ -96,8 +96,20 @@ Any other static host works too: upload the contents of `dist/`.
 - **Waveforms:** one period of v_AB and of v_ab·V_LL/V_ll, a time cursor, and a bracket marking the shift as
   T/12 (1.389 ms at 60 Hz, 1.667 ms at 50 Hz). With the third-harmonic view: the three v_kN with harmonic h,
   their (identical) third-harmonic part, v_AB without it, and the sum of the harmonics around a delta.
-- **Inputs:** connection; "line voltage and a" or "unit rating" (one unit's winding voltages and S_unit; the
-  lab derives a, V_LL and the rated 3·S_unit, with a "Rated load" button); balanced load S_3φ, PF, lag/lead;
+- **Model: Ideal | Real bank.** The real bank uses Chapman's approximate per-phase equivalent circuit of each
+  transformer (R_C ∥ jX_M at the primary terminals, then R_eq + jX_eq) and solves the end-of-chapter bank
+  problems: rating (one transformer or the bank, Problem 2-10), the equivalent circuit from OC and SC test data
+  (on either side, as bank line readings or one-transformer readings), from per-unit values or from ohms on
+  either side; operating point with the secondary or the primary held at rated voltage; load as S or % of
+  rated, PF lagging / unity / leading; display referred to HV, LV or per-unit.
+  Hero switch "Connections | Equivalent circuit": the per-phase circuit with live values (neglected elements
+  faint and dashed), sketches of the OC and SC set-ups with the converted readings, and the per-phase phasor
+  diagram (V_φS, I_φS, R_eq,S I, jX_eq,S I, V_φP/a, δ, VR) with a labelled display gain for the drops. Below:
+  power bars (P_in → P_out, P_Cu, P_core; Q in a second row) and VR (three PFs) and η against load, 0–125 %.
+  Results, Show the work in exam order, six real-bank experiments, and six presets (Example 2-9, Problems
+  2-10 to 2-13, midterm-style bank) with notes on the solutions manual's errors.
+- **Inputs (ideal):** connection; "line voltage and a" or "unit rating" (one unit's winding voltages and S_φ; the
+  lab derives a, V_LL and the rated S = 3S_φ, with a "Rated load" button); balanced load S, PF, lagging / unity / leading;
   sequence abc/acb; 50 or 60 Hz; presets (Example 2-9, the 3 × 10 MVA bank, Y–Δ 13.8 kV, Y–Y 480/240 V,
   Δ–Δ 4160/480 V).
 - **Results**, **What is happening**, **Show the work** (equation, numbers, result for each step of the
@@ -114,6 +126,16 @@ Any other static host works too: upload the contents of `dist/`.
   line currents and powers from these netlists; the ratio and the 30° shift are results, not rules.
 - The third-harmonic amplitude h is a display parameter (the book gives none); the circulating current it
   drives in a delta is described, not computed.
+- Notation (the course's exam notation): V_LL, V_LN (HV), V_ll, V_ln (LV); V_φP, V_φS winding voltages of one
+  transformer; I_LP, I_LS line currents; I_φP, I_φS winding currents; a = N_P/N_S = V_φP/V_φS of one
+  transformer; S of the bank, S_φ = S/3 of one transformer; R_C, X_M, Y_E = G_C − jB_M; R_eq, X_eq,
+  Z_SE = R_eq + jX_eq; subscript P or S for the side a value is referred to.
+- Real bank: one solver for both models. The secondary windings sit at the angles the ideal netlist gives
+  them; each transformer k: V_Pk = a(V_Sk + Z_SE,S I_Sk), a I_Pk = I_Sk + (V_Pk/a) Y_E,S; node voltages and line
+  currents then come from the same netlists. Referral Z_S = Z_P/a², Y_E,S = a² Y_E,P. Per-unit bases are each
+  side's rated winding voltage and S_φ (Eqs. 2-92 to 2-95). Test readings: Y side V/√3, I, P/3; Δ side V, I/√3,
+  P/3. VR (2-62), P_Cu = 3I_φS²R_eq,S, P_core = 3|V_φP/a|²/R_C,S, η (2-67). The shift readout becomes
+  (connection shift) − δ.
 
 ## Lab 03 (EEE 321): armature windings, parallel paths and E_A
 
@@ -320,6 +342,38 @@ Any other static host works too: upload the contents of `dist/`.
   the dots all show t = 0.
 - **EEE 321 Lab 01, frequency defaults:** 60 Hz for the Chapman presets (US examples), 50 Hz for the
   3 × 10 MVA bank.
+- **EEE 321 Lab 01, real bank — the solutions manual has errors; the lab follows the book's equations.**
+  Problem 2-11(d): the manual uses P_out = 80 MW; 80 MVA at PF 0.8 is 64 MW, so η = 96.91 %, not 97.5 %.
+  Problem 2-12: the manual computes Z_base,HV with 25 kVA instead of 20 kVA and in (b) uses yet another
+  impedance (0.0125 + j0.0588); its VR = 3.8 % and η = 96.9 % are wrong; the lab gives 2.94 % and 97.15 %.
+  Problem 2-13: the manual writes 8413 V instead of 8314 V (V_φP = 8856 V, VR = 6.52 %); the lab gives
+  8757 V and 5.32 %. In (e) the manual uses V_φ²/S with the bank S (230 Ω); Eq. (2-94b) gives 3V_φ²/S = 691 Ω,
+  so Z = 0.0273 + j0.0518 pu. Problem 2-10: the manual's turns ratios (2.50, 1.44, 4.33) belong to a
+  34.5/13.8 kV bank; for 34.5/11 kV they are 3.136, 1.811, 5.432, 3.136. Each preset shows its note.
+- **EEE 321 Lab 01, real bank, operating point:** "secondary at rated voltage" (default) holds V_φS at its
+  rating at the angle the ideal netlist gives that winding. "Primary at rated voltage" holds |V_φP| and solves
+  |V_φS| from Eq. (2-64); the load then means the winding current (S_load/3)/V_φS,rated (rated current at
+  100 %), so the delivered VA is a little below S_load. If Eq. (2-64) has no solution the lab says so and
+  computes nothing.
+- **EEE 321 Lab 01, real bank, inputs:** the shunt branch is used only when the OC test is on (test data) or
+  the "excitation branch" switch is on (per-unit / ohms); otherwise P_core = 0 and the results and the work say
+  "shunt branch neglected". The SC test off means Z_SE = 0. A wattmeter reading above V·I (or a negative one)
+  is refused with a `--warn` message and nothing is computed. Switching the circuit source (per-unit, ohms on
+  either side) carries the present circuit over in the new units; switching the model carries the ratings over.
+- **EEE 321 Lab 01, real bank, presets:** Problem 2-10 gives only ratings, so its preset uses test data with
+  both tests off (an ideal circuit): the numbers to compare are the ratings and a for the four connections.
+  The book's 60 Hz for Chapman's problems, 50 Hz for the midterm-style bank. Problem 2-12's rated load is
+  3 × 20 kVA at PF 0.9 lagging; Problem 2-13's 300 kVA at PF 0.8 lagging.
+- **EEE 321 Lab 01, real bank, "primary (HV)":** the primary is the HV side in every preset. If the student sets
+  a < 1 the labels stay "primary / secondary" with "(LV)" / "(HV)" beside them.
+- **EEE 321 Lab 01, notation change:** the whole lab, including the ideal mode, now uses V_φP, V_φS, I_LP, I_φP,
+  I_LS, I_φS, S and S_φ instead of the slide-style V_p-pri, I_L-pri, I_p-pri, S_3φ, S_unit. The ideal results are
+  unchanged (its browser test passes with the same values). The PF control gained "unity".
+- **EEE 321 Lab 01, real bank, display:** the drop phasors may be drawn ×5 or ×10 (labelled "display only"; the
+  closing V_φP/a is drawn to the magnified tip, the numbers are true). The η plot zooms on the useful range;
+  loads under 10 % fall below its axis and are not drawn. Losses use the power token `--trn` with a lighter
+  tint (P_Cu) or a hatch (P_core). Shared additions: `NumberField` (typed values without a slider) and
+  `PERPHASE_COLOR` in `ui/palette.ts`.
 - **EEE 321 Lab 01, display noise:** P or Q below 10⁻⁹ of S is shown as 0 (for example Q at PF 1).
 - **Shared "Show the work" notes** may now contain inline maths (rendered with KaTeX). Lab 01 (EEE 361) is
   unchanged: its six reference screenshots are still pixel-identical.
@@ -396,7 +450,6 @@ Any other static host works too: upload the contents of `dist/`.
   diagram (§ 7.7); windings whose brushes would share a segment, C/P < m + ½ (see Decisions), including
   triplex lap with 10 or 12 poles at C ≤ 48; fringing at the pole tips (the field is ±1 under a pole face and
   0 in the dead zone); exam questions on multiplex wave windings (outside the course).
-- EEE 321 Lab 01, out of scope: the per-phase equivalent circuit with winding impedance, the per-unit system
-  for three-phase banks, voltage regulation and efficiency (Chapman § 2.10, Example 2-9 (b)–(c)); unbalanced
-  loads; open-Δ and other two-transformer connections (§ 2.11); derating and inrush current; computing the
-  third-harmonic circulating current.
+- EEE 321 Lab 01, out of scope: open-Δ and other two-transformer connections (§ 2.11); unbalanced loads;
+  autotransformers; derating and inrush current; computing the third-harmonic circulating current; the exact
+  (not approximate) equivalent circuit; non-identical transformers in one bank; "all-day" efficiency.
