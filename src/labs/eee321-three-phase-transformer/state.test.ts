@@ -27,3 +27,31 @@ describe('three-phase transformer lab state', () => {
     expect(isCustomized({ ...s, seq: 'acb' })).toBe(true)
   })
 })
+
+describe('real-bank presets through the lab state', () => {
+  const near = (x: number, y: number, rel = 1e-5) => expect(Math.abs(x - y) / Math.abs(y)).toBeLessThan(rel)
+  it('round-trip through the URL, with the view switches', () => {
+    for (const p of PRESETS.filter((x) => x.values.model === 'real')) {
+      const s = { ...fromPreset(p.id), refSide: 'S' as const, hero: 'circuit' as const, gain: 5 as const }
+      expect(decodeState(encodeState(s))).toEqual(s)
+      expect(isCustomized(s)).toBe(false)
+    }
+  })
+  it('every preset gives the book / brief values', () => {
+    const vr = (id: Parameters<typeof fromPreset>[0]) => derive(fromPreset(id)).sol.real!
+    near(vr('r29').VR, 5.11898)
+    near(vr('r211').VR, 3.88686); near(vr('r211').eta, 96.9121)
+    near(vr('r212').VR, 2.93974); near(vr('r212').eta, 97.1452); near(derive(fromPreset('r212')).sol.pri.VLLmag, 24705.5)
+    near(vr('r213').VR, 5.32378); near(derive(fromPreset('r213')).sol.pri.VLLmag, 15166.9)
+    near(vr('rmid').VR, 4.06011); near(vr('rmid').eta, 99.7783)
+    const m10 = derive(fromPreset('r210'))
+    near(m10.real!.rating.a, 3.13636); expect(Math.abs(m10.sol.real!.VR)).toBeLessThan(1e-12)
+    const pri = derive({ ...fromPreset('r213'), hold: 'pri' })
+    near(pri.sol.real!.VR, 5.62492)
+  })
+  it('a wattmeter reading above V·I is refused and nothing real is computed', () => {
+    const m = derive({ ...fromPreset('r212'), scP: 5000 })
+    expect(m.real!.error?.where).toBe('SC')
+    expect(m.sol.real).toBeUndefined()
+  })
+})

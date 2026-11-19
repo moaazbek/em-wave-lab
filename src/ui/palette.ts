@@ -63,6 +63,18 @@ export const MACHINE_COLOR = {
  */
 export const PHASE_COLOR = ['var(--inc)', 'var(--ref)', 'var(--trn)'] as const
 
+/**
+ * EEE 321 Lab 01, real bank (per-phase circuit, phasor diagram, power bars): meaning -> existing token.
+ * Losses use the power token with a lighter tint or a hatch, never colour alone.
+ */
+export const PERPHASE_COLOR = {
+  voltage: 'var(--inc)',
+  current: 'var(--ref)',
+  power: 'var(--trn)',
+  element: 'var(--ink)',
+  neglected: 'var(--faint)',
+} as const
+
 export type ThemeName = 'light' | 'dark'
 export const PALETTES: Record<ThemeName, Palette> = { light: LIGHT, dark: DARK }
 

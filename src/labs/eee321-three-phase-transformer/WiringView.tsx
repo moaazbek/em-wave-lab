@@ -108,7 +108,7 @@ function layout(model: Model, W: number, H: number, compact: boolean): Layout {
       coils.push({ x, yT, yB, dir, color, side, k, d: toD(coil) })
       if (!compact) {
         const Vw = side === 0 ? sol.pri.Vw[k] : sol.sec.Vw[k]
-        const sub = side === 0 ? 'p\\text{-}pri' : 'p\\text{-}sec'
+        const sub = side === 0 ? '\\phi P' : '\\phi S'
         labels.push({
           x: side === 0 ? x - 16 : x + 16, y: (yT + yB) / 2, align: side === 0 ? 'right' : 'left',
           node: <><Tex>{`V_{${sub}}`}</Tex> <span className="num">= {si(abs(Vw), 'V', 4)} ∠ {phaseDeg(arg(Vw))}</span></>,

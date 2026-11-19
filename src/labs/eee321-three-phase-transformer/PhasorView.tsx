@@ -4,7 +4,7 @@ import type { Clock } from '../../ui/clock'
 import { useSize } from '../../ui/controls'
 import { PHASE_COLOR } from '../../ui/palette'
 import { Tex } from '../../ui/Tex'
-import { shiftWords } from './derive'
+import { shiftLabel } from './derive'
 import type { Model } from './derive'
 
 interface Arrow {
@@ -140,12 +140,12 @@ export function PhasorView({ model, clock, className = '', compact = false }: { 
       {geo && lists && (
         <>
           <svg ref={svgRef} width={W} height={H} className="absolute inset-0" role="img"
-            aria-label={`Phasor diagrams. Secondary line voltages: ${shiftWords(sol.shiftDeg)} relative to the primary.`}>
+            aria-label={`Phasor diagrams. Secondary line voltages: ${shiftLabel(model)} relative to the primary.`}>
             <line x1={W / 2} x2={W / 2} y1={8} y2={H - 8} stroke="var(--rule)" />
             <Diagram title="Primary" arrows={lists.pri} cx={geo.c1.x} cy={geo.c1.y} R={geo.R}
               note={state.overlay && !compact ? <>faded: secondary <Tex>{'\\times V_{LL}/V_{ll}'}</Tex> (display only)</> : undefined} />
             <Diagram title="Secondary" arrows={lists.sec} cx={geo.c2.x} cy={geo.c2.y} R={geo.R}
-              ghost={{ ang: angAB, label: 'V_AB' }} arc={{ from: angAB, to: angab, text: shiftWords(sol.shiftDeg) }}
+              ghost={{ ang: angAB, label: 'V_AB' }} arc={{ from: angAB, to: angab, text: shiftLabel(model) }}
               note={!compact ? <>dashed line: direction of <Tex>{'V_{AB}'}</Tex></> : undefined} />
           </svg>
           {all.map(({ a }, j) => (
@@ -157,7 +157,7 @@ export function PhasorView({ model, clock, className = '', compact = false }: { 
           ))}
           <div className="pointer-events-none absolute whitespace-nowrap rounded-[3px] px-1 text-[11.5px] font-medium text-ink"
             style={{ left: W / 2 + 10, top: 24, background: 'color-mix(in srgb, var(--panel) 80%, transparent)' }}>
-            <Tex>{'V_{ab}'}</Tex> vs <Tex>{'V_{AB}'}</Tex>: {shiftWords(sol.shiftDeg)}
+            <Tex>{'V_{ab}'}</Tex> vs <Tex>{'V_{AB}'}</Tex>: {shiftLabel(model)}
           </div>
         </>
       )}

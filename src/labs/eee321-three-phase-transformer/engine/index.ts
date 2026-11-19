@@ -377,7 +377,7 @@ function solveReal(p: Params, r: RealParams): Solution {
     shiftDeg: wrapDeg(argDeg(sec.Vll[0]) - argDeg(pri.Vll[0])),
     Sload: Sout,
     real: {
-      VphiS: fr(VwS[0]), IphiS: fr(IwS[0]), VphiP: fr(VwP[0]), IphiP: fr(IwP[0]), VPa: fr(VPa),
+      VphiS: c(Vmag, 0), IphiS: fr(IwS[0]), VphiP: fr(VwP[0]), IphiP: fr(IwP[0]), VPa: fr(VPa),
       Iex: fr(r.YeS ? mul(VwP[0], scale(r.YeS, 1 / (p.a * p.a))) : ZERO),
       deltaDeg: wrapDeg(argDeg(VwP[0]) - argDeg(VwS[0])),
       VR: ((V1 - Vmag) / Vmag) * 100,
@@ -576,9 +576,12 @@ export const realParams = (rating: Rating, circuit: Circuit, hold: 'sec' | 'pri'
   ZseS: circuit.ZseS, YeS: circuit.YeS, VphiP: rating.VphiP, VphiS: rating.VphiS, hold,
 })
 
-/** VR and η against the load fraction of rated (0 … 1.25), for the plots. */
+/** VR and η against the load fraction of rated (0 … 1.25), for the plots. NaN where Eq. (2-64) has no solution. */
 export function sweepLoad(base: Params, Srated: number, fractions: readonly number[]): { x: number; VR: number; eta: number }[] {
   return fractions.map((x) => {
+    const r = base.real
+    if (r && r.hold === 'pri' && secondaryVoltageForPrimary(r.VphiP, base.a, r.ZseS, (x * Srated) / 3 / r.VphiS, loadAngle(base.pf, base.lagging)) === null)
+      return { x, VR: NaN, eta: NaN }
     const s = solve({ ...base, S3: x * Srated })
     return { x, VR: s.real!.VR, eta: s.real!.eta }
   })

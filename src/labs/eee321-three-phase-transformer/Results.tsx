@@ -5,12 +5,14 @@ import { PHASE_COLOR } from '../../ui/palette'
 import { Row } from '../../ui/Row'
 import { Prose, Tex } from '../../ui/Tex'
 import { CONN_TEXT, Model, shiftWords } from './derive'
+import { RealResults } from './RealResults'
 
 const polar = (z: C, unit: string) => `${si(abs(z), unit, 4)} ∠ ${phaseDeg(arg(z))}`
 /** Drop floating-point noise (e.g. Q = 5e-13 var at PF 1): parts below 1e-9 of the reference count as zero. */
 const clean = (x: number, ref: number) => (Math.abs(x) <= 1e-9 * Math.abs(ref) ? 0 : x)
 
 export function Results({ model }: { model: Model }) {
+  if (model.real) return <RealResults model={model} />
   const { sol, formula, conn } = model
   const { pri, sec } = sol
   const n = sol.params.netlist
@@ -30,9 +32,9 @@ export function Results({ model }: { model: Model }) {
         <dl className="mt-1.5">
           <Row sym="V_{LL}">{si(pri.VLLmag, 'V', 5)}</Row>
           <Row sym="V_{LN}" sub={pri.star ? undefined : 'of the supply'}>{si(pri.VLNmag, 'V', 5)}</Row>
-          <Row sym="V_{p\text{-}pri}" sub="winding">{si(pri.Vp, 'V', 5)}</Row>
-          <Row sym="I_{L\text{-}pri}" sub="line">{si(pri.IL, 'A', 5)}</Row>
-          <Row sym="I_{p\text{-}pri}" sub="winding">{si(pri.Ip, 'A', 5)}</Row>
+          <Row sym="V_{\phi P}" sub="winding">{si(pri.Vp, 'V', 5)}</Row>
+          <Row sym="I_{LP}" sub="line">{si(pri.IL, 'A', 5)}</Row>
+          <Row sym="I_{\phi P}" sub="winding">{si(pri.Ip, 'A', 5)}</Row>
           <Row sym="S" sub={<Tex>{'= \\sqrt3\\,V_{LL} I_L'}</Tex>}>{si(abs(pri.Sline), 'VA', 4)}</Row>
           <Row sym="P">{si(clean(pri.Sline.re, abs(pri.Sline)), 'W', 4)}</Row>
           <Row sym="Q">{si(clean(pri.Sline.im, abs(pri.Sline)), 'var', 4)}</Row>
@@ -44,9 +46,9 @@ export function Results({ model }: { model: Model }) {
         <dl className="mt-1.5">
           <Row sym="V_{ll}">{si(sec.VLLmag, 'V', 5)}</Row>
           <Row sym="V_{ln}" sub={sec.star ? undefined : 'equivalent Y'}>{si(sec.VLNmag, 'V', 5)}</Row>
-          <Row sym="V_{p\text{-}sec}" sub="winding">{si(sec.Vp, 'V', 5)}</Row>
-          <Row sym="I_{L\text{-}sec}" sub="line">{si(sec.IL, 'A', 5)}</Row>
-          <Row sym="I_{p\text{-}sec}" sub="winding">{si(sec.Ip, 'A', 5)}</Row>
+          <Row sym="V_{\phi S}" sub="winding">{si(sec.Vp, 'V', 5)}</Row>
+          <Row sym="I_{LS}" sub="line">{si(sec.IL, 'A', 5)}</Row>
+          <Row sym="I_{\phi S}" sub="winding">{si(sec.Ip, 'A', 5)}</Row>
           <Row sym="S">{si(abs(sec.Sline), 'VA', 4)}</Row>
           <Row sym="P">{si(clean(sec.Sline.re, abs(sec.Sline)), 'W', 4)}</Row>
           <Row sym="Q">{si(clean(sec.Sline.im, abs(sec.Sline)), 'var', 4)}</Row>

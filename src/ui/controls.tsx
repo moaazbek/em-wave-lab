@@ -200,3 +200,40 @@ export function useSize<T extends HTMLElement>(): [React.RefObject<T | null>, { 
   }, [])
   return [ref, size]
 }
+
+/**
+ * Number field without a slider, for typed data such as test readings ("1.4 kV", "945 W").
+ * Same look and behaviour as the field of `ParamSlider`: Enter or blur commits, Escape cancels, red until valid.
+ */
+export function NumberField({ symbol, name, unit, value, onChange, digits = 4, prefix = true, min = 0, className = '' }: {
+  symbol: ReactNode; name: string; unit: string; value: number; onChange: (v: number) => void
+  digits?: number; prefix?: boolean; min?: number; className?: string
+}) {
+  const show = (v: number) => (prefix ? si(v, unit, digits) : `${sig(v, digits)}${unit ? ' ' + unit : ''}`)
+  const [text, setText] = useState<string | null>(null)
+  const [bad, setBad] = useState(false)
+  const commit = (raw: string) => {
+    const v = parseEng(raw)
+    if (v === null || v < min) { setBad(true); return }
+    setBad(false); setText(null); onChange(v)
+  }
+  return (
+    <label className={`flex min-w-0 items-baseline justify-between gap-2 ${className}`}>
+      <span className="flex min-w-0 items-baseline gap-1.5"><span className="shrink-0">{symbol}</span><span className="truncate text-[12px] text-mute">{name}</span></span>
+      <input
+        aria-label={`${name} (${unit || 'no unit'}), type a value`}
+        aria-invalid={bad}
+        className={`num w-[7.5rem] shrink-0 border-b bg-transparent py-0.5 text-right text-[13px] outline-none focus:border-ink ${bad ? 'border-warn text-warn' : 'border-rule'}`}
+        value={text ?? show(value)}
+        inputMode="text" spellCheck={false} autoComplete="off"
+        onFocus={(e) => { setText(show(value)); const el = e.target; requestAnimationFrame(() => { if (document.activeElement === el) el.select() }) }}
+        onChange={(e) => { setText(e.target.value); setBad(false) }}
+        onBlur={() => { if (text !== null && text !== show(value)) commit(text); else { setText(null); setBad(false) } }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') { commit(e.currentTarget.value); e.currentTarget.blur() }
+          if (e.key === 'Escape') { setText(null); setBad(false); e.currentTarget.blur() }
+        }}
+      />
+    </label>
+  )
+}
