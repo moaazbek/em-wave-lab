@@ -3,7 +3,10 @@ import { Disclaimer } from './Disclaimer'
 import { ThemeToggle } from './ThemeToggle'
 import { COURSES, Course } from './courses'
 import { LABS, PLANNED } from './labs'
+import { Chip } from '../ui/buttons'
+import { LabTile } from '../ui/LabTile'
 import { Prose } from '../ui/Tex'
+import { PREVIEWS } from './previews'
 import { parseHash, useRoutePath } from './router'
 
 export { Disclaimer } from './Disclaimer'
@@ -24,19 +27,23 @@ export function App() {
 }
 
 function Home() {
+  const jump = (code: string) => document.getElementById(`course-${code.replace(' ', '')}`)?.scrollIntoView({ block: 'start' })
   return (
-    <div className="mx-auto flex min-h-full max-w-3xl flex-col px-5 py-8 sm:px-8 sm:py-14">
-      <header className="flex items-center justify-between">
-        <span className="tag !text-ink">{COURSES.map((c) => c.code).join(' · ')}</span>
+    <div className="mx-auto flex min-h-full max-w-[1040px] flex-col px-5 py-8 sm:px-8 sm:py-12">
+      <header className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-[34px] font-semibold leading-[1.1] tracking-[-0.02em] sm:text-[42px]">Field Lab</h1>
         <ThemeToggle />
       </header>
-      <main className="mt-14 sm:mt-20">
-        <h1 className="text-[34px] font-semibold leading-[1.1] tracking-[-0.02em] sm:text-[46px]">Field Lab</h1>
-        <p className="mt-5 max-w-xl text-[16px] leading-relaxed text-mute">
+      <main className="mt-6">
+        <p className="max-w-2xl text-[16px] leading-relaxed text-mute">
           An online laboratory for two courses. Change a material, an angle or a load, watch the fields and the machine
           respond, and read the same numbers you would get by hand. Each lab follows the notation of its course
           textbook.
         </p>
+        <div className="mt-6 flex flex-wrap items-center gap-2">
+          <span className="tag">Courses</span>
+          {COURSES.map((c) => <Chip key={c.code} onClick={() => jump(c.code)}>{c.code}</Chip>)}
+        </div>
         {COURSES.map((c) => <CourseGroup key={c.code} course={c} />)}
       </main>
       <footer className="mt-auto flex flex-col gap-1.5 pt-16 text-[12px] leading-relaxed text-faint">
@@ -49,46 +56,32 @@ function Home() {
 function CourseGroup({ course }: { course: Course }) {
   const labs = LABS.filter((l) => l.course === course.code).sort((a, b) => a.number.localeCompare(b.number))
   const planned = PLANNED.filter((p) => p.course === course.code)
+  const id = `course-${course.code.replace(' ', '')}`
   return (
-    <section className="mt-14" aria-labelledby={`course-${course.code}`}>
-      <h2 id={`course-${course.code}`} className="tag flex flex-wrap items-baseline justify-between gap-x-4 border-b border-rule pb-2">
-        <span className="!text-ink">{course.code} · {course.name}</span>
-        <span className="normal-case tracking-normal">
-          {course.book.author}, <i>{course.book.title}</i>, {course.book.edition}
-        </span>
-      </h2>
-      <ul>
-        {labs.map((l) => (
-          <li key={l.slug} className="border-b border-rule">
-            <a href={`#/${l.slug}`} className="group grid grid-cols-[3rem_1fr_auto] items-baseline gap-x-3 py-5">
-              <span className="num text-[13px] text-faint">{l.number}</span>
-              <span>
-                <span className="text-[19px] font-medium tracking-[-0.01em] group-hover:underline group-hover:decoration-1 group-hover:underline-offset-4">
-                  {l.title.includes('$') ? <Prose>{l.title}</Prose> : l.title}
-                </span>
-                <span className="mt-1.5 block max-w-xl text-[14px] leading-relaxed text-mute">{l.summary}</span>
-                <span className="tag mt-2.5 block">{l.tag}</span>
-              </span>
-              <span aria-hidden className="num text-[15px] text-mute transition-transform group-hover:translate-x-0.5">→</span>
-            </a>
+    <section id={id} className="mt-12 scroll-mt-4" aria-labelledby={`${id}-h`}>
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-rule pb-2.5">
+        <span className="tag !text-ink">{course.code}</span>
+        <h2 id={`${id}-h`} className="text-[19px] font-medium tracking-[-0.01em]">{course.name}</h2>
+        <span className="text-[13px] text-mute sm:ml-auto">{course.book.author}, <i>{course.book.title}</i>, {course.book.edition}</span>
+      </div>
+      <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {labs.map((l) => {
+          const Preview = PREVIEWS[l.slug]
+          return (
+            <li key={l.slug} className="flex">
+              <LabTile href={`#/${l.slug}`} number={l.number} tag={l.tag} preview={Preview ? <Preview /> : undefined}
+                title={l.title.includes('$') ? <Prose>{l.title}</Prose> : l.title} summary={l.summary} />
+            </li>
+          )
+        })}
+        {planned.map((p) => (
+          <li key={p.title} className="flex">
+            <LabTile number={p.number} title={<Prose>{p.title}</Prose>} summary={p.tag ?? "In preparation."} />
           </li>
         ))}
       </ul>
-      {planned.length > 0 && (
-        <p className="mt-5 text-[13px] text-faint">
-          In preparation:{' '}
-          {planned.map((p, i) => (
-            <span key={p.title}>
-              {p.number && <span className="num">{p.number} </span>}
-              <Prose>{p.title}</Prose>
-              {p.tag && ` (${p.tag})`}
-              {i < planned.length - 1 ? '; ' : '.'}
-            </span>
-          ))}
-        </p>
-      )}
       {labs.map((l) => (
-        <p key={l.slug} className="mt-1.5 text-[12px] leading-relaxed text-faint">
+        <p key={l.slug} className="mt-2 text-[12px] leading-relaxed text-faint">
           {labs.length > 1 && <span className="num mr-1.5">{l.number}</span>}<Prose>{l.model}</Prose>
         </p>
       ))}

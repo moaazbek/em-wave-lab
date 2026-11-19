@@ -35,9 +35,9 @@ export const LABS: LabEntry[] = [
     number: '01',
     title: 'Three-phase transformer connections',
     summary:
-      'Y–Y, Y–Δ, Δ–Y and Δ–Δ banks of three single-phase transformers. See the current move in every winding and line, the phasors of both sides, the √3 factors and the 30° shift.',
-    tag: 'Chapman § 2.10',
-    model: 'Model: three ideal single-phase transformers, balanced load, no circulating current in a delta; the third-harmonic view is illustrative.',
+      'Y–Y, Y–Δ, Δ–Y and Δ–Δ banks of three single-phase transformers: the √3 factors and the 30° shift, then a real bank with OC/SC tests, per-unit, voltage regulation and efficiency.',
+    tag: 'Chapman § 2.5–2.7, 2.10',
+    model: 'Model: three identical single-phase transformers, ideal or with the approximate equivalent circuit (real bank), balanced load, no circulating current in a delta; the third-harmonic view is illustrative.',
     component: lazy(() => import('../labs/eee321-three-phase-transformer')),
   },
   {
