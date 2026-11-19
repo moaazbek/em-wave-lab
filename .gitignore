@@ -11,6 +11,8 @@ coverage
 
 # documents that must never be published (textbook, exams, notes)
 *.pdf
+# the one exception: the guide, printed from our own pages by `npm run guide:pdf`
+!public/guide/eee-labs-guide.pdf
 *.doc
 *.docx
 *.ppt

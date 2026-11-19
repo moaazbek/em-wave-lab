@@ -538,6 +538,10 @@ with Google Chrome nothing is needed. Commit the new images, marker files and PD
   images losslessly in a PDF (13 MB); the script prints JPEG copies at most 1500 px wide instead (2.9 MB). Lab links
   in the PDF point to the live site and guide links jump inside the document. Printing the page from a browser
   also switches to the light colours.
+- **Guide, PDF in git.** `.gitignore` excludes every `*.pdf` so that no textbook or exam file is ever committed;
+  `public/guide/eee-labs-guide.pdf` is the one exception (it is printed from our own pages).
+- **Test time limit** raised from Vitest's 5 s to 30 s per test: on the CI runner, an armature sweep (2000 random
+  presses) took 5.04 s once the guide's DOM tests ran alongside it. No test value changed.
 - **Guide, EEE 361 walkthrough.** That lab has material presets, not problem presets; the guide uses its default
   media at normal incidence (air to a lossless dielectric with εr = 4), the most common Cheng exercise.
 - **Guide, noticed but not changed:** the rotating loop's "what changed" sentence prints a resistance as "300 mΩ"

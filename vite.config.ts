@@ -7,5 +7,6 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   base: './',
   plugins: [react(), tailwindcss()],
-  test: { include: ['src/**/*.test.{ts,tsx}'], environment: 'node' },
+  // 30 s per test: the CI runner is slower, and the DOM tests of the guide run alongside the engine sweeps
+  test: { include: ['src/**/*.test.{ts,tsx}'], environment: 'node', testTimeout: 30000 },
 })
