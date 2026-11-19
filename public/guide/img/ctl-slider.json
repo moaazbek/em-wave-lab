@@ -1,0 +1,31 @@
+{
+  "name": "ctl-slider",
+  "device": "desktop",
+  "window": false,
+  "width": 542,
+  "height": 338,
+  "markers": [
+    {
+      "n": 1,
+      "label": "number field",
+      "place": "right",
+      "box": {
+        "x": 47.6,
+        "y": 22.61,
+        "w": 50.18,
+        "h": 14.11
+      }
+    },
+    {
+      "n": 2,
+      "label": "slider",
+      "place": "left",
+      "box": {
+        "x": 2.21,
+        "y": 36.72,
+        "w": 95.57,
+        "h": 16.57
+      }
+    }
+  ]
+}

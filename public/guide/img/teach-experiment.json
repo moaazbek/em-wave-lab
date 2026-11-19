@@ -1,0 +1,53 @@
+{
+  "name": "teach-experiment",
+  "device": "desktop",
+  "window": false,
+  "width": 542,
+  "height": 616,
+  "markers": [
+    {
+      "n": 1,
+      "label": "experiment",
+      "place": "left",
+      "box": {
+        "x": 2.95,
+        "y": 2.24,
+        "w": 94.46,
+        "h": 18.53
+      }
+    },
+    {
+      "n": 2,
+      "label": "Predict first",
+      "place": "left",
+      "box": {
+        "x": 7.38,
+        "y": 40.36,
+        "w": 85.61,
+        "h": 26.79
+      }
+    },
+    {
+      "n": 3,
+      "label": "Show the answer",
+      "place": "left",
+      "box": {
+        "x": 7.38,
+        "y": 70.39,
+        "w": 46.51,
+        "h": 10.39
+      }
+    },
+    {
+      "n": 4,
+      "label": "Set up this experiment",
+      "place": "right",
+      "box": {
+        "x": 7.38,
+        "y": 83.38,
+        "w": 58.16,
+        "h": 10.39
+      }
+    }
+  ]
+}

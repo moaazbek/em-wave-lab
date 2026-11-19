@@ -1,0 +1,53 @@
+{
+  "name": "wave-results",
+  "device": "desktop",
+  "window": false,
+  "width": 606,
+  "height": 1106,
+  "markers": [
+    {
+      "n": 1,
+      "label": "Γ",
+      "place": "left",
+      "box": {
+        "x": 1.98,
+        "y": 10.91,
+        "w": 96.04,
+        "h": 4.85
+      }
+    },
+    {
+      "n": 2,
+      "label": "τ",
+      "place": "left",
+      "box": {
+        "x": 1.98,
+        "y": 15.77,
+        "w": 96.04,
+        "h": 4.85
+      }
+    },
+    {
+      "n": 3,
+      "label": "S",
+      "place": "left",
+      "box": {
+        "x": 1.98,
+        "y": 80.24,
+        "w": 96.04,
+        "h": 4.85
+      }
+    },
+    {
+      "n": 4,
+      "label": "|E|min",
+      "place": "left",
+      "box": {
+        "x": 1.98,
+        "y": 89.95,
+        "w": 96.04,
+        "h": 4.85
+      }
+    }
+  ]
+}

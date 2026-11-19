@@ -1,0 +1,42 @@
+{
+  "name": "xf-ideal-phasors",
+  "device": "desktop",
+  "window": false,
+  "width": 1592,
+  "height": 714,
+  "markers": [
+    {
+      "n": 1,
+      "label": "phasor diagrams",
+      "place": "tl",
+      "box": {
+        "x": 0.88,
+        "y": 14.66,
+        "w": 98.49,
+        "h": 84.03
+      }
+    },
+    {
+      "n": 2,
+      "label": "Rotate with ωt",
+      "place": "top",
+      "box": {
+        "x": 66.46,
+        "y": 1.78,
+        "w": 14,
+        "h": 7.84
+      }
+    },
+    {
+      "n": 3,
+      "label": "Overlay secondary",
+      "place": "top",
+      "box": {
+        "x": 82.47,
+        "y": 1.78,
+        "w": 16.78,
+        "h": 7.84
+      }
+    }
+  ]
+}

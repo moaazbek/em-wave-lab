@@ -1,0 +1,75 @@
+{
+  "name": "ctl-toolbar",
+  "device": "desktop",
+  "window": false,
+  "width": 1592,
+  "height": 156,
+  "markers": [
+    {
+      "n": 1,
+      "label": "segmented choice",
+      "place": "top",
+      "box": {
+        "x": 0.75,
+        "y": 7.69,
+        "w": 38.89,
+        "h": 38.46
+      }
+    },
+    {
+      "n": 2,
+      "label": "switch",
+      "place": "top",
+      "box": {
+        "x": 75.74,
+        "y": 8.97,
+        "w": 7.5,
+        "h": 35.9
+      }
+    },
+    {
+      "n": 3,
+      "label": "play / pause",
+      "place": "bottom",
+      "box": {
+        "x": 64.47,
+        "y": 56.41,
+        "w": 3.52,
+        "h": 35.9
+      }
+    },
+    {
+      "n": 4,
+      "label": "step",
+      "place": "bottom",
+      "box": {
+        "x": 68.74,
+        "y": 56.41,
+        "w": 3.52,
+        "h": 35.9
+      }
+    },
+    {
+      "n": 5,
+      "label": "reset",
+      "place": "bottom",
+      "box": {
+        "x": 73.02,
+        "y": 56.41,
+        "w": 3.52,
+        "h": 35.9
+      }
+    },
+    {
+      "n": 6,
+      "label": "speed",
+      "place": "bottom",
+      "box": {
+        "x": 77.29,
+        "y": 56.41,
+        "w": 12.06,
+        "h": 35.9
+      }
+    }
+  ]
+}

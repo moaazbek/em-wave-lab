@@ -1,0 +1,75 @@
+{
+  "name": "arm-exam",
+  "device": "desktop",
+  "window": false,
+  "width": 1592,
+  "height": 1462,
+  "markers": [
+    {
+      "n": 1,
+      "label": "New winding",
+      "place": "left",
+      "box": {
+        "x": 84.05,
+        "y": 0.88,
+        "w": 15.19,
+        "h": 4.38
+      }
+    },
+    {
+      "n": 2,
+      "label": "diagram",
+      "place": "tl",
+      "box": {
+        "x": 0.88,
+        "y": 11.98,
+        "w": 97.99,
+        "h": 37.21
+      }
+    },
+    {
+      "n": 3,
+      "label": "type, plex, direction",
+      "place": "left",
+      "box": {
+        "x": 0.75,
+        "y": 53.9,
+        "w": 31.83,
+        "h": 4.1
+      }
+    },
+    {
+      "n": 4,
+      "label": "number fields",
+      "place": "left",
+      "box": {
+        "x": 0.75,
+        "y": 62.57,
+        "w": 18.49,
+        "h": 4.38
+      }
+    },
+    {
+      "n": 5,
+      "label": "Check",
+      "place": "left",
+      "box": {
+        "x": 0.75,
+        "y": 68.71,
+        "w": 7.63,
+        "h": 4.38
+      }
+    },
+    {
+      "n": 6,
+      "label": "grading",
+      "place": "left",
+      "box": {
+        "x": 0.75,
+        "y": 74.72,
+        "w": 98.49,
+        "h": 24.56
+      }
+    }
+  ]
+}

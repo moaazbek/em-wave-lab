@@ -82,7 +82,7 @@ export default function RotatingLoopLab({ query }: { query: string }) {
       <div className="mt-3"><PowerBars model={model} /></div>
     </section>
   )
-  const header = <LabHeader number="02" title="The rotating loop" tag="Chapman § 7.1" compact={!desktop} />
+  const header = <LabHeader slug={SLUG} number="02" title="The rotating loop" tag="Chapman § 7.1" compact={!desktop} />
 
   return (
     <LabFrame

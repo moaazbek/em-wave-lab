@@ -69,7 +69,7 @@ export default function PlaneWaveIncidenceLab({ query }: { query: string }) {
   )
   const header = (
     <LabHeader
-      number="01" title="Plane-wave incidence" tag="Cheng § 8-2 to 8-10" compact={!desktop}
+      slug={SLUG} number="01" title="Plane-wave incidence" tag="Cheng § 8-2 to 8-10" compact={!desktop}
       advanced={{ checked: session.state.advanced, onChange: (v) => dispatch({ type: 'view', patch: { advanced: v } }) }}
     />
   )
@@ -184,7 +184,7 @@ function Toolbar({ model, dispatch, time, compact = false }: { model: Model; dis
     )
   }
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+    <div data-guide="toolbar" className="flex flex-wrap items-center gap-x-3 gap-y-2">
       {part}{field}{comp}{pol}{rays}
       <div className="ml-auto flex shrink-0 items-center gap-1.5">{playback}</div>
     </div>

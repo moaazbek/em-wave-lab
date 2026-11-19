@@ -1,0 +1,75 @@
+{
+  "name": "lab-loop-desktop",
+  "device": "desktop",
+  "window": true,
+  "width": 2880,
+  "height": 1800,
+  "markers": [
+    {
+      "n": 1,
+      "label": "preset",
+      "place": "left",
+      "box": {
+        "x": 1.11,
+        "y": 12.62,
+        "w": 17.99,
+        "h": 4
+      }
+    },
+    {
+      "n": 2,
+      "label": "given",
+      "place": "right",
+      "box": {
+        "x": 1.11,
+        "y": 20.11,
+        "w": 11.91,
+        "h": 3.33
+      }
+    },
+    {
+      "n": 3,
+      "label": "machine",
+      "place": "tl",
+      "box": {
+        "x": 21.74,
+        "y": 13.92,
+        "w": 54.44,
+        "h": 53.33
+      }
+    },
+    {
+      "n": 4,
+      "label": "operating line",
+      "place": "tl",
+      "box": {
+        "x": 49.72,
+        "y": 78.87,
+        "w": 26.39,
+        "h": 21.11
+      }
+    },
+    {
+      "n": 5,
+      "label": "voltage against angle",
+      "place": "tl",
+      "box": {
+        "x": 21.67,
+        "y": 75.07,
+        "w": 26.39,
+        "h": 24.93
+      }
+    },
+    {
+      "n": 6,
+      "label": "results",
+      "place": "tl",
+      "box": {
+        "x": 77.5,
+        "y": 4.89,
+        "w": 22.5,
+        "h": 95.11
+      }
+    }
+  ]
+}

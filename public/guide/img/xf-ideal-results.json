@@ -1,0 +1,42 @@
+{
+  "name": "xf-ideal-results",
+  "device": "desktop",
+  "window": false,
+  "width": 606,
+  "height": 242,
+  "markers": [
+    {
+      "n": 1,
+      "label": "V_LL/V_ll",
+      "place": "left",
+      "box": {
+        "x": 1.98,
+        "y": 28.28,
+        "w": 96.04,
+        "h": 22.18
+      }
+    },
+    {
+      "n": 2,
+      "label": "a",
+      "place": "left",
+      "box": {
+        "x": 1.98,
+        "y": 50.46,
+        "w": 96.04,
+        "h": 22.18
+      }
+    },
+    {
+      "n": 3,
+      "label": "phase shift",
+      "place": "left",
+      "box": {
+        "x": 1.98,
+        "y": 72.65,
+        "w": 96.04,
+        "h": 22.18
+      }
+    }
+  ]
+}

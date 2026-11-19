@@ -1,0 +1,53 @@
+{
+  "name": "home-desktop",
+  "device": "desktop",
+  "window": true,
+  "width": 2880,
+  "height": 1800,
+  "markers": [
+    {
+      "n": 1,
+      "label": "How to use",
+      "place": "bottom",
+      "box": {
+        "x": 66.24,
+        "y": 6.34,
+        "w": 7.02,
+        "h": 3.11
+      }
+    },
+    {
+      "n": 2,
+      "label": "course chips",
+      "place": "left",
+      "box": {
+        "x": 16.11,
+        "y": 24.47,
+        "w": 67.78,
+        "h": 2.89
+      }
+    },
+    {
+      "n": 3,
+      "label": "a lab tile",
+      "place": "tl",
+      "box": {
+        "x": 16.11,
+        "y": 38.75,
+        "w": 21.85,
+        "h": 39.09
+      }
+    },
+    {
+      "n": 4,
+      "label": "theme choice",
+      "place": "bottom",
+      "box": {
+        "x": 74.1,
+        "y": 6.23,
+        "w": 9.79,
+        "h": 3.33
+      }
+    }
+  ]
+}

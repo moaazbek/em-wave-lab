@@ -7,26 +7,12 @@
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import { ComponentType } from 'react'
 import { afterEach, beforeAll, describe, expect, it } from 'vitest'
+import { installDomStubs } from './test/dom'
 
-const ALLOWED = new Set(['button', 'chip', 'disclosure', 'experiment', 'lab-tile', 'segmented', 'switch', 'icon-button', 'tab', 'slider-input', 'header-link', 'prose-link'])
+const ALLOWED = new Set(['button', 'chip', 'disclosure', 'experiment', 'lab-tile', 'segmented', 'switch', 'icon-button', 'tab', 'slider-input', 'header-link', 'prose-link', 'toc-link'])
 
 let desktop = true
-beforeAll(() => {
-  // jsdom has no layout, canvas, ResizeObserver or matchMedia: minimal stand-ins (display only, no physics)
-  window.matchMedia = ((q: string) => ({
-    matches: q.includes('min-width: 1100px') ? desktop : false, media: q, onchange: null,
-    addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {}, dispatchEvent: () => false,
-  })) as unknown as typeof window.matchMedia
-  class RO { cb: ResizeObserverCallback; constructor(cb: ResizeObserverCallback) { this.cb = cb } observe() { this.cb([], this as unknown as ResizeObserver) } unobserve() {} disconnect() {} }
-  window.ResizeObserver = RO as unknown as typeof ResizeObserver
-  Element.prototype.getBoundingClientRect = function () { return { x: 0, y: 0, top: 0, left: 0, right: 800, bottom: 400, width: 800, height: 400, toJSON() {} } as DOMRect }
-  const ctx = new Proxy({}, { get: (_t, k) => (k === 'createImageData' ? (w: number, h: number) => ({ data: new Uint8ClampedArray(w * h * 4), width: w, height: h }) : k === 'measureText' ? () => ({ width: 10 }) : () => {}) })
-  HTMLCanvasElement.prototype.getContext = (() => ctx) as unknown as typeof HTMLCanvasElement.prototype.getContext
-  window.requestAnimationFrame = ((cb: FrameRequestCallback) => window.setTimeout(() => cb(performance.now()), 16)) as typeof window.requestAnimationFrame
-  window.cancelAnimationFrame = (id: number) => window.clearTimeout(id)
-  Element.prototype.scrollIntoView = () => {}
-  ;(SVGElement.prototype as unknown as { getBBox: () => DOMRect }).getBBox = () => ({ x: 0, y: 0, width: 10, height: 10 }) as DOMRect
-})
+beforeAll(() => installDomStubs(() => desktop))
 afterEach(() => cleanup())
 
 function checkAll(where: string) {
@@ -87,6 +73,14 @@ describe('every button and link uses a design-system component (data-ui)', () =>
     expect(n).toBeGreaterThan(5)
     expect(document.querySelectorAll('a[data-ui=lab-tile]').length).toBe(4)
     expect(document.querySelectorAll('[data-ui=lab-tile][aria-disabled=true]').length).toBeGreaterThan(0)
+  })
+  it('guide page (#/guide), "Contents" opened', async () => {
+    window.location.hash = '#/guide'
+    const GuidePage = (await import('./guide/GuidePage')).default
+    await act(async () => { render(<GuidePage />) })
+    expect(checkAll('guide')).toBeGreaterThan(20)
+    await openEverything('guide')
+    cleanup()
   })
   for (const [name, load, queries] of LABS) {
     for (const d of [true, false]) {

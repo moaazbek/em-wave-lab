@@ -1,0 +1,64 @@
+{
+  "name": "xf-real-operating",
+  "device": "desktop",
+  "window": false,
+  "width": 542,
+  "height": 728,
+  "markers": [
+    {
+      "n": 1,
+      "label": "hold",
+      "place": "left",
+      "box": {
+        "x": 2.21,
+        "y": 17.02,
+        "w": 92.4,
+        "h": 8.24
+      }
+    },
+    {
+      "n": 2,
+      "label": "load as",
+      "place": "right",
+      "box": {
+        "x": 20.32,
+        "y": 28.01,
+        "w": 45.67,
+        "h": 8.24
+      }
+    },
+    {
+      "n": 3,
+      "label": "S_load",
+      "place": "right",
+      "box": {
+        "x": 47.6,
+        "y": 39,
+        "w": 50.18,
+        "h": 6.55
+      }
+    },
+    {
+      "n": 4,
+      "label": "Rated load",
+      "place": "left",
+      "box": {
+        "x": 2.21,
+        "y": 60.14,
+        "w": 32.73,
+        "h": 8.79
+      }
+    },
+    {
+      "n": 5,
+      "label": "PF",
+      "place": "right",
+      "box": {
+        "x": 47.6,
+        "y": 71.68,
+        "w": 50.18,
+        "h": 6.55
+      }
+    }
+  ]
+}

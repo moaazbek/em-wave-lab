@@ -1,0 +1,42 @@
+{
+  "name": "ctl-header",
+  "device": "desktop",
+  "window": false,
+  "width": 696,
+  "height": 84,
+  "markers": [
+    {
+      "n": 1,
+      "label": "Guide",
+      "place": "bottom",
+      "box": {
+        "x": 1.72,
+        "y": 15.48,
+        "w": 20.9,
+        "h": 66.67
+      }
+    },
+    {
+      "n": 2,
+      "label": "Copy link",
+      "place": "bottom",
+      "box": {
+        "x": 27.21,
+        "y": 15.48,
+        "w": 25.95,
+        "h": 66.67
+      }
+    },
+    {
+      "n": 3,
+      "label": "theme",
+      "place": "bottom",
+      "box": {
+        "x": 57.76,
+        "y": 13.1,
+        "w": 40.52,
+        "h": 71.43
+      }
+    }
+  ]
+}

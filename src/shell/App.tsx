@@ -1,9 +1,9 @@
-import { Suspense } from 'react'
+import { Suspense, lazy } from 'react'
 import { Disclaimer } from './Disclaimer'
 import { ThemeToggle } from './ThemeToggle'
 import { COURSES, Course } from './courses'
 import { LABS, PLANNED } from './labs'
-import { Chip } from '../ui/buttons'
+import { BUTTON_CLASS, Chip, HelpIcon } from '../ui/buttons'
 import { LabTile } from '../ui/LabTile'
 import { Prose } from '../ui/Tex'
 import { PREVIEWS } from './previews'
@@ -12,8 +12,16 @@ import { parseHash, useRoutePath } from './router'
 export { Disclaimer } from './Disclaimer'
 export { ThemeToggle } from './ThemeToggle'
 
+const GuidePage = lazy(() => import('../guide/GuidePage'))
+
 export function App() {
   const path = useRoutePath()
+  if (path === 'guide')
+    return (
+      <Suspense fallback={<div className="p-6 text-mute">Loading the guide…</div>}>
+        <GuidePage />
+      </Suspense>
+    )
   const lab = LABS.find((l) => l.slug === path)
   if (lab) {
     const Lab = lab.component
@@ -32,7 +40,10 @@ function Home() {
     <div className="mx-auto flex min-h-full max-w-[1040px] flex-col px-5 py-8 sm:px-8 sm:py-12">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-[34px] font-semibold leading-[1.1] tracking-[-0.02em] sm:text-[42px]">Field Lab</h1>
-        <ThemeToggle />
+        <div className="flex items-center gap-3">
+          <a href="#/guide" data-ui="header-link" className={BUTTON_CLASS.small}><HelpIcon /><span>How to use</span></a>
+          <ThemeToggle />
+        </div>
       </header>
       <main className="mt-6">
         <p className="max-w-2xl text-[16px] leading-relaxed text-mute">

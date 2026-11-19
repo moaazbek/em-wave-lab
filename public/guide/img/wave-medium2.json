@@ -1,0 +1,42 @@
+{
+  "name": "wave-medium2",
+  "device": "desktop",
+  "window": false,
+  "width": 542,
+  "height": 634,
+  "markers": [
+    {
+      "n": 1,
+      "label": "Medium 2 material",
+      "place": "left",
+      "box": {
+        "x": 2.21,
+        "y": 18.84,
+        "w": 95.57,
+        "h": 11.36
+      }
+    },
+    {
+      "n": 2,
+      "label": "εr2",
+      "place": "right",
+      "box": {
+        "x": 47.6,
+        "y": 33.35,
+        "w": 50.18,
+        "h": 7.52
+      }
+    },
+    {
+      "n": 3,
+      "label": "σ2",
+      "place": "right",
+      "box": {
+        "x": 47.6,
+        "y": 75.71,
+        "w": 50.18,
+        "h": 7.52
+      }
+    }
+  ]
+}

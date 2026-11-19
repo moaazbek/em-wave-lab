@@ -4,7 +4,7 @@ import { Tex } from './Tex'
 /** Result row: optional colour dot, KaTeX symbol, small qualifier; value on the right in the number face. */
 export function Row({ sym, children, color, sub }: { sym: string; children: ReactNode; color?: string; sub?: ReactNode }) {
   return (
-    <div className="flex items-baseline justify-between gap-3 py-[3px]">
+    <div data-guide={`row-${sym.replace(/[^A-Za-z0-9]/g, '')}`} className="flex items-baseline justify-between gap-3 py-[3px]">
       <dt className="flex shrink-0 items-baseline gap-1.5">
         {color && <span className="inline-block h-2 w-2 translate-y-[-1px] rounded-full" style={{ background: color }} />}
         <Tex>{sym}</Tex>

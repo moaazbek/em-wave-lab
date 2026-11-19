@@ -1,0 +1,53 @@
+{
+  "name": "loop-results",
+  "device": "desktop",
+  "window": false,
+  "width": 606,
+  "height": 962,
+  "markers": [
+    {
+      "n": 1,
+      "label": "mode badge",
+      "place": "left",
+      "box": {
+        "x": 1.98,
+        "y": 7.95,
+        "w": 17.53,
+        "h": 4.3
+      }
+    },
+    {
+      "n": 2,
+      "label": "e_ind",
+      "place": "left",
+      "box": {
+        "x": 1.98,
+        "y": 59.65,
+        "w": 96.04,
+        "h": 5.58
+      }
+    },
+    {
+      "n": 3,
+      "label": "i",
+      "place": "left",
+      "box": {
+        "x": 1.98,
+        "y": 65.24,
+        "w": 96.04,
+        "h": 5.58
+      }
+    },
+    {
+      "n": 4,
+      "label": "ω",
+      "place": "left",
+      "box": {
+        "x": 1.98,
+        "y": 70.82,
+        "w": 96.04,
+        "h": 5.58
+      }
+    }
+  ]
+}

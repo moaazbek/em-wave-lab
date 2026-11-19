@@ -1,0 +1,31 @@
+{
+  "name": "arm-notdrawn",
+  "device": "desktop",
+  "window": false,
+  "width": 1592,
+  "height": 264,
+  "markers": [
+    {
+      "n": 1,
+      "label": "reason",
+      "place": "top",
+      "box": {
+        "x": 27.18,
+        "y": 26.25,
+        "w": 45.64,
+        "h": 16
+      }
+    },
+    {
+      "n": 2,
+      "label": "Go to nearest drawable",
+      "place": "left",
+      "box": {
+        "x": 34.96,
+        "y": 49.83,
+        "w": 30.08,
+        "h": 24.24
+      }
+    }
+  ]
+}

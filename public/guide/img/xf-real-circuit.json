@@ -1,0 +1,31 @@
+{
+  "name": "xf-real-circuit",
+  "device": "desktop",
+  "window": false,
+  "width": 1594,
+  "height": 678,
+  "markers": [
+    {
+      "n": 1,
+      "label": "hero view",
+      "place": "right",
+      "box": {
+        "x": 0.75,
+        "y": 1.77,
+        "w": 25.48,
+        "h": 8.85
+      }
+    },
+    {
+      "n": 2,
+      "label": "equivalent circuit",
+      "place": "tl",
+      "box": {
+        "x": 0.88,
+        "y": 24.48,
+        "w": 98.37,
+        "h": 73.75
+      }
+    }
+  ]
+}

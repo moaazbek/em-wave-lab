@@ -1,0 +1,53 @@
+{
+  "name": "xf-real-rating",
+  "device": "desktop",
+  "window": false,
+  "width": 542,
+  "height": 638,
+  "markers": [
+    {
+      "n": 1,
+      "label": "given as",
+      "place": "right",
+      "box": {
+        "x": 22.01,
+        "y": 11.86,
+        "w": 65.29,
+        "h": 9.4
+      }
+    },
+    {
+      "n": 2,
+      "label": "S_φ",
+      "place": "right",
+      "box": {
+        "x": 47.6,
+        "y": 24.4,
+        "w": 50.18,
+        "h": 7.47
+      }
+    },
+    {
+      "n": 3,
+      "label": "V_φP",
+      "place": "right",
+      "box": {
+        "x": 47.6,
+        "y": 45.44,
+        "w": 50.18,
+        "h": 7.47
+      }
+    },
+    {
+      "n": 4,
+      "label": "V_φS",
+      "place": "right",
+      "box": {
+        "x": 47.6,
+        "y": 66.49,
+        "w": 50.18,
+        "h": 7.47
+      }
+    }
+  ]
+}

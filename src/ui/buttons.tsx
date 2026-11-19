@@ -39,6 +39,16 @@ export function CopyIcon({ size = 13 }: { size?: number }) {
   )
 }
 
+export function HelpIcon({ size = 13 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 14 14" aria-hidden className="shrink-0">
+      <circle cx="7" cy="7" r="5.9" fill="none" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M5.3 5.4a1.8 1.8 0 1 1 2.5 1.65c-.5.22-.8.6-.8 1.1v.35" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <circle cx="7" cy="10.3" r=".85" fill="currentColor" />
+    </svg>
+  )
+}
+
 /* ---------- Button ---------- */
 
 export type ButtonVariant = 'primary' | 'secondary' | 'small'

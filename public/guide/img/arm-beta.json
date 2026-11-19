@@ -1,0 +1,42 @@
+{
+  "name": "arm-beta",
+  "device": "desktop",
+  "window": false,
+  "width": 542,
+  "height": 380,
+  "markers": [
+    {
+      "n": 1,
+      "label": "β",
+      "place": "right",
+      "box": {
+        "x": 47.6,
+        "y": 3.13,
+        "w": 50.18,
+        "h": 12.55
+      }
+    },
+    {
+      "n": 2,
+      "label": "Ignore dead zone",
+      "place": "left",
+      "box": {
+        "x": 2.21,
+        "y": 51.95,
+        "w": 47.08,
+        "h": 16.84
+      }
+    },
+    {
+      "n": 3,
+      "label": "geometry",
+      "place": "left",
+      "box": {
+        "x": 2.21,
+        "y": 71.95,
+        "w": 95.57,
+        "h": 24.97
+      }
+    }
+  ]
+}

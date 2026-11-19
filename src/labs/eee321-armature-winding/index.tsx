@@ -100,7 +100,7 @@ export default function ArmatureWindingLab({ query }: { query: string }) {
     if (d.build.ok) time.clock.reset(cleanPhase(d.build.winding))
   }
   const notDrawn = !model.build.ok && (
-    <div className="flex min-h-[120px] flex-col items-center justify-center gap-2.5 border border-dashed border-rule bg-panel px-4 py-6 text-center text-[13px] leading-relaxed text-mute">
+    <div data-guide="not-drawable" className="flex min-h-[120px] flex-col items-center justify-center gap-2.5 border border-dashed border-rule bg-panel px-4 py-6 text-center text-[13px] leading-relaxed text-mute">
       <p>{model.build.reason}</p>
       {model.nearest !== null && (
         <Button variant="secondary" onClick={() => goTo(model.nearest!)} icon={<ArrowIcon />}>
@@ -110,7 +110,7 @@ export default function ArmatureWindingLab({ query }: { query: string }) {
     </div>
   )
   const diagram = (
-    <section className="min-w-0">
+    <section data-guide="diagram" className="min-w-0">
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-rule pb-1.5">
         <h3 className="tag !text-ink">Developed winding · {windingName(s)}, {s.progressive ? 'progressive' : 'retrogressive'}</h3>
         <span className="tag">§ 7.3</span>
@@ -135,7 +135,7 @@ export default function ArmatureWindingLab({ query }: { query: string }) {
       <div className="mt-2.5"><BrushPlot w={w} beta={s.beta} econd={model.f.econd} EA={model.f.EA} EAdz={model.f.EAdz} avg={model.avgBrush ?? 0} clock={time.clock} /></div>
     </section>
   ) : null
-  const header = <LabHeader number="03" title={<>Armature windings and <Tex>{'E_A'}</Tex></>} tag="Chapman § 7.3, 7.5" compact={!desktop} />
+  const header = <LabHeader slug={SLUG} number="03" title={<>Armature windings and <Tex>{'E_A'}</Tex></>} tag="Chapman § 7.3, 7.5" compact={!desktop} />
   const endView = (cls: string) => (w && snap ? <EndView w={w} snap={snap} geo={model.geo} clock={time.clock} className={cls} /> : <div className={cls}>{notDrawn}</div>)
 
   return (

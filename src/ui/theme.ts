@@ -18,7 +18,11 @@ let choice: ThemeChoice = (() => {
 const resolve = (): ThemeName => (choice === 'system' ? (mq().matches ? 'dark' : 'light') : choice)
 
 export function applyTheme(): void {
-  const name = resolve()
+  applyPalette(resolve())
+}
+
+/** Set the colour tokens of one theme without changing the choice (the guide prints in the light theme). */
+export function applyPalette(name: ThemeName): void {
   const p = PALETTES[name]
   const s = document.documentElement.style
   for (const k of ['bg', 'panel', 'sunk', 'ink', 'mute', 'faint', 'rule', 'inc', 'ref', 'trn', 'warn'] as const)

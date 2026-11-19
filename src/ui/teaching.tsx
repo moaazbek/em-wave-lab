@@ -112,8 +112,8 @@ export function WhatIsHappening({ reaction, lines }: { reaction: string | null; 
   return (
     <>
       <Heading>What is happening</Heading>
-      <div className="mt-2.5 flex flex-col gap-2 text-[14px] leading-relaxed" aria-live="polite">
-        {reaction && <p className="border-l-2 border-inc pl-3"><Prose>{reaction}</Prose></p>}
+      <div data-guide="what-is-happening" className="mt-2.5 flex flex-col gap-2 text-[14px] leading-relaxed" aria-live="polite">
+        {reaction && <p data-guide="what-changed" className="border-l-2 border-inc pl-3"><Prose>{reaction}</Prose></p>}
         {lines.map((l, i) => <p key={i} className={reaction ? 'text-mute' : ''}><Prose>{l}</Prose></p>)}
       </div>
     </>

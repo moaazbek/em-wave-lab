@@ -29,7 +29,7 @@ export function ExamMode() {
   if (!w || !snap) return null
   const score = graded ? graded.filter((g) => g.ok).length : 0
   return (
-    <section className="min-w-0">
+    <section data-guide="exam" className="min-w-0">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule pb-1.5">
         <h3 className="tag !text-ink">Exam mode · Identify the winding</h3>
         <Button variant="primary" onClick={next} icon={<RefreshIcon />}>New winding</Button>

@@ -1,15 +1,22 @@
 import { useEffect, useRef, useSyncExternalStore } from 'react'
 
-/** Hash routing ("#/slug?query") so the static build works from any sub-path. */
+/**
+ * Hash routing ("#/slug?query") so the static build works from any sub-path. A second "#" names an anchor
+ * inside the page: "#/guide#faq" is the route "guide", anchor "faq".
+ */
 export interface Route {
   path: string
   query: string
+  anchor: string
 }
 
 export function parseHash(hash: string): Route {
-  const h = hash.replace(/^#\/?/, '')
+  let h = hash.replace(/^#\/?/, '')
+  const j = h.indexOf('#')
+  const anchor = j < 0 ? '' : h.slice(j + 1)
+  if (j >= 0) h = h.slice(0, j)
   const i = h.indexOf('?')
-  return i < 0 ? { path: h, query: '' } : { path: h.slice(0, i), query: h.slice(i + 1) }
+  return i < 0 ? { path: h, query: '', anchor } : { path: h.slice(0, i), query: h.slice(i + 1), anchor }
 }
 
 const subscribe = (l: () => void) => {
@@ -19,6 +26,11 @@ const subscribe = (l: () => void) => {
 
 export function useRoutePath(): string {
   return useSyncExternalStore(subscribe, () => parseHash(window.location.hash).path)
+}
+
+/** Anchor after the route ("faq" in "#/guide#faq"), or "". */
+export function useRouteAnchor(): string {
+  return useSyncExternalStore(subscribe, () => parseHash(window.location.hash).anchor)
 }
 
 /** Replace the query part of the hash without adding a history entry. */

@@ -81,3 +81,15 @@ details > summary::-webkit-details-marker { display: none; }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }
+
+/* Guide (#/guide): print and PDF. A4; each lab section starts on a new page; markers keep their colours. */
+@media print {
+  @page { size: A4; margin: 14mm 14mm 16mm; }
+  html, body, #root { height: auto; }
+  .guide { -webkit-print-color-adjust: exact; print-color-adjust: exact; padding-top: 0; }
+  .guide-lab { break-before: page; }
+  .guide-figure, .guide-group { break-inside: avoid; }
+  body { background: #fff; }
+  .guide h2, .guide h3, .guide h4 { break-after: avoid; }
+  .guide ol > li, .guide ul > li { break-inside: avoid; }
+}

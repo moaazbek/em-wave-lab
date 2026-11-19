@@ -1,0 +1,75 @@
+{
+  "name": "xf-real-tests",
+  "device": "desktop",
+  "window": false,
+  "width": 542,
+  "height": 1418,
+  "markers": [
+    {
+      "n": 1,
+      "label": "test data",
+      "place": "right",
+      "box": {
+        "x": 2.21,
+        "y": 5.32,
+        "w": 95.57,
+        "h": 4.23
+      }
+    },
+    {
+      "n": 2,
+      "label": "OC test switch",
+      "place": "left",
+      "box": {
+        "x": 6.27,
+        "y": 12.51,
+        "w": 87.45,
+        "h": 3.95
+      }
+    },
+    {
+      "n": 3,
+      "label": "measured on",
+      "place": "left",
+      "box": {
+        "x": 6.27,
+        "y": 20.79,
+        "w": 70.54,
+        "h": 4.23
+      }
+    },
+    {
+      "n": 4,
+      "label": "readings are",
+      "place": "left",
+      "box": {
+        "x": 6.27,
+        "y": 29.35,
+        "w": 79.9,
+        "h": 4.23
+      }
+    },
+    {
+      "n": 5,
+      "label": "readings",
+      "place": "right",
+      "box": {
+        "x": 49.45,
+        "y": 34.71,
+        "w": 44.28,
+        "h": 3.36
+      }
+    },
+    {
+      "n": 6,
+      "label": "one-transformer values",
+      "place": "left",
+      "box": {
+        "x": 6.27,
+        "y": 48.18,
+        "w": 87.45,
+        "h": 4.58
+      }
+    }
+  ]
+}

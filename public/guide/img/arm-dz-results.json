@@ -1,0 +1,42 @@
+{
+  "name": "arm-dz-results",
+  "device": "desktop",
+  "window": false,
+  "width": 606,
+  "height": 510,
+  "markers": [
+    {
+      "n": 1,
+      "label": "E_A",
+      "place": "left",
+      "box": {
+        "x": 1.98,
+        "y": 13.34,
+        "w": 96.04,
+        "h": 10.53
+      }
+    },
+    {
+      "n": 2,
+      "label": "E_A,dz",
+      "place": "left",
+      "box": {
+        "x": 1.98,
+        "y": 23.87,
+        "w": 96.04,
+        "h": 10.53
+      }
+    },
+    {
+      "n": 3,
+      "label": "I_A",
+      "place": "left",
+      "box": {
+        "x": 1.98,
+        "y": 55.45,
+        "w": 96.04,
+        "h": 10.53
+      }
+    }
+  ]
+}

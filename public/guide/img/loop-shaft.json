@@ -1,0 +1,31 @@
+{
+  "name": "loop-shaft",
+  "device": "desktop",
+  "window": false,
+  "width": 542,
+  "height": 382,
+  "markers": [
+    {
+      "n": 1,
+      "label": "τ_load",
+      "place": "right",
+      "box": {
+        "x": 47.6,
+        "y": 19.89,
+        "w": 50.18,
+        "h": 12.48
+      }
+    },
+    {
+      "n": 2,
+      "label": "sign hint",
+      "place": "left",
+      "box": {
+        "x": 2.21,
+        "y": 48.76,
+        "w": 95.57,
+        "h": 8.28
+      }
+    }
+  ]
+}

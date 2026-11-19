@@ -30,14 +30,14 @@ export function LabFrame({ desktop, header, course, left, centre, right, pinned,
       <div className="flex h-full flex-col">
         {header}
         <div className="grid min-h-0 flex-1 grid-cols-[292px_minmax(0,1fr)_324px]">
-          <aside className="scroll-thin flex flex-col gap-6 overflow-y-auto border-r border-rule bg-panel px-4 py-4" aria-label="Controls">
+          <aside data-guide="controls" className="scroll-thin flex flex-col gap-6 overflow-y-auto border-r border-rule bg-panel px-4 py-4" aria-label="Controls">
             {left}
           </aside>
-          <main className="scroll-thin overflow-y-auto px-5 py-4">
+          <main data-guide="centre" className="scroll-thin overflow-y-auto px-5 py-4">
             {centre}
             <footer className="mt-8 border-t border-rule pb-2 pt-3"><Disclaimer course={course} /></footer>
           </main>
-          <aside className="scroll-thin overflow-y-auto border-l border-rule bg-panel px-4 py-4" aria-label="Results">
+          <aside data-guide="results" className="scroll-thin overflow-y-auto border-l border-rule bg-panel px-4 py-4" aria-label="Results">
             {right}
           </aside>
         </div>
@@ -49,8 +49,8 @@ export function LabFrame({ desktop, header, course, left, centre, right, pinned,
     <div className="flex min-h-full flex-col">
       {header}
       <div className="sticky top-0 z-20 border-b border-rule bg-bg">
-        {pinned}
-        <div role="tablist" aria-label="Panels" className="flex">
+        <div data-guide="pinned">{pinned}</div>
+        <div role="tablist" aria-label="Panels" data-guide="tabs" className="flex">
           {tabs.map(({ id, label }) => (
             <button
               key={id} role="tab" data-ui="tab" aria-selected={tab === id} onClick={() => setTab(id)}
@@ -61,7 +61,7 @@ export function LabFrame({ desktop, header, course, left, centre, right, pinned,
           ))}
         </div>
       </div>
-      <div role="tabpanel" className="flex-1 bg-panel px-4 pb-10 pt-4">
+      <div role="tabpanel" data-guide="tab-panel" className="flex-1 bg-panel px-4 pb-10 pt-4">
         {current.content}
         <footer className="mt-8 border-t border-rule pt-3"><Disclaimer course={course} /></footer>
       </div>

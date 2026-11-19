@@ -1,0 +1,42 @@
+{
+  "name": "ctl-preset",
+  "device": "desktop",
+  "window": false,
+  "width": 542,
+  "height": 326,
+  "markers": [
+    {
+      "n": 1,
+      "label": "preset",
+      "place": "left",
+      "box": {
+        "x": 2.21,
+        "y": 36.57,
+        "w": 95.57,
+        "h": 22.09
+      }
+    },
+    {
+      "n": 2,
+      "label": "customized tag",
+      "place": "right",
+      "box": {
+        "x": 71.44,
+        "y": 24.67,
+        "w": 26.35,
+        "h": 9.34
+      }
+    },
+    {
+      "n": 3,
+      "label": "segmented choice",
+      "place": "right",
+      "box": {
+        "x": 2.21,
+        "y": 77.91,
+        "w": 63.3,
+        "h": 18.4
+      }
+    }
+  ]
+}

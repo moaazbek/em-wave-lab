@@ -1,0 +1,31 @@
+{
+  "name": "wave-inputs",
+  "device": "desktop",
+  "window": false,
+  "width": 542,
+  "height": 472,
+  "markers": [
+    {
+      "n": 1,
+      "label": "f",
+      "place": "right",
+      "box": {
+        "x": 47.6,
+        "y": 16.18,
+        "w": 50.18,
+        "h": 10.1
+      }
+    },
+    {
+      "n": 2,
+      "label": "θi",
+      "place": "right",
+      "box": {
+        "x": 47.6,
+        "y": 44.63,
+        "w": 50.18,
+        "h": 10.1
+      }
+    }
+  ]
+}

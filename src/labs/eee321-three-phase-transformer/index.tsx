@@ -70,7 +70,7 @@ export default function ThreePhaseTransformerLab({ query }: { query: string }) {
       <div className="mt-2.5"><WaveformPlot model={model} clock={time.clock} /></div>
     </section>
   )
-  const header = <LabHeader number="01" title="Three-phase transformer connections" tag="Chapman § 2.10" compact={!desktop} />
+  const header = <LabHeader slug={SLUG} number="01" title="Three-phase transformer connections" tag="Chapman § 2.10" compact={!desktop} />
   const setGain = (g: 1 | 5 | 10) => dispatch({ type: 'set', change: 'view', patch: { gain: g } })
   const errorBanner = model.real?.error && (
     <p className="mt-2.5 rounded-[3px] border border-warn px-3 py-2 text-[12.5px] leading-snug text-warn" role="alert">

@@ -1,0 +1,75 @@
+{
+  "name": "lab-xf-desktop",
+  "device": "desktop",
+  "window": true,
+  "width": 2880,
+  "height": 1800,
+  "markers": [
+    {
+      "n": 1,
+      "label": "Model",
+      "place": "right",
+      "box": {
+        "x": 1.11,
+        "y": 10.25,
+        "w": 17.99,
+        "h": 3.33
+      }
+    },
+    {
+      "n": 2,
+      "label": "Preset",
+      "place": "left",
+      "box": {
+        "x": 1.11,
+        "y": 17.07,
+        "w": 17.99,
+        "h": 4
+      }
+    },
+    {
+      "n": 3,
+      "label": "Connection",
+      "place": "right",
+      "box": {
+        "x": 1.11,
+        "y": 22.18,
+        "w": 17.99,
+        "h": 3.33
+      }
+    },
+    {
+      "n": 4,
+      "label": "wiring",
+      "place": "tl",
+      "box": {
+        "x": 21.74,
+        "y": 11,
+        "w": 54.44,
+        "h": 48.89
+      }
+    },
+    {
+      "n": 5,
+      "label": "playback",
+      "place": "bottom",
+      "box": {
+        "x": 56.89,
+        "y": 6.67,
+        "w": 1.94,
+        "h": 3.11
+      }
+    },
+    {
+      "n": 6,
+      "label": "results",
+      "place": "tl",
+      "box": {
+        "x": 77.5,
+        "y": 4.89,
+        "w": 22.5,
+        "h": 95.11
+      }
+    }
+  ]
+}

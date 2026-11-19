@@ -1,0 +1,31 @@
+{
+  "name": "teach-what",
+  "device": "desktop",
+  "window": false,
+  "width": 1592,
+  "height": 454,
+  "markers": [
+    {
+      "n": 1,
+      "label": "what changed",
+      "place": "left",
+      "box": {
+        "x": 0.75,
+        "y": 16.62,
+        "w": 98.49,
+        "h": 20.04
+      }
+    },
+    {
+      "n": 2,
+      "label": "the situation now",
+      "place": "left",
+      "box": {
+        "x": 0.75,
+        "y": 40.19,
+        "w": 98.49,
+        "h": 20.04
+      }
+    }
+  ]
+}

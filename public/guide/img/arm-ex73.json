@@ -1,0 +1,31 @@
+{
+  "name": "arm-ex73",
+  "device": "desktop",
+  "window": false,
+  "width": 606,
+  "height": 562,
+  "markers": [
+    {
+      "n": 1,
+      "label": "Z",
+      "place": "left",
+      "box": {
+        "x": 1.98,
+        "y": 21.47,
+        "w": 96.04,
+        "h": 9.55
+      }
+    },
+    {
+      "n": 2,
+      "label": "a",
+      "place": "left",
+      "box": {
+        "x": 1.98,
+        "y": 31.03,
+        "w": 96.04,
+        "h": 9.55
+      }
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "arm-path",
+  "device": "desktop",
+  "window": false,
+  "width": 1592,
+  "height": 700,
+  "markers": [
+    {
+      "n": 1,
+      "label": "Path 1 chip",
+      "place": "left",
+      "box": {
+        "x": 0.75,
+        "y": 10.46,
+        "w": 12.37,
+        "h": 7.43
+      }
+    },
+    {
+      "n": 2,
+      "label": "highlighted path",
+      "place": "tl",
+      "box": {
+        "x": 0.88,
+        "y": 20.46,
+        "w": 98.49,
+        "h": 77.71
+      }
+    }
+  ]
+}

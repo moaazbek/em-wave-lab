@@ -1,0 +1,53 @@
+{
+  "name": "xf-real-results",
+  "device": "desktop",
+  "window": false,
+  "width": 606,
+  "height": 1098,
+  "markers": [
+    {
+      "n": 1,
+      "label": "VR",
+      "place": "left",
+      "box": {
+        "x": 1.98,
+        "y": 35.59,
+        "w": 96.04,
+        "h": 4.89
+      }
+    },
+    {
+      "n": 2,
+      "label": "P_Cu",
+      "place": "left",
+      "box": {
+        "x": 1.98,
+        "y": 64.66,
+        "w": 96.04,
+        "h": 4.96
+      }
+    },
+    {
+      "n": 3,
+      "label": "P_core",
+      "place": "left",
+      "box": {
+        "x": 1.98,
+        "y": 69.62,
+        "w": 96.04,
+        "h": 4.89
+      }
+    },
+    {
+      "n": 4,
+      "label": "η",
+      "place": "left",
+      "box": {
+        "x": 1.98,
+        "y": 79.39,
+        "w": 96.04,
+        "h": 4.89
+      }
+    }
+  ]
+}

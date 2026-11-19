@@ -1,0 +1,64 @@
+{
+  "name": "teach-work",
+  "device": "desktop",
+  "window": false,
+  "width": 1588,
+  "height": 348,
+  "markers": [
+    {
+      "n": 1,
+      "label": "Show the work",
+      "place": "left",
+      "box": {
+        "x": 0.76,
+        "y": 3.73,
+        "w": 98.49,
+        "h": 22.99
+      }
+    },
+    {
+      "n": 2,
+      "label": "equation number",
+      "place": "right",
+      "box": {
+        "x": 93.24,
+        "y": 34.76,
+        "w": 4.5,
+        "h": 8.75
+      }
+    },
+    {
+      "n": 3,
+      "label": "equation",
+      "place": "left",
+      "box": {
+        "x": 2.27,
+        "y": 49.35,
+        "w": 95.47,
+        "h": 10.08
+      }
+    },
+    {
+      "n": 4,
+      "label": "numbers",
+      "place": "left",
+      "box": {
+        "x": 2.27,
+        "y": 62.04,
+        "w": 95.47,
+        "h": 10.08
+      }
+    },
+    {
+      "n": 5,
+      "label": "result",
+      "place": "left",
+      "box": {
+        "x": 2.27,
+        "y": 74.73,
+        "w": 95.47,
+        "h": 10.08
+      }
+    }
+  ]
+}
