@@ -81,3 +81,19 @@ a control.
 | Path chips "Path 1 · 5.33 V" (diagram) and path rows (schematic) | outlined | `Chip` |
 | Brush rectangles in the developed diagram | click + hover on an SVG `<g>` | hover only (a click handler on a static element is not allowed); the path chips do the same job by click or tap |
 | Experiments, Show the work | see Shared | see Shared |
+
+## After
+
+Every element above now uses the component in its "Becomes" column. Checks:
+
+- `npm run lint`: jsx-a11y `no-static-element-interactions`, `click-events-have-key-events` and
+  `no-noninteractive-element-interactions` as errors; no violations.
+- `src/ui-affordance.test.tsx`: renders the home page and every lab (desktop, and every phone tab), several URL
+  states per lab (Ideal and Real bank, both hero views, refused test data; wave duplex, frog-leg, an undrawable
+  typed C, Example 7-3), opens every disclosure and experiment and presses every "Show the answer"; every
+  `button` and `a[href]` carries an allowed `data-ui`.
+- `src/ui/palette.test.ts`: contrast of button, chip, disclosure, experiment and tile text, borders and icons,
+  both themes, at rest and on hover.
+- Browser: every page at 1440 px and 390 px in both themes, every phone tab: no horizontal page scroll, no
+  console errors. Hover and keyboard focus: `after-home-hover-<theme>.jpg`, `after-home-focus-<theme>.jpg`,
+  `after-arm-hover-focus-<theme>.jpg`.

@@ -104,7 +104,7 @@ export default function ArmatureWindingLab({ query }: { query: string }) {
       <p>{model.build.reason}</p>
       {model.nearest !== null && (
         <Button variant="secondary" onClick={() => goTo(model.nearest!)} icon={<ArrowIcon />}>
-          {s.C > MAX_DRAWN_COILS ? 'Show a small drawable version' : 'Go to nearest drawable'} (<span className="num">C = {model.nearest}</span>)
+          <span>{s.C > MAX_DRAWN_COILS ? 'Show a small drawable version' : 'Go to nearest drawable'} (<span className="num">C = {model.nearest}</span>)</span>
         </Button>
       )}
     </div>

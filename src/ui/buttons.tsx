@@ -60,7 +60,7 @@ export function Button({ variant = 'secondary', icon, children, className = '', 
   return (
     <button data-ui="button" type={type} className={`${BUTTON_CLASS[variant]} ${className}`} {...rest}>
       {icon}
-      {children}
+      <span>{children}</span>
     </button>
   )
 }

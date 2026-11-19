@@ -9,7 +9,8 @@ The repository is public: never add textbook pages, slides, figures, scans, exam
 
 ## Commands
 - `npm run dev` — dev server
-- `npm test` — Vitest (physics engine, formatting, palette, URL state)
+- `npm test` — Vitest (physics engine, formatting, palette and contrast, URL state, data-ui DOM test)
+- `npm run lint` — ESLint with jsx-a11y (Babel parser; TypeScript 7 has no JS API for typescript-eslint)
 - `npm run build` — `tsc --noEmit` then static build into `dist/` (relative base, works from any sub-path)
 - `npm run preview` — serve the build
 
@@ -20,11 +21,16 @@ The repository is public: never add textbook pages, slides, figures, scans, exam
 - `src/labs/plane-wave-incidence/` — the lab (state + URL codec, derived model, field map, plots, teaching text).
 - `src/shell/` — home page grouped by course, `courses.ts` (course, textbook, footer), lab registry (`labs.ts`),
   hash router + `useUrlSync`, `LabHeader`, `LabFrame` (desktop 3 columns / phone pinned view + tabs), `Disclaimer`.
-- `src/ui/` — shared components: `ParamSlider` (with `onOutOfRange`), `NumberField`, `Segmented`, `Switch`, `SelectField`,
+- `src/ui/` — shared components: `Button` (primary / secondary / small), `Chip`, `Disclosure`, icons (`buttons.tsx`),
+  `LabTile`, `ParamSlider` (with `onOutOfRange`), `NumberField`, `Segmented`, `Switch`, `SelectField`,
   `Row`/`Badge`, `PlaybackControls`/`AngleReadout`, clock (`useClock`), teaching panels (`ExperimentList`,
   `ExperimentPanel`, `WhatIsHappening`, `ShowWork`), KaTeX (`Tex`, `Prose`), formatting, palette, theme.
 - New labs: add a folder under `src/labs/` and one entry in `src/shell/labs.ts`; reuse the shared components.
-- Never change a published route slug. Do not change Lab 01's look: compare screenshots before and after.
+- Never change a published route slug. Compare screenshots before and after any visual change.
+- Everything clickable looks clickable: use `Button`, `Chip`, `Disclosure`, `ExperimentList`, `LabTile`, `Segmented`,
+  `Switch`. Actions are `<button>`, navigation `<a href>`; never a click handler on a div, span or SVG group.
+  Every button and link carries a `data-ui` value (tested in `src/ui-affordance.test.tsx`). Run `npm run lint`
+  (jsx-a11y) before committing.
 
 ## Notation and conventions (exams are graded on Cheng's notation)
 - Phasors with e^{jωt}; instantaneous = Re[phasor · e^{jωt}]; e^{-jβz} travels in +z; cosine form in time domain.

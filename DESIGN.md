@@ -21,7 +21,7 @@ Source: `src/ui/palette.ts` (values), `src/ui/theme.ts` (how they are applied), 
 | `--sunk` | `#ece9e1` | `#080a0d` | Background of the field-map frame before the canvas draws |
 | `--ink` | `#16181b` | `#e9e6df` | Primary text, active controls (filled), plot curve of the current case |
 | `--mute` | `#565b62` | `#a0a6ad` | Secondary text, labels, hints, axis text, inactive controls |
-| `--faint` | `#8e9299` | `#69707a` | Tertiary text (numbering, footer), zero line, the "other" curve |
+| `--faint` | `#6a6f76` | `#69707a` | Tertiary text (numbering, footer), zero line, the "other" curve |
 | `--rule` | `#d6d2c7` | `#262c34` | All borders and hairlines, slider track, plot grid |
 | `--inc` | `#b07a00` | `#f2c744` | **Incident wave** (amber) |
 | `--ref` | `#a31c6b` | `#d9488f` | **Reflected wave** (magenta) |
@@ -46,7 +46,7 @@ Source: `src/ui/palette.ts` (values), `src/ui/theme.ts` (how they are applied), 
 ```css
 :root {            /* light */
   --bg:#f4f2ec; --panel:#fbfaf6; --sunk:#ece9e1;
-  --ink:#16181b; --mute:#565b62; --faint:#8e9299; --rule:#d6d2c7;
+  --ink:#16181b; --mute:#565b62; --faint:#6a6f76; --rule:#d6d2c7;
   --inc:#b07a00; --ref:#a31c6b; --trn:#16a37f; --warn:#a8431a;
   --map-ink:#16181b; --map-halo:#f6f4ee;
 }
@@ -64,11 +64,16 @@ Source: `src/ui/palette.ts` (values), `src/ui/theme.ts` (how they are applied), 
 |---|---|---|
 | ink | 17.03 / 15.89 | 14.70 / 15.53 |
 | mute | 6.55 / 6.11 | 7.46 / 7.88 |
-| faint | 2.99 / 2.79 | 3.66 / 3.87 |
+| faint | 4.85 / 4.52 | 3.66 / 3.87 |
 | inc | 3.57 / 3.33 | 11.37 / 12.01 |
 | ref | 6.85 / 6.39 | 4.60 / 4.86 |
 | trn | 3.06 / 2.85 | 11.27 / 11.90 |
 | warn | 5.77 / 5.39 | 8.98 / 9.48 |
+
+Interactive elements (tested in `src/ui/palette.test.ts`, both themes, rest and hover): primary button
+`--bg` on `--ink` and on `color-mix(--ink 85 %, --bg)`; secondary / small / chip text `--ink` on `--bg`,
+`--panel`, `--sunk`; their `--mute` borders ≥ 3 : 1 on `--bg` and `--panel`; `--ink` chevrons and arrows ≥ 3 : 1
+on `--panel` and `--sunk`; `--mute` text ≥ 4.5 : 1 on `--panel` and `--sunk`.
 
 Use `ink` and `mute` for anything that must be read. The wave colours are used for marks (dots, rays,
 lines, symbols next to text), not for running text; see section 3.
@@ -320,7 +325,7 @@ animates (the only transition on the site). Label 12 px, `--mute`, `--ink` when 
 Speed select: 28 px tall, `.num` 12 px.
 
 ### Icon buttons (play, step, reset)
-28 × 28 px, 1 px `--rule` border, 3 px radius, `--mute` icon (`--ink` on hover). Icons are 14 × 14 px
+28 × 28 px, 1 px `--mute` border, 3 px radius, `--ink` icon; hover `--ink` border and `--sunk` fill. Icons are 14 × 14 px
 filled SVG paths:
 - play `M3.5 1.5v11l9-5.5z`, pause `M3 2h3v10H3zM8 2h3v10H8z`
 - step `M2 1.5v11l7-5.5zM10 2h2v10h-2z`
@@ -346,18 +351,74 @@ Play / pause, step, reset (icon buttons below), the speed select (units "T/s" fo
 machines) and an angle readout (`ωt =` or `θ =`, `.num`, written to the DOM each frame).
 
 ### Teaching panels (`src/ui/teaching.tsx`)
-`ExperimentList` (numbered rows with a `§` or reference tag), `ExperimentPanel` (task, "Predict first"
-question at 15 px 500, "Show the answer", answer with a 2 px `--ink` left rule, optional set-the-controls
-button), `WhatIsHappening` (reaction sentence with a 2 px `--inc` left rule, then the situation),
-`ShowWork` (collapsible; each step numbered, tagged with a section or an equation number such as
+`ExperimentList` of `ExperimentItem`s (below; each opens inline with the task, "Predict first", "Show the
+answer" and "Set up this experiment"), `WhatIsHappening` (reaction sentence with a 2 px `--inc` left rule, then the situation),
+`ShowWork` (a `Disclosure`; each step numbered, tagged with a section or an equation number such as
 "Eq. (7-6)", display maths one line each).
 
-### Text buttons
-- Primary (e.g. "Show the answer"): 32 px tall, `px-3`, 12.5 px, 1 px `--ink` border, 3 px radius;
-  on hover fills `--ink` with `--bg` text.
-- Secondary (e.g. "Go to 45°"): same size, `--rule` border, `--mute` text; hover border and text `--ink`.
-- Header links ("Copy link", theme choices): plain 12 / 11.5 px text, `--mute` or `--faint`, hover
-  `--ink`. The selected theme is `--ink` with a 1 px underline offset 4 px.
+### Buttons — `Button` (`src/ui/buttons.tsx`, `data-ui="button"`)
+Everything clickable looks clickable before the pointer touches it: at least two of a border or fill, an action
+or navigation icon (chevron, arrow, ↻), a button shape (padding, 3 px radius); a hover change and
+`cursor: pointer`; the focus ring; at least 28 px tall. Actions are `<button>`, navigation `<a href>`; never a
+click handler on a `div`, `span` or SVG group (enforced by `npm run lint`, jsx-a11y).
+- **Primary** — the main action of a block ("Show the answer", "New winding" with ↻, "Check"): 32 px tall,
+  `px-3`, 13 px 500, `--ink` fill, `--bg` text; hover `color-mix(in srgb, var(--ink) 85%, var(--bg))`.
+- **Secondary** — other actions ("Set up this experiment", "Go to 45°", "Ignore dead zone", "Rated load",
+  "Go to nearest drawable"): same size, 1 px `--mute` border, `--ink` text, transparent; hover `--sunk` fill and
+  `--ink` border.
+- **Small** — dense rows and the header ("Copy link" with a copy icon, the C − / + stepper): 28 px, `px-2.5`,
+  12 px, otherwise like secondary.
+- Optional 14 px leading icon (`RefreshIcon`, `ArrowIcon`, `CopyIcon`; stroke `currentColor`). Disabled: 40 %.
+
+### Chip — `Chip` (`data-ui="chip"`)
+Value shortcuts ("Drawable: 20 · 30 · 40", path chips "Path 1 5.33 V", course chips on the home page): 26 px,
+`px-2`, IBM Plex Mono 12 px, `--ink` text, 1 px `--mute` border, 3 px radius; hover `--sunk`. The value in use is
+`--ink` fill with `--bg` text (`aria-pressed`). The path rows of the Lab 03 schematic are chips too: transparent
+border at rest, `--mute` border and `--sunk` fill on hover.
+
+### Disclosure — `Disclosure` (`data-ui="disclosure"`)
+```
+┌───────────────────────────────────────────────────────────┐
+│ ›  Show the work: equation, numbers, result          Show │  40 px button, --panel
+└───────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────┐
+│ ⌄  Show the work: equation, numbers, result          Hide │
+├───────────────────────────────────────────────────────────┤
+│ 1 Conductors                                Eq. (7-22)    │  content in the same frame
+└───────────────────────────────────────────────────────────┘
+```
+A full-width `<button aria-expanded>`, 40 px, 1 px `--rule` frame, 3 px radius, `--panel`; 12 px chevron (right
+when closed, down when open, 120 ms rotation, none under reduced motion), title 13 px 500 `--ink`, state
+"Show" / "Hide" 12 px `--mute`; hover `--sunk` and `--ink` frame. "Show the work" uses it in every lab.
+
+### Guided experiment — `ExperimentItem` (`src/ui/teaching.tsx`, `data-ui="experiment"`)
+```
+┌───────────────────────────────────────────────────────────┐
+│ 3  Brewster angle                              ✓ done  ›  │  ≥ 52 px button
+│    At which angle does the parallel wave…                 │  preview, 12 px --mute, ellipsis
+└───────────────────────────────────────────────────────────┘
+┃  open: 2 px --inc left edge, --ink frame, chevron down
+┃  § 8-8                                     controls set
+┃  task · "Predict first: …" (15 px 500)
+┃  [ Show the answer ]  [ Set up this experiment ]         primary, secondary
+┃  answer with a 2 px --ink rule, then the experiment's own secondary button
+```
+Full-width `<button aria-expanded>`, `--panel`, 1 px `--rule` frame, 3 px radius, padding 10–12 px; number `.num`
+13 px `--mute`, title 13.5 px 500 `--ink`, one-line question preview; chevron right. Hover `--sunk`, `--ink`
+frame. Items are 6 px apart, no rules. "✓ done" (text tag) once the answer has been shown in the session.
+
+### Lab tile — `LabTile` (`src/ui/LabTile.tsx`, `data-ui="lab-tile"`)
+See § 9 "Home page".
+
+### Header controls
+Back link: an `<a href="#/">` styled as a small button with a left arrow ("Field Lab", "Labs" on phone),
+`data-ui="header-link"`. "Copy link": small button. Theme: `Segmented` Auto / Light / Dark.
+
+### Other tags
+`Segmented` radio buttons `data-ui="segmented"` (outer border `--mute`), `Switch` `switch`, playback buttons
+`icon-button` (`--mute` border, `--ink` icon, hover `--sunk`), phone tabs `tab`. Links inside prose (none yet)
+stay text links, underlined 1 px with a 3 px offset, `--ink`, `data-ui="prose-link"`. `Heading` is a label,
+never a control.
 
 ### Power bar
 A 10 px tall row (`h-2.5`) split into the reflected share (`--ref`) and the entering share (`--trn`),
@@ -455,9 +516,9 @@ The lab switches layout with a media query at **1100 px** (`useMediaQuery('(min-
 
 ### Header (both layouts)
 44 px tall (`h-11`), `--panel` background, bottom rule, `px-3` (`px-4` from 640 px).
-Left: back link as `.tag` (`← Field Lab`, or `← Labs` on phone), then the lab name 14 px 600 with its
-number `01` in `.num` `--faint`, then `Cheng § 8-2 to 8-10` as `.tag` (only from 1280 px).
-Right: Advanced switch, "Copy link" (hidden below 640 px), theme choice Auto / Light / Dark (desktop only).
+Left: back link as a small button with a left arrow (`Field Lab`, or `Labs` on phone), then the lab name 14 px
+600 with its number `01` in `.num` `--faint`, then `Cheng § 8-2 to 8-10` as `.tag` (only from 1280 px).
+Right: Advanced switch, "Copy link" small button (hidden below 640 px), theme `Segmented` (desktop only).
 
 ### Desktop (≥ 1100 px)
 ```
@@ -513,16 +574,40 @@ gap), the power bars, the explanation, Show the work and the footer. Phone: the 
 (`min(40vh, 320px)`) under a one-row toolbar; tabs Controls, Results, Explain, Plots.
 
 ### Home page (`src/shell/App.tsx`)
-Single column, max width 768 px (`max-w-3xl`), padding 20 px / 32 px sides and 32 px / 56 px top
-(phone / ≥ 640 px). Header row: the course codes as a tag left (`EEE 361 · EEE 321`), theme choice right.
-Title 34 / 46 px, intro 16 px `--mute` (max 576 px). Then one group per course: a `.tag` heading
-(`EEE 361 · Electromagnetic Waves`) with the textbook on the right (normal case, book title in italics)
-and a rule below; each lab is a full-width link row with a `3rem 1fr auto` grid: number (`.num` 13 px
-`--faint`), title 19 px with summary 14 px and the textbook tag, and an arrow `→` that moves 2 px right on
-hover. Planned labs follow as one `--faint` 13 px line ("In preparation: 01 …; 03 …"), then the model note
-of each built lab in 12 px `--faint`.
-
----
+```
+┌──────────────────────────── max 1040 px ─────────────────────────────┐
+│ Field Lab                                       [Auto|Light|Dark]    │
+│ intro (16 px --mute, max 672 px)                                     │
+│ COURSES [EEE 361] [EEE 321]                      chips: jump to course│
+│                                                                      │
+│ EEE 361  Electromagnetic Waves            Cheng, Field and Wave …    │
+│ ──────────────────────────────────────────────────────────────────── │
+│ ┌──────────────┐ ┌ ─ ─ ─ ─ ─ ─ ─┐ ┌ ─ ─ ─ ─ ─ ─ ─┐                   │
+│ │01   Cheng § …│   PLANNED          PLANNED                         │
+│ │  [preview]   │ │ Faraday's law │ │ Transmission  │                  │
+│ │ Plane-wave … │   …               …                                 │
+│ │ summary ×3   │ │               │ │               │                  │
+│ │ [Open lab →] │                                                     │
+│ └──────────────┘ └ ─ ─ ─ ─ ─ ─ ─┘ └ ─ ─ ─ ─ ─ ─ ─┘                   │
+│ model notes (12 px --faint)                                          │
+│ EEE 321 … three tiles                                                │
+│ footers                                                              │
+└──────────────────────────────────────────────────────────────────────┘
+```
+- Max width 1040 px; padding 20 px / 32 px sides, 32 px / 48 px top (phone / ≥ 640 px). Header row: the
+  site title (34 / 42 px, 600) left, theme `Segmented` right. Intro, then "Courses" with one `Chip` per course
+  (a button that scrolls to the course).
+- Per course: a heading row (code `.tag` `--ink`, name 19 px 500, book 13 px `--mute`, right-aligned from
+  640 px), a 1 px rule, then a grid of tiles: 1 column below 640 px, 2 from 640 px, 3 from 1024 px, 16 px gap.
+  The model notes and the footers follow as before.
+- **`LabTile`:** the whole tile is one `<a href="#/<slug>">` (own route; ⌘/Ctrl-click opens a tab). 1 px
+  `--rule` frame, 3 px radius, `--panel`, padding 16 / 20 px, min-height 200 px, flex column. Top row: number
+  `.num` 20 px `--mute`, section tag `.tag` right. Preview: a 96 px decorative SVG (`aria-hidden`, no numbers;
+  `src/shell/previews.tsx`) in the tokens. Title 19 px 500 `--ink`; summary 14 px `--mute`, 3 lines. Bottom
+  (`mt-auto`): "Open lab →" drawn as a secondary button (part of the same link). Hover: `--ink` frame, `--sunk`
+  fill, arrow 2 px right (no transition under reduced motion). Focus ring around the tile.
+- **Planned:** same shape, dashed `--rule` frame, "Planned" tag, "In preparation.", no arrow, no hover, not a
+  link (`aria-disabled="true"`).
 
 ## 10. Footer
 
@@ -567,9 +652,11 @@ Text (exact):
 
 ## 13. Known limitations
 
-- Light-theme `--faint` (`#8e9299`) measures 2.99 : 1 on `--panel`, below the 4.5 : 1 WCAG AA level for
-  small text. It is used for tertiary text, including the footer. A project that needs AA for all text
-  should darken it; `#6a6f76` measures 4.85 : 1 on `--panel` and 4.52 : 1 on `--bg`.
+- Light-theme `--faint` is now `#6a6f76` (4.85 : 1 on `--panel`, 4.52 : 1 on `--bg`). Dark-theme `--faint`
+  (`#69707a`) still measures 3.66 : 1 on `--panel`; it is tertiary text only and no interactive element uses it.
+- The 1 px `--rule` frames of disclosures, experiment items and lab tiles (about 1.4 : 1) group content; what
+  marks them as controls is the `--ink` chevron or arrow (≥ 3 : 1), the full-width button shape and the hover
+  fill, and on tiles the "Open lab" pill with its `--mute` border.
 - Light-theme `--trn` (3.06 : 1) and `--inc` (3.57 : 1) are suitable for marks and symbols, not for
   running text.
 - Dark-theme `--inc` and `--trn` are lighter than a typical categorical lightness band (see section 3);

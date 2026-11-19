@@ -438,6 +438,37 @@ Any other static host works too: upload the contents of `dist/`.
 - **EEE 321 Lab 03, conductor colours:** ⊙ (+) and ⊗ (−) use the two ends of the existing diverging field map,
   always with the symbol; the highlighted path is `--ref`; E_A and V_T `--inc`, I_A `--ref`, τ and ω `--trn`.
 
+- **Site-wide, clickable elements.** Every button and link now uses one design-system component (`Button`,
+  `Chip`, `Disclosure`, `ExperimentItem`, `LabTile`, or the existing `Segmented`, `Switch`, icon buttons and
+  tabs) and carries `data-ui`; a jsdom test renders the home page and every lab (desktop and every phone tab,
+  several URL states per lab, every disclosure and experiment opened) and checks them; ESLint's jsx-a11y rules
+  forbid click handlers on static elements. The inventory and before / after screenshots are in
+  `docs/ui-audit.md` and `docs/ui-audit/`. No engine file and no test value changed.
+- **Guided experiments open inline.** The separate experiment panel (with "Close") is gone: each item opens in
+  the list with the task, "Predict first", "Show the answer" (primary) and "Set up this experiment" (secondary;
+  it loads the experiment's starting point, as clicking a row did before). The answer keeps the experiment's own
+  button that sets the controls. "✓ done" marks experiments whose answer was shown in this browser session.
+- **"Show the work"** is a `Disclosure`. The labs have no view options inside it (equations / numbers / results
+  are always shown together), so no `Segmented` was added there.
+- **Lab 03 brushes.** The brush rectangles of the developed diagram no longer react to a click or tap (a click
+  handler on an SVG group is not allowed and is not keyboard-accessible); hovering still highlights their paths,
+  and the path chips do the same by click, tap or keyboard. The path rows of the schematic are `Chip`s.
+- **Contrast.** Light `--faint` is darkened to `#6a6f76` (4.85 : 1 on `--panel`), as DESIGN.md proposed; dark
+  `--faint` (3.66 : 1) is unchanged because the brief asked only for the light fix, and no control uses it.
+  The 1 px `--rule` frames of tiles, disclosures and experiment items stay as the brief specifies (≈ 1.4 : 1);
+  the contrast test checks their icons (≥ 3 : 1), texts (≥ 4.5 : 1) and the tile's "Open lab" pill border
+  (`--mute`, ≥ 3 : 1) instead. Segmented controls, icon buttons and selects now have `--mute` borders so they do
+  not look fainter than the new buttons.
+- **EEE 361 look.** The brief overrides "do not change the EEE 361 lab's look" for these components only: its
+  header, experiments, "Show the work", segmented borders and `--faint` changed; the field map, plots, numbers and
+  layout did not. The old pixel-regression baseline was replaced by the new after-screenshots.
+- **Home page.** Course chips are buttons that scroll to the course (a `#eee321` anchor would clash with the
+  hash router). Planned labs are dashed tiles with "In preparation." because they have no summary yet. Every
+  lab already had its own route (`#/<slug>`); none is rendered inside the home page.
+- **Lint set-up.** `typescript-eslint` needs TypeScript < 6.1 and this project uses TypeScript 7 (no JS API), so
+  ESLint parses TSX with `@babel/eslint-parser` (typescript + jsx syntax plugins). Type checking stays with
+  `tsc --noEmit`. Only the three jsx-a11y rules of the brief are enabled.
+
 ## Not yet implemented
 
 - Lossy Medium 1 (the brief fixes σ₁ = 0 for this version).
